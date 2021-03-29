@@ -14,10 +14,21 @@ public class NetBusEntity {
 
     private NetMessage netMessage;
 
-    public static NetBusEntity create(Node node, NetMessage netMessage) {
+    private String uri;
+
+    public static NetBusEntity createPush(Node node, NetMessage netMessage) {
         NetBusEntity entity = new NetBusEntity();
         entity.setNode(node);
         entity.setNetMessage(netMessage);
+        entity.setUri(node.getAddress() + ":" + node.getPort() + NetConstant.PUSH_URI);
+        return entity;
+    }
+
+    public static NetBusEntity createPull(Node node, NetMessage netMessage) {
+        NetBusEntity entity = new NetBusEntity();
+        entity.setNode(node);
+        entity.setNetMessage(netMessage);
+        entity.setUri(node.getAddress() + ":" + node.getPort() + NetConstant.PULL_URI);
         return entity;
     }
 

@@ -26,10 +26,8 @@ public class NetMessage {
      */
     private Descriptor sourceAddress;
 
-    public NetMessage merge(NodeView nodeView, Descriptor descriptor) {
+    public static NetMessage merge(NodeView nodeView, Descriptor descriptor, Descriptor sourceAddress) {
         descriptor.increase();
-        sourceAddress.increase();
-
         NetMessage message = new NetMessage();
         message.setAddress(descriptor);
         message.setView(nodeView);

@@ -3,6 +3,7 @@ package com.dust.epidemic.core;
 import com.dust.epidemic.handlers.ActiveHandler;
 import com.dust.epidemic.handlers.ClientHandler;
 import com.dust.epidemic.handlers.RequestHandler;
+import com.dust.epidemic.net.NetConstant;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpMethod;
@@ -31,13 +32,15 @@ public class EpidemicNode extends AbstractVerticle {
 
         ClientHandler clientHandler = new ClientHandler(client);
         RequestHandler requestHandler = new RequestHandler(nodeManager, dataManager, vertx);
-        ActiveHandler activeHandler = new ActiveHandler(vertx, nodeManager);
+        ActiveHandler activeHandler = new ActiveHandler(vertx, nodeManager, dataManager);
 
         setRouter(router, requestHandler);
         server.requestHandler(router).listen(8080, serverRes -> {
             if (serverRes.succeeded()) {
 
-                vertx.eventBus().consumer("send", activeHandler::sendHandler);
+                vertx.eventBus().consumer("push-ready", activeHandler::sendPushHandler);
+                vertx.eventBus().consumer("pull-ready", activeHandler::sendPullHandler);
+
                 vertx.eventBus().consumer("net-send", clientHandler::send);
 
                 System.out.println("node start ok");
@@ -52,8 +55,8 @@ public class EpidemicNode extends AbstractVerticle {
      * 配置路由表
      */
     private void setRouter(Router router, RequestHandler handler) {
-        router.route(HttpMethod.POST, "/epidemic/push").handler(handler::push);
-        router.route(HttpMethod.POST, "/epidemic/pull").handler(handler::pull);
+        router.route(HttpMethod.POST, NetConstant.PUSH_URI).handler(handler::push);
+        router.route(HttpMethod.POST, NetConstant.PULL_URI).handler(handler::pull);
     }
 
 }

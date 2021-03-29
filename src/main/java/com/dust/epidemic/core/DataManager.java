@@ -1,8 +1,13 @@
 package com.dust.epidemic.core;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * 节点中对所有存储信息的管理表
  */
+@Getter
+@Setter
 public class DataManager {
 
     private NodeView view;

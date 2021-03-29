@@ -5,6 +5,7 @@ import com.dust.epidemic.net.NetMessage;
 import com.dust.epidemic.net.Node;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.http.HttpClient;
+import io.vertx.core.json.Json;
 
 /**
  * 客户端对内部消息处理
@@ -23,11 +24,10 @@ public class ClientHandler {
      */
     public void send(Message<NetBusEntity> message) {
         NetBusEntity netBusEntity = message.body();
-        Node sendNode = netBusEntity.getNode();
         NetMessage sendMessage = netBusEntity.getNetMessage();
 
         //TODO 需要查询资料，vertx http client如何采用post发送数据对象
-//        client.post()
+        client.post(netBusEntity.getUri()).putHeader("content-type", "application/json").write(Json.encodeToBuffer(sendMessage));
     }
 
 }
