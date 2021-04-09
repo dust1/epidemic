@@ -7,7 +7,7 @@ import io.vertx.core.Vertx;
 public class MainVerticle extends AbstractVerticle {
 
     @Override
-    public void start() throws Exception {
+    public void start() {
         vertx.deployVerticle(EpidemicNode.class.getName());
     }
 

@@ -25,9 +25,7 @@ public class ClientHandler {
     public void send(Message<NetBusEntity> message) {
         NetBusEntity netBusEntity = message.body();
         NetMessage sendMessage = netBusEntity.getNetMessage();
-
-        //TODO 需要查询资料，vertx http client如何采用post发送数据对象
-        client.post(netBusEntity.getUri()).putHeader("content-type", "application/json").write(Json.encodeToBuffer(sendMessage));
+        client.post(netBusEntity.getUri()).putHeader("content-type", "application/json").end(Json.encodeToBuffer(sendMessage));
     }
 
 }

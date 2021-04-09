@@ -1,5 +1,6 @@
-package com.dust.epidemic.core;
+package com.dust.epidemic.data;
 
+import com.dust.epidemic.core.NodeView;
 import lombok.Getter;
 import lombok.Setter;
 

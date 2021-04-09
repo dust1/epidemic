@@ -1,6 +1,6 @@
 package com.dust.epidemic.handlers;
 
-import com.dust.epidemic.core.DataManager;
+import com.dust.epidemic.data.DataManager;
 import com.dust.epidemic.core.NodeManager;
 import com.dust.epidemic.core.NodeView;
 import com.dust.epidemic.net.Descriptor;
@@ -44,7 +44,7 @@ public class ActiveHandler {
             Descriptor descriptor = nodeManager.getMyDescriptor();
             NodeView nodeView = dataManager.getView();
             NetMessage pushBuffer = NetMessage.merge(nodeView, descriptor, netMessage.getSourceAddress());
-            nodes.forEach(node -> vertx.eventBus().send("net-send", NetBusEntity.create(node, pushBuffer)));
+            nodes.forEach(node -> vertx.eventBus().send("net-send", NetBusEntity.createPush(node, pushBuffer)));
         }
     }
 
@@ -60,7 +60,7 @@ public class ActiveHandler {
             netMessage.getAddress().increase();
             netMessage.getSourceAddress().increase();
 
-            nodes.forEach(node -> vertx.eventBus().send("net-send", NetBusEntity.create(node, netMessage)));
+            nodes.forEach(node -> vertx.eventBus().send("net-send", NetBusEntity.createPull(node, netMessage)));
         }
     }
 

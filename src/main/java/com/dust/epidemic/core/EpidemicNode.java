@@ -1,5 +1,6 @@
 package com.dust.epidemic.core;
 
+import com.dust.epidemic.data.DataManager;
 import com.dust.epidemic.handlers.ActiveHandler;
 import com.dust.epidemic.handlers.ClientHandler;
 import com.dust.epidemic.handlers.RequestHandler;
@@ -13,7 +14,7 @@ import io.vertx.ext.web.Router;
 public class EpidemicNode extends AbstractVerticle {
 
     @Override
-    public void start() throws Exception {
+    public void start() {
 //        vertx.fileSystem().readFile("./conf/setting.json", settingRes -> {
 //            if (settingRes.succeeded()) {
 //
