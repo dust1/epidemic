@@ -33,6 +33,10 @@ public class NodeManager {
                 .collect(Collectors.toList());
     }
 
+    public void addNode(Node node) {
+        nodes.add(node);
+    }
+
     /**
      * 获取当前节点描述符
      * @return

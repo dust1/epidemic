@@ -1,9 +1,5 @@
 package com.dust.epidemic.data;
 
-import java.security.InvalidParameterException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -28,6 +24,13 @@ public class BPlusTree<T, V extends Comparable<V>> {
         this.maxNumber = bTreeOrder + 1;
         this.root = new LeafNode<>();
         this.left = null;
+    }
+
+    public Node<T, V> getRoot() {
+        return root;
+    }
+    public LeafNode<T, V> getLeft() {
+        return left;
     }
 
     public void insert(V key, T value) {

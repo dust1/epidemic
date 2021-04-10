@@ -1,20 +1,27 @@
 package com.dust.epidemic.net;
 
-import com.dust.epidemic.core.NodeView;
+import com.dust.epidemic.data.NodeView;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * 在网络兼传输的消息包装对象
  */
 @Getter
 @Setter
+@ToString
 public class NetMessage {
 
     /**
-     * 信息主体
+     * 传输关键字
      */
-    private NodeView view;
+    private int[] keys;
+
+    /**
+     * 关键字对应的值
+     */
+    private String[] value;
 
     /**
      * 这个请求的发起方
@@ -26,19 +33,9 @@ public class NetMessage {
      */
     private Descriptor sourceAddress;
 
-    public static NetMessage merge(NodeView nodeView, Descriptor descriptor, Descriptor sourceAddress) {
-        descriptor.increase();
-        NetMessage message = new NetMessage();
-        message.setAddress(descriptor);
-        message.setView(nodeView);
-        message.setSourceAddress(sourceAddress);
-        return message;
-    }
-
-    public String logInfo() {
-        return "message view:" + view.toString() + ";" +
-                "from:" + address.toString() + ";" +
-                "source from:" + sourceAddress.toString() + ";";
-    }
+    /**
+     * 消息校验
+     */
+    private String timestamp;
 
 }

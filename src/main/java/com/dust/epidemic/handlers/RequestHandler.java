@@ -30,11 +30,12 @@ public class RequestHandler {
     public void push(RoutingContext context) {
         context.request().bodyHandler(buffer -> {
             NetMessage message = Json.decodeValue(buffer, NetMessage.class);
-            dataManager.merge(message.getView());
-            System.out.println(message.logInfo());
-
-            //将自身的数据转发出去
-            vertx.eventBus().send("push-ready", message);
+            if (dataManager.check(message.getTimestamp())) {
+                System.out.println("节点：" + nodeManager.getMyDescriptor().toString() + "收到push请求：" + message.toString());
+                dataManager.merge(message.getKeys(), message.getValue());
+                //将自身的数据转发出去
+                vertx.eventBus().send("push-ready", Json.encode(message));
+            }
             context.response().end("{\"status\":1}");
         });
     }
@@ -47,9 +48,7 @@ public class RequestHandler {
     public void pull(RoutingContext context) {
         context.request().bodyHandler(buffer -> {
             NetMessage message = Json.decodeValue(buffer, NetMessage.class);
-            dataManager.merge(message.getView());
-            System.out.println(message.logInfo());
-
+            dataManager.merge(message.getKeys(), message.getValue());
             vertx.eventBus().send("pull-ready", message);
             context.response().end("{\"status\":1}");
         });

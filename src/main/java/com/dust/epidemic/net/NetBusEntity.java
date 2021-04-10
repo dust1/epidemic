@@ -14,13 +14,18 @@ public class NetBusEntity {
 
     private NetMessage netMessage;
 
+    private int port;
     private String uri;
+    private String host;
 
     public static NetBusEntity createPush(Node node, NetMessage netMessage) {
         NetBusEntity entity = new NetBusEntity();
         entity.setNode(node);
         entity.setNetMessage(netMessage);
-        entity.setUri(node.getAddress() + ":" + node.getPort() + NetConstant.PUSH_URI);
+
+        entity.setPort(node.getPort());
+        entity.setHost(node.getAddress());
+        entity.setUri(NetConstant.PUSH_URI);
         return entity;
     }
 
