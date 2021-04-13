@@ -38,13 +38,11 @@ public class LeafTreeNode<K extends Comparable<K>, V> extends AbstractTreeNode<K
         LeafTreeNode<K, V> tempNode = new LeafTreeNode<>(orderNum);
         tempNode.setSize(size - mid);
         tempNode.setParent(parent);
-        boolean newParent = false;
         if (Objects.isNull(parent)) {
             //如果父节点为空，则创建一个空的父节点并指向它
             IndexTreeNode<K, V> p = new IndexTreeNode<>(orderNum);
             parent = p;
             tempNode.setParent(p);
-            newParent = true;
         }
 
         tempNode.setKeys(keys, mid, size - mid);
@@ -63,8 +61,7 @@ public class LeafTreeNode<K extends Comparable<K>, V> extends AbstractTreeNode<K
         tempNode.setPrev(this);
 
         //拆分成功后，将新的节点插入父节点（索引节点）
-        TreeNode<K, V> result = parent.pushNode(this, tempNode, media);
-        return newParent ? parent : result;
+        return parent.pushNode(this, tempNode, media);
     }
 
     @Override

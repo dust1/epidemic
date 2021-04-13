@@ -53,22 +53,25 @@ public class IndexTreeNode <K extends Comparable<K>, V> extends AbstractTreeNode
         newRight.setSize(size - mid - 1);
         newRight.setKeys(keys, mid + 1, size - mid - 1);
         newRight.setParent(parent);
-        boolean newParent = false;
         if (Objects.isNull(parent)) {
-            newParent = true;
             IndexTreeNode<K, V> p = new IndexTreeNode<>(orderNum);
             parent = p;
             newRight.setParent(p);
         }
-
         newRight.setChilds(childs, mid +  1, size - mid);
         setSize(mid);
-        TreeNode<K, V> result = parent.pushNode(this, newRight, pushKey);
-        return newParent ? parent : result;
+        return parent.pushNode(this, newRight, pushKey);
     }
 
     private void setChilds(TreeNode<K, V>[] source, int start, int len) {
         System.arraycopy(source, start, childs, 0, len);
+        for (int i = 0; i < len; i++) {
+            TreeNode<K, V> child = childs[i];
+            if (child instanceof AbstractTreeNode) {
+                AbstractTreeNode<K, V> node = (AbstractTreeNode<K, V>) child;
+                node.setParent(this);
+            }
+        }
     }
 
     /**
@@ -90,7 +93,7 @@ public class IndexTreeNode <K extends Comparable<K>, V> extends AbstractTreeNode
         if (size >= orderNum) {
             return splitMe();
         }
-        return null;
+        return Objects.isNull(parent) ? this : null;
     }
 
     public void print() {
@@ -120,8 +123,11 @@ public class IndexTreeNode <K extends Comparable<K>, V> extends AbstractTreeNode
                     }
                 }
             }
-
         }
+    }
+
+    public String toString() {
+        return Arrays.toString(keys);
     }
 
 }

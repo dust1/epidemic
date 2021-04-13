@@ -21,8 +21,6 @@ public class MyBTreeTest {
         manager.insert(10, "J");
 
         manager.print();
-
-        System.out.println(manager.find(8));
     }
 
 }
