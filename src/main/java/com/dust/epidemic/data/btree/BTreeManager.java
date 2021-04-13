@@ -42,7 +42,10 @@ public class BTreeManager<K extends Comparable<K>, V> {
      * 添加元素
      */
     public void insert(K key, V value) {
-        root = root.insert(key, value);
+        TreeNode<K, V> result = root.insert(key, value);
+        if (Objects.nonNull(result)) {
+            root = result;
+        }
     }
 
     /**
@@ -91,6 +94,13 @@ public class BTreeManager<K extends Comparable<K>, V> {
     public boolean byBytesWithMerge(byte[] b) {
         //TODO
         return false;
+    }
+
+    public void print() {
+        if (root instanceof IndexTreeNode) {
+            IndexTreeNode<K, V> node = (IndexTreeNode<K, V>) root;
+            node.print();
+        }
     }
 
 }

@@ -31,4 +31,12 @@ public class DataNode {
         this.updateTime = timestamp;
     }
 
+    public Object getData() {
+        return data;
+    }
+
+    public String toString() {
+        return data.toString();
+    }
+
 }
