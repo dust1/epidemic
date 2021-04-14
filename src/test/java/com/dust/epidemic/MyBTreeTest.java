@@ -1,26 +1,25 @@
 package com.dust.epidemic;
 
 import com.dust.epidemic.data.btree.BTreeManager;
+import com.dust.epidemic.data.btree.DataNode;
+
+import java.util.Iterator;
 
 public class MyBTreeTest {
 
     public static void main(String[] args) {
-        BTreeManager<Integer, String> manager = BTreeManager.create(3);
-        manager.insert(1, "A");
-        manager.insert(2, "B");
-        manager.insert(3, "C");
+        BTreeManager manager = BTreeManager.create(8);
+        int asc = (int) 'A';
+        for (int i = 0; i < 26; i++) {
+            String key = String.valueOf((char) (asc + i));
+            manager.insert(key);
+        }
 
-        manager.insert(4, "D");
-        manager.insert(5, "E");
-        manager.insert(6, "F");
-
-        manager.insert(7, "G");
-        manager.insert(8, "H");
-        manager.insert(9, "I");
-
-        manager.insert(10, "J");
-
-        manager.print();
+        Iterator<DataNode> iterator = manager.iterator();
+        while (iterator.hasNext()) {
+            DataNode dataNode = iterator.next();
+            System.out.println(dataNode.getKey());
+        }
     }
 
 }

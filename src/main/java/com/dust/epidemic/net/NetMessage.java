@@ -16,7 +16,7 @@ public class NetMessage {
     /**
      * 传输关键字
      */
-    private int[] keys;
+    private String key;
 
     /**
      * 关键字对应的值

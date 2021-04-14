@@ -23,7 +23,16 @@ public class RequestHandler {
     }
 
     /**
-     * 收到push请求
+     * 这里是通过客户端上传的数据信息
+     * 用户只是上传文件，客户端会计算出文件的MD5码作为文件的key
+     */
+    public void pushByClient() {
+        //TODO 缓存文件，并检索集群查询是否有空余节点能够存放这个文件。
+
+    }
+
+    /**
+     * 这里是从其他节点收到push请求
      * push - 表示有新数据
      * @param context
      */
@@ -32,7 +41,7 @@ public class RequestHandler {
             NetMessage message = Json.decodeValue(buffer, NetMessage.class);
             if (dataManager.check(message.getTimestamp())) {
                 System.out.println("节点：" + nodeManager.getMyDescriptor().toString() + "收到push请求：" + message.toString());
-                dataManager.merge(message.getKeys(), message.getValue());
+//                dataManager.merge(message.getKey(), message.getValue());
                 //将自身的数据转发出去
                 vertx.eventBus().send("push-ready", Json.encode(message));
             }
@@ -48,7 +57,7 @@ public class RequestHandler {
     public void pull(RoutingContext context) {
         context.request().bodyHandler(buffer -> {
             NetMessage message = Json.decodeValue(buffer, NetMessage.class);
-            dataManager.merge(message.getKeys(), message.getValue());
+//            dataManager.merge(message.getKey(), message.getValue());
             vertx.eventBus().send("pull-ready", message);
             context.response().end("{\"status\":1}");
         });

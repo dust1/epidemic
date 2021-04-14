@@ -3,23 +3,25 @@ package com.dust.epidemic.data.btree;
 /**
  * 树节点接口
  */
-public interface TreeNode<K extends Comparable<K>, V> {
+public interface TreeNode {
 
     /**
      * 添加节点
+     * 这里只是根据要添加的文件关键字预先占位，并不会进行数据的写入
+     * 后续根据这个关键字获取数据节点对象，并直接写入对象中
      * @return 返回对象主要是保证在插入后返回root节点
      */
-    TreeNode<K, V> insert(K k, V v);
+    TreeNode insert(String k);
 
     /**
      * 删除节点
      * @return 理由同上
      */
-    TreeNode<K, V> delete(K k);
+    TreeNode delete(String k);
 
     /**
      * 查询节点
      */
-    V find(K k);
+    DataNode find(String k);
 
 }

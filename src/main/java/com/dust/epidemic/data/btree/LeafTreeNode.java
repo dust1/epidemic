@@ -1,19 +1,17 @@
 package com.dust.epidemic.data.btree;
 
-import com.dust.epidemic.data.DataNode;
-
 import java.util.Objects;
 
 /**
  * 叶子节点
  */
-public class LeafTreeNode<K extends Comparable<K>, V> extends AbstractTreeNode<K, V> {
+public class LeafTreeNode extends AbstractTreeNode {
 
     /**
      * 叶子结点的两个兄弟节点
      */
-    private LeafTreeNode<K, V> prev;
-    private LeafTreeNode<K, V> next;
+    private LeafTreeNode prev;
+    private LeafTreeNode next;
 
     /**
      * 叶子节点保存的数据内容
@@ -28,19 +26,19 @@ public class LeafTreeNode<K extends Comparable<K>, V> extends AbstractTreeNode<K
     }
 
     @Override
-    protected TreeNode<K, V> splitMe() {
+    protected TreeNode splitMe() {
         int mid = size / 2;
-        K media = (K) keys[mid];
+        String media = keys[mid];
 
         /*
          * 拆分的新节点，作为右半部分
          */
-        LeafTreeNode<K, V> tempNode = new LeafTreeNode<>(orderNum);
+        LeafTreeNode tempNode = new LeafTreeNode(orderNum);
         tempNode.setSize(size - mid);
         tempNode.setParent(parent);
         if (Objects.isNull(parent)) {
             //如果父节点为空，则创建一个空的父节点并指向它
-            IndexTreeNode<K, V> p = new IndexTreeNode<>(orderNum);
+            IndexTreeNode p = new IndexTreeNode(orderNum);
             parent = p;
             tempNode.setParent(p);
         }
@@ -65,12 +63,12 @@ public class LeafTreeNode<K extends Comparable<K>, V> extends AbstractTreeNode<K
     }
 
     @Override
-    public TreeNode<K, V> insert(K k, V v) {
+    public TreeNode insert(String k) {
         int pos = searchKey(k);
         System.arraycopy(keys, pos, keys, pos + 1, size - pos);
         System.arraycopy(dataNodes, pos, dataNodes, pos + 1, size - pos);
         keys[pos] = k;
-        dataNodes[pos] = new DataNode(v);
+        dataNodes[pos] = new DataNode(k);
         size += 1;
 
         if (size >= orderNum) {
@@ -81,15 +79,15 @@ public class LeafTreeNode<K extends Comparable<K>, V> extends AbstractTreeNode<K
     }
 
     @Override
-    public TreeNode<K, V> delete(K k) {
+    public TreeNode delete(String k) {
         return null;
     }
 
     @Override
-    public V find(K k) {
+    public DataNode find(String k) {
         int pos = searchKey(k);
-        if (pos < size && k.compareTo((K) keys[pos]) == 0) {
-            return (V) dataNodes[pos].getData();
+        if (pos < size && k.compareTo(keys[pos]) == 0) {
+            return dataNodes[pos];
         }
         return null;
     }
@@ -98,15 +96,19 @@ public class LeafTreeNode<K extends Comparable<K>, V> extends AbstractTreeNode<K
         System.arraycopy(source, start, dataNodes, 0, len);
     }
 
-    public void setPrev(LeafTreeNode<K, V> prev) {
+    public void setPrev(LeafTreeNode prev) {
         this.prev = prev;
     }
 
-    public void setNext(LeafTreeNode<K, V> next) {
+    public void setNext(LeafTreeNode next) {
         this.next = next;
     }
 
     public DataNode[] getDataNodes() {
         return dataNodes;
+    }
+
+    public LeafTreeNode getNext() {
+        return next;
     }
 }

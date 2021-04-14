@@ -1,27 +1,31 @@
 package com.dust.epidemic.data.btree;
 
+import java.util.Iterator;
 import java.util.Objects;
 
 /**
  * B+树管理器
  */
-public class BTreeManager<K extends Comparable<K>, V> {
+public class BTreeManager {
 
     /**
      * 默认阶数
      */
     private static final int DEFAULT_ORDER_NUM = 11;
 
-    private TreeNode<K, V> root;
+    /**
+     * 根节点
+     */
+    private TreeNode root;
 
     private int orderNum;
 
-    public static <K extends Comparable<K>, V> BTreeManager<K, V> create() {
+    public static BTreeManager create() {
         return create(DEFAULT_ORDER_NUM);
     }
 
-    public static <K extends Comparable<K>, V> BTreeManager<K, V> create(int orderNum) {
-        BTreeManager<K, V> manager = new BTreeManager<>(orderNum);
+    public static BTreeManager create(int orderNum) {
+        BTreeManager manager = new BTreeManager(orderNum);
         manager.init();
         return manager;
     }
@@ -35,31 +39,60 @@ public class BTreeManager<K extends Comparable<K>, V> {
      * 初始化方法
      */
     private void init() {
-        this.root = new LeafTreeNode<>(orderNum);
+        this.root = new LeafTreeNode(orderNum);
     }
 
     /**
      * 添加元素
+     * @return 返回数据节点信息，后续的文件写入都通过这个对象写入，而不是通过目录
      */
-    public void insert(K key, V value) {
-        TreeNode<K, V> result = root.insert(key, value);
+    public DataNode insert(String key) {
+        TreeNode result = root.insert(key);
         if (Objects.nonNull(result)) {
             root = result;
         }
+        return find(key);
+    }
+
+    /**
+     * 获取目录树的顺序迭代器
+     * @return
+     */
+    public Iterator<DataNode> iterator() {
+        return new DataIterator(findMin());
+    }
+
+    /**
+     * 获取树的最小元素
+     */
+    private LeafTreeNode findMin() {
+        if (Objects.isNull(root)) {
+            return null;
+        }
+
+        TreeNode head = root;
+        while (Objects.nonNull(head) && head instanceof IndexTreeNode) {
+            IndexTreeNode index = (IndexTreeNode) head;
+            head = index.getFirstChild();
+        }
+        if (Objects.isNull(head) || !(head instanceof LeafTreeNode)) {
+            return null;
+        }
+        return (LeafTreeNode) head;
     }
 
     /**
      * 查询元素
      */
-    public V find(K key) {
+    public DataNode find(String key) {
         return root.find(key);
     }
 
     /**
      * 删除元素
      */
-    public V delete(K key) {
-        V v = root.find(key);
+    public DataNode delete(String key) {
+        DataNode v = root.find(key);
         if (Objects.isNull(v)) {
             return null;
         }
@@ -97,10 +130,10 @@ public class BTreeManager<K extends Comparable<K>, V> {
     }
 
     public void print() {
-        if (root instanceof IndexTreeNode) {
-            IndexTreeNode<K, V> node = (IndexTreeNode<K, V>) root;
-            node.print();
-        }
+//        if (root instanceof IndexTreeNode) {
+//            IndexTreeNode<K, V> node = (IndexTreeNode<K, V>) root;
+//            node.print();
+//        }
     }
 
 }
