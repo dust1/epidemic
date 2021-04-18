@@ -1,7 +1,13 @@
 package com.dust.epidemic.data.btree;
 
-import com.dust.epidemic.fs.FSNode;
+import com.dust.epidemic.core.EpidemicConfig;
+import com.dust.epidemic.foundation.buffer.ReusableBuffer;
+import com.dust.epidemic.fs.MetadataCache;
+import com.dust.epidemic.fs.StorageLayout;
+import com.dust.epidemic.fs.StorageLayoutFactory;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -15,23 +21,11 @@ import java.util.Objects;
 public class DataNode {
 
     /**
-     * 虚拟关键字
-     * 文件对应的文件目录关键字
-     * 这个关键字用于查找对应的文件虚拟对象
+     * 虚拟id，这个只是存入文件的id
+     * 注意这有两个文件id，一个是对于用户与目录树来说的文件id，这个id用于叶子节点检索
+     * 还有一个文件id表示的是.data文件的id
      */
     private String virtualKey;
-
-    /**
-     * 物理关键字
-     * 这个关键字是DataNode要进行写入操作的时候由fs模块给出的本机全局唯一的UUID
-     * 通过这个关键字来对文件进行物理上的操作
-     */
-    private String physicalKey;
-
-    /**
-     * 文件系统对象
-     */
-    private FSNode fsNode;
 
     /**
      * 文件虚拟对象的状态
@@ -48,18 +42,35 @@ public class DataNode {
      */
     private int updateTime;
 
-    private String dirPath;
+    /**
+     * 这个文件对应的磁盘文件id与对象id
+     */
+    private Map<String, List<String>> fileIdWithObjIdMap;
 
     /**
-     * 加载文件路径
-     * @param dirPath
+     * 存储对象
      */
-    public void loadDir(String dirPath, long len) {
-        this.fsNode = FSNode.create(dirPath);
-        if (Objects.isNull(fsNode)) {
-            throw new NullPointerException("磁盘空间不足");
+    private StorageLayout storageLayout;
+
+    /**
+     * 写入数据
+     */
+    public void write(ReusableBuffer data) {
+        if (Objects.isNull(storageLayout)) {
+            throw new NullPointerException("the storagelayout was not init in DataNode.");
         }
-        this.physicalKey = fsNode.init(virtualKey, len);
+
+    }
+
+    /**
+     * 初始化存储对象
+     * @param config
+     * @param cache
+     */
+    public void init(EpidemicConfig config, MetadataCache cache) {
+        if (Objects.isNull(storageLayout)) {
+            this.storageLayout = StorageLayoutFactory.createFile(config, cache);
+        }
     }
 
     /**

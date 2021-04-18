@@ -60,17 +60,10 @@ public class DataManager {
     }
 
     /**
-     * 要对数据进行写入，从目录中获取这个文件的虚拟对象
-     * 并让这个对象加载路径以达到能够写入文件的状态
+     * 在写入前获取DataNode，其实就是根据文件id先创建对应的DataNode对象
      */
-    public DataNode write(String key, long len) {
-        long usableSpace = getUsableSpace();
-        if (usableSpace <= len) {
-            return null;
-        }
-        DataNode dataNode = bTreeManager.insert(key);
-        dataNode.loadDir(dirPath, len);
-        return dataNode;
+    public DataNode getDataNodeBeforeWrite(String key) {
+        return bTreeManager.insert(key);
     }
 
     /**
