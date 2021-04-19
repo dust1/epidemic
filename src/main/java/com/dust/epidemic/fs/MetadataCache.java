@@ -6,4 +6,14 @@ package com.dust.epidemic.fs;
  */
 public class MetadataCache {
 
+
+    public FileMetadata getFileInfo(String fileId) {
+        //TODO 根据文件id返回缓存的元数据对象
+        return null;
+    }
+
+    public void setFileInfo(String fileId, FileMetadata metadata) {
+        //TODO 根据文件id将其对应的元数据对象加入缓存
+    }
+
 }

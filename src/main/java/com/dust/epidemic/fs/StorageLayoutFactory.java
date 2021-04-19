@@ -2,6 +2,7 @@ package com.dust.epidemic.fs;
 
 import com.dust.epidemic.core.EpidemicConfig;
 
+import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -11,7 +12,7 @@ public class StorageLayoutFactory {
 
     private static FileStorageLayout fileStorageLayout;
 
-    public static StorageLayout createFile(EpidemicConfig config, MetadataCache cache) {
+    public static StorageLayout createFile(EpidemicConfig config, MetadataCache cache) throws IOException {
         if (Objects.isNull(fileStorageLayout)) {
             synchronized (StorageLayoutFactory.class) {
                 if (Objects.isNull(fileStorageLayout)) {
