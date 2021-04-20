@@ -4,7 +4,6 @@ import com.dust.epidemic.core.EpidemicConfig;
 import com.dust.epidemic.foundation.LRUCache;
 import com.dust.epidemic.foundation.buffer.ReusableBuffer;
 import com.dust.epidemic.fs.checksum.ChecksumAlgorithm;
-import com.dust.epidemic.logging.Logging;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;

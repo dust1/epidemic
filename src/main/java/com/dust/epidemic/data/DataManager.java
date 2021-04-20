@@ -1,12 +1,18 @@
 package com.dust.epidemic.data;
 
+import com.dust.epidemic.core.EpidemicConfig;
 import com.dust.epidemic.data.btree.BTreeManager;
 import com.dust.epidemic.data.btree.DataNode;
-import io.vertx.ext.web.impl.LRUCache;
+import com.dust.epidemic.foundation.LRUCache;
+import com.dust.epidemic.fs.MetadataCache;
+import com.dust.epidemic.fs.StorageLayout;
+import com.dust.epidemic.fs.StorageLayoutFactory;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 
 
@@ -20,6 +26,12 @@ import java.util.Objects;
 @Setter
 public class DataManager {
 
+    private int orderNum;
+
+    private int maxSize;
+
+    private EpidemicConfig config;
+
     /**
      * LRU缓存实现
      * 用来记录已经接收的请求，避免循环
@@ -32,38 +44,41 @@ public class DataManager {
     private BTreeManager bTreeManager;
 
     /**
-     * 本地存储路径
+     * 文件系统对象
      */
-    private String dirPath;
+    private StorageLayout storageLayout;
 
     /**
-     * 文件存储目录文件对象
-     * {@link java.io.File}并不会将文件读取到内存中，真正会占用文件引用的只有文件IO。
-     * 因此可以将这个对象一致持有
+     * 只能通过构造极构建
      */
-    private File dirFile;
+    public static DataManagerBuilder builder() {
+        return new DataManagerBuilder();
+    }
 
-    public DataManager() {
-        this(11, 50, null);
+    private DataManager(DataManagerBuilder builder) throws IOException {
+        this.orderNum = builder.orderNum;
+        this.maxSize = builder.maxSize;
+        this.config = builder.config;
+        this.cache = new LRUCache<>(maxSize);
+        this.bTreeManager = BTreeManager.create(orderNum);
+
+        init();
     }
 
     /**
-     *
-     * @param orderNum
-     * @param maxSize LRU换粗队列长度，最好设置成大于N/2（N集群中节点数量）
+     * 初始化文件系统
      */
-    public DataManager(int orderNum, int maxSize, String dirPath) {
-        this.cache = new LRUCache<>(maxSize);
-        this.bTreeManager = BTreeManager.create(orderNum);
-        this.dirPath = dirPath;
-        this.dirFile = new File(dirPath);
+    private void init() throws IOException {
+        storageLayout = StorageLayoutFactory.createFile(config, new MetadataCache());
     }
 
     /**
      * 在写入前获取DataNode，其实就是根据文件id先创建对应的DataNode对象
      */
     public DataNode getDataNodeBeforeWrite(String key) {
-        return bTreeManager.insert(key);
+        DataNode dataNode = bTreeManager.insert(key);
+        dataNode.init(storageLayout);
+        return dataNode;
     }
 
     /**
@@ -94,13 +109,6 @@ public class DataManager {
     }
 
     /**
-     * 查询剩余空间
-     */
-    public long getUsableSpace() {
-        return dirFile.getUsableSpace();
-    }
-
-    /**
      * 检查是否已经接受过这个数据包
      * @param sign 数据包的唯一标识符
      */
@@ -119,5 +127,50 @@ public class DataManager {
 
     }
 
+    /**
+     * 数据管理构造器
+     */
+    static class DataManagerBuilder {
+        /**
+         * B+数的阶数
+         */
+        private int orderNum;
+
+        /**
+         * 记录每个请求的LRU队列数量
+         */
+        private int maxSize;
+
+        /**
+         * 系统配置文件
+         */
+        private EpidemicConfig config;
+
+        public DataManagerBuilder() {
+            this.orderNum = 5;
+            this.maxSize = 100;
+            this.config = null;
+        }
+
+        public DataManagerBuilder orderNum(int orderNum) {
+            this.orderNum = orderNum;
+            return this;
+        }
+
+        public DataManagerBuilder maxSize(int maxSize) {
+            this.maxSize = maxSize;
+            return this;
+        }
+
+        public DataManagerBuilder config(EpidemicConfig config) {
+            this.config = config;
+            return this;
+        }
+
+        public DataManager build() throws IOException {
+            return new DataManager(this);
+        }
+
+    }
 
 }
