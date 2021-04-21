@@ -103,8 +103,8 @@ public class DataManager {
      */
     public boolean destroy(DataNode dataNode) {
         boolean result = dataNode.destroy();
-        String key = dataNode.getKey();
-        bTreeManager.delete(key);
+//        String key = dataNode.getKey();getKey
+//        bTreeManager.delete(key);
         return result;
     }
 

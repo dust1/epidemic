@@ -27,4 +27,14 @@ public class FileMetadata {
         return 0;
     }
 
+    /**
+     * 根据objNo获取这个对象最后一次提交版本的版本号
+     * @param objNo 查询的objNo
+     * @return 如果这个对象不存在则返回-1
+     */
+    public long getLatestObjectVersionByObj(long objNo) {
+        //TODO
+        return -1;
+    }
+
 }

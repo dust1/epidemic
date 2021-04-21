@@ -3,6 +3,7 @@ package com.dust.epidemic.fs;
 
 import com.dust.epidemic.core.EpidemicConfig;
 import com.dust.epidemic.foundation.buffer.ReusableBuffer;
+import com.dust.epidemic.fs.entity.WriteResult;
 
 import java.io.File;
 import java.io.FileReader;
@@ -146,7 +147,18 @@ public abstract class StorageLayout {
      *      当修改.data文件失败时
      */
     public abstract void writeObject(String fileId, FileMetadata md, ReusableBuffer data, long objNo,
-                                     int offset, long newVersion, boolean sync) throws IOException;
+                                            int offset, long newVersion, boolean sync) throws IOException;
+
+    /**
+     * 简单写入，不需要指定对应的文件、对象信息、版本号等情况
+     * 这种时候可以看成是一个新的对象追加写入
+     * @param data 要写入的对象
+     * @param sync 写入是否是同步的
+     * @return {@link WriteResult} 写入成功之后会返回本次写入数据所在的fileId、objNo、length、version等信息
+     * @throws IOException
+     *      当写入.data文件失效时
+     */
+    public abstract WriteResult writeObject(ReusableBuffer data, boolean sync) throws IOException;
 
     /**
      * 删除文件中对应版本的对象
