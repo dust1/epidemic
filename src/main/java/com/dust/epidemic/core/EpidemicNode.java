@@ -12,6 +12,8 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
 
+import java.io.IOException;
+
 public class EpidemicNode extends AbstractVerticle {
 
     @Override
@@ -32,7 +34,12 @@ public class EpidemicNode extends AbstractVerticle {
 
         Router router = Router.router(vertx);
 
-        DataManager dataManager = new DataManager();
+        DataManager dataManager = null;
+        try {
+            dataManager = DataManager.builder().build();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         NodeManager nodeManager = new NodeManager("0.0.0.0", port);
 
         for (int i = 0; i < ports.length; i++) {

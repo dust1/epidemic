@@ -75,8 +75,8 @@ public class DataManager {
     /**
      * 在写入前获取DataNode，其实就是根据文件id先创建对应的DataNode对象
      */
-    public DataNode getDataNodeBeforeWrite(String key) {
-        DataNode dataNode = bTreeManager.insert(key);
+    public DataNode getDataNodeBeforeWrite(String key, String fileName) {
+        DataNode dataNode = bTreeManager.insert(key, fileName);
         dataNode.init(storageLayout);
         return dataNode;
     }
@@ -130,7 +130,7 @@ public class DataManager {
     /**
      * 数据管理构造器
      */
-    static class DataManagerBuilder {
+    public static class DataManagerBuilder {
         /**
          * B+数的阶数
          */

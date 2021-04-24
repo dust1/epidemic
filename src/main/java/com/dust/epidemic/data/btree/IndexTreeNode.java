@@ -18,13 +18,13 @@ public class IndexTreeNode extends AbstractTreeNode {
     }
 
     @Override
-    public TreeNode insert(String k) {
+    public TreeNode insert(String k, String fileName) {
         int pos = searchKey(k);
         if (pos < size && k.compareTo(keys[pos]) == 0) {
             pos += 1;
         }
 
-        return childs[pos].insert(k);
+        return childs[pos].insert(k, fileName);
     }
 
     @Override

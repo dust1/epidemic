@@ -63,12 +63,12 @@ public class LeafTreeNode extends AbstractTreeNode {
     }
 
     @Override
-    public TreeNode insert(String k) {
+    public TreeNode insert(String k, String fileName) {
         int pos = searchKey(k);
         System.arraycopy(keys, pos, keys, pos + 1, size - pos);
         System.arraycopy(dataNodes, pos, dataNodes, pos + 1, size - pos);
         keys[pos] = k;
-        dataNodes[pos] = new DataNode(k);
+        dataNodes[pos] = new DataNode(k, fileName);
         size += 1;
 
         if (size >= orderNum) {

@@ -4,6 +4,7 @@ package com.dust.epidemic.fs;
 import com.dust.epidemic.core.EpidemicConfig;
 import com.dust.epidemic.foundation.buffer.ReusableBuffer;
 import com.dust.epidemic.fs.entity.WriteResult;
+import com.dust.epidemic.net.common.StripingPolicyImpl;
 
 import java.io.File;
 import java.io.FileReader;
@@ -208,7 +209,7 @@ public abstract class StorageLayout {
      * @throws IOException
      *         当读取元数据文件失败
      */
-    protected abstract FileMetadata loadFileMetadata(String fileId) throws IOException;
+    protected abstract FileMetadata loadFileMetadata(String fileId, StripingPolicyImpl stripingPolicy) throws IOException;
 
     /**
      * 根据给定的文件id检查对应的.data文件是否存在

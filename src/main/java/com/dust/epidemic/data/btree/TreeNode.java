@@ -11,7 +11,7 @@ public interface TreeNode {
      * 后续根据这个关键字获取数据节点对象，并直接写入对象中
      * @return 返回对象主要是保证在插入后返回root节点
      */
-    TreeNode insert(String k);
+    TreeNode insert(String k, String fileName);
 
     /**
      * 删除节点
