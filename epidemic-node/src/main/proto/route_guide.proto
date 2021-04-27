@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.dust.grpc.kademlia";
+option java_outer_classname = "KademliaServiceProto";
+option java_generic_services = true;
+
+// 定义的一个服务
+service KademliaService {
+  // Ping函数
+  rpc Ping(PingPackage) returns (PingPackage) {}
+
+  // 存储
+  rpc Store(StoreRequest) returns (StoreResponse) {}
+
+  // 寻找节点
+  rpc FindNode(FindRequest) returns (stream FindNodeResponse) {}
+
+  // 寻找值
+  rpc findValue(FindRequest) returns (stream FindValueResponse) {}
+}
+
+//ping函数发起的请求，携带发起者的id以及发起时间，收到ping之后的节点将id修改成自身id，时间不变原样返回
+message PingPackage {
+    string nodeId = 1;
+    int32 timestamp = 2;
+}
+
+//存储请求，携带有一个sha1编码的key和数据对象。其中key还是该对象的checksum
+message StoreRequest {
+    string key = 1;
+    bytes data = 2;
+}
+
+//存储响应，code = 1表示成功；code = 0表示失败。当code = 0的时候errmsg才会有值
+message StoreResponse {
+    int32 code = 1;
+    string errmsg = 2;
+}
+
+//寻找请求，key既可以表示节点id，又可以表示文件id。具体根据请求的接口来判断
+message FindRequest {
+    string key = 1;
+}
+
+//寻找节点返回，返回的是一个三元组<IP地址、端口、节点id>列表
+message FindNodeResponse {
+    string host = 1;
+    int32 port = 2;
+    string nodeId = 3;
+}
+
+//寻找文件呢返回，如果文件不存在则返回离这个文件最近的三元组<IP地址、端口、节点id>列表，否则直接返回值
+message FindValueResponse {
+    string host = 1;
+    int32 port = 2;
+    string nodeId = 3;
+
+    bytes data = 4;
+}

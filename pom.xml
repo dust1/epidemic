@@ -19,6 +19,8 @@
         <java.version>11</java.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <protobuf.version>3.14.0</protobuf.version>
+        <grpc.version>1.23.0</grpc.version>
     </properties>
 
     <dependencyManagement>
@@ -29,22 +31,6 @@
                 <version>1.18.18</version>
                 <scope>provided</scope>
             </dependency>
-            <dependency>
-                <groupId>io.vertx</groupId>
-                <artifactId>vertx-core</artifactId>
-                <version>3.9.5</version>
-            </dependency>
-            <dependency>
-                <groupId>io.vertx</groupId>
-                <artifactId>vertx-web</artifactId>
-                <version>3.9.5</version>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java -->
-            <dependency>
-                <groupId>com.google.protobuf</groupId>
-                <artifactId>protobuf-java</artifactId>
-                <version>3.15.8</version>
-            </dependency>
             <!-- https://mvnrepository.com/artifact/junit/junit -->
             <dependency>
                 <groupId>junit</groupId>
@@ -52,6 +38,49 @@
                 <version>4.13.2</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-protobuf</artifactId>
+                <version>${grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java-util</artifactId>
+                <version>${protobuf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>${protobuf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-netty</artifactId>
+                <version>${grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-stub</artifactId>
+                <version>${grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.annotation</groupId>
+                <artifactId>javax.annotation-api</artifactId>
+                <version>1.2</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.30</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12 -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>1.7.30</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

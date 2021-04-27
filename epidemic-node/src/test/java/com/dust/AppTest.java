@@ -9,12 +9,15 @@ import org.junit.Test;
  */
 public class AppTest 
 {
+
+//    private static Logger logger = LoggerFactory.getLogger(AppTest.class);
     /**
      * Rigorous Test :-)
      */
     @Test
     public void shouldAnswerWithTrue()
     {
-        assertTrue( true );
+//        logger.info("asss{}", 22);
+//        assertTrue( true );
     }
 }
