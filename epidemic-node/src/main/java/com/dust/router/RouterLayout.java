@@ -1,6 +1,10 @@
 package com.dust.router;
 
+import com.dust.core.NodeConfig;
+import com.dust.fundation.EpidemicUtils;
+
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.List;
 
 /**
@@ -9,6 +13,38 @@ import java.util.List;
  * 由于每种路由表的实现结构都不一样，因此这里不应该保存路由表的原始对象，而是应该记录路由表的通用参数以及对外接口
  */
 public abstract class RouterLayout {
+
+    /**
+     * 网络路由模块的版本名称
+     */
+    public static final String VERSION_FILENAME = ".routerVersion";
+
+    /**
+     * 网络路由模块的快照文件名称
+     */
+    public static final String SNAPSHOT_FILENAME = "routerSnapshot";
+
+    /**
+     * 路由信息持久化保存的文件夹
+     */
+    protected final String routerPath;
+
+    /**
+     * 对快照文件进行随机读写的对象
+     * 默认不会初始化
+     */
+    protected RandomAccessFile snapshot = null;
+
+    protected RouterLayout(NodeConfig config) throws IOException {
+        String tmp = config.getRouterPath();
+        if (!tmp.endsWith("/")) {
+            tmp += "/";
+        }
+        //检查版本信息
+        EpidemicUtils.checkAndwriteVersion(tmp,
+                VERSION_FILENAME, this::isCompatibleVersion, getVersion());
+        this.routerPath = tmp;
+    }
 
     /**
      * 加载路由快照文件并构建路由表
@@ -42,5 +78,26 @@ public abstract class RouterLayout {
      */
     public abstract FindValueResult findValue(String fileId);
 
+    /**
+     * 检查当前的实现版本与给定的版本是否兼容
+     * @param version 检查的版本
+     * @return 如果兼容则返回true，否则返回false
+     */
+    protected abstract boolean isCompatibleVersion(int version);
+
+    /**
+     * 获取当前系统的实现版本
+     * @return 当前系统版本的string形式
+     */
+    protected abstract String getVersion();
+
+    /**
+     * 获取持久化到本地的一个网络节点的大小
+     * 如果不需要持久化则不用重载该方法
+     * @return 如果不用持久化，则返回-1
+     */
+    protected int getPersistenceNodeSize() {
+        return -1;
+    }
 
 }

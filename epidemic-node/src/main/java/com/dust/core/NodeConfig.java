@@ -13,7 +13,11 @@ import java.util.Properties;
 @Setter
 public class NodeConfig {
 
+    private String routerPath;
+
     private int port;
+
+    private int bucketKey;
 
     public NodeConfig(Properties properties) {
 

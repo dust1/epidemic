@@ -49,6 +49,7 @@ public class EpidemicServer {
     public void start(StartedFunction rollback) throws IOException {
         //TODO 启动前需要加载路由表以及索引文件索引
         storageLayout.load();
+        routerLayout.load();
 
         server.start();
         rollback.apply();
