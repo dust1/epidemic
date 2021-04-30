@@ -16,4 +16,10 @@ public class NodeTriad {
 
     private int port;
 
+    public NodeTriad(String nodeId, String host, int port) {
+        this.key = nodeId;
+        this.host = host;
+        this.port = port;
+    }
+
 }

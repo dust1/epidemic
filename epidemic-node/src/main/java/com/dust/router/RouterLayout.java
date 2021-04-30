@@ -100,4 +100,13 @@ public abstract class RouterLayout {
         return -1;
     }
 
+    /**
+     * 持久化方法，如果实现类需要将数据持久化的化需要继承并实现
+     * @throws IOException
+     *         写入本地磁盘失败
+     */
+    protected void persistence() throws IOException {
+        //...
+    }
+
 }
