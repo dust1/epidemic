@@ -22,7 +22,7 @@ public abstract class RouterLayout {
     /**
      * 网络路由模块的快照文件名称
      */
-    public static final String SNAPSHOT_FILENAME = "routerSnapshot";
+    public static final String SNAPSHOT_FILENAME = "node.cache";
 
     /**
      * 路由信息持久化保存的文件夹

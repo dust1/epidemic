@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
@@ -25,6 +26,52 @@ public class EpidemicUtils {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 将16进制字符串转为2进制数组
+     * @param hexStr
+     * @return
+     */
+    public static byte[] hexToByte(String hexStr) {
+        ByteBuffer buffer = ByteBuffer.allocate(hexStr.length() / 2);
+        for (int i = 0; i < hexStr.length() / 2; i++) {
+            int high = Integer.parseInt(hexStr.substring(i * 2, i * 2 + 1), 16);
+            int low = Integer.parseInt(hexStr.substring(i* 2 + 1, i * 2 + 2), 16);
+            buffer.put((byte) ((high << 4) + low));
+        }
+        return buffer.array();
+    }
+
+    /**
+     * 获取两个节点id之间的距离
+     * @return 返回两个节点id之间的距离，前缀匹配表示
+     */
+    public static int getDis(String n1, String n2) {
+        if (n1.length() != n2.length()) {
+            return 0;
+        }
+        byte[] binary1 = hexToByte(n1);
+        byte[] binary2 = hexToByte(n2);
+        int result = 0;
+        for (int i = 0; i < binary1.length; i++) {
+            int bb = binary1[i] ^ binary2[i];
+            boolean canBreak = false;
+            for (int j = 7; j >= 0; j--) {
+                int index = 1 << j;
+                //检查对应位上的比特位是否为0，如果是0则按位或的结果与原来的值不同
+                if ((bb | index) != bb) {
+                    result += 1;
+                } else {
+                    canBreak = true;
+                    break;
+                }
+            }
+            if (canBreak) {
+                break;
+            }
+        }
+        return result;
     }
 
     /**

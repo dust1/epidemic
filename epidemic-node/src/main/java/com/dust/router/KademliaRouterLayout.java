@@ -21,7 +21,7 @@ public class KademliaRouterLayout extends RouterLayout {
     public KademliaRouterLayout(NodeConfig config) throws IOException {
         super(config);
         this.k = config.getBucketKey();
-        this.bucket = new KademliaBucket(config.getBucketKey());
+//        this.bucket = new KademliaBucket(config.getBucketKey());
     }
 
     /**
@@ -42,16 +42,11 @@ public class KademliaRouterLayout extends RouterLayout {
         }
         snapshot.seek(0);
         //尝试获取文件的读写锁
-        FileChannel fileChannel = snapshot.getChannel();
-        final long fileLen = f.length();
-        final int objLen = getPersistenceNodeSize();
-        final long objNum = (long) Math.ceil(fileLen / objLen);
-        for (long i = 0; i < objNum; i++) {
-            var node = NodeTriadRouterNode.fromFile(snapshot);
-            if (Objects.nonNull(node)) {
-                bucket.add(node);
-            }
+        final FileChannel fileChannel = snapshot.getChannel();
+        while (snapshot.getFilePointer() < snapshot.length()) {
+            bucket.add(NodeTriadRouterNode.fromFile(snapshot));
         }
+        fileChannel.close();
     }
 
     @Override

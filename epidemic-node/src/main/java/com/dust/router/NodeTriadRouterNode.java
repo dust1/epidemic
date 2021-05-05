@@ -28,6 +28,14 @@ public class NodeTriadRouterNode extends NodeTriad {
         this.updateTime = (int) (System.currentTimeMillis() / 1000);
     }
 
+    public int getUpdateTime() {
+        return updateTime;
+    }
+
+    public void updateTime() {
+        this.updateTime = (int) (System.currentTimeMillis() / 1000);
+    }
+
     /**
      * 尝试从文件中读取一个网络存储节点
      * @param raf 文件通道
