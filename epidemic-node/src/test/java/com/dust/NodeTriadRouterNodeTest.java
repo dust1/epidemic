@@ -37,6 +37,18 @@ public class NodeTriadRouterNodeTest {
     }
 
     @Test
+    public void readTest() {
+        try (RandomAccessFile raf = new RandomAccessFile(savePath, "rw");
+            FileChannel fc = raf.getChannel()) {
+            ByteBuffer buffer = ByteBuffer.allocate(2);
+            fc.read(buffer);
+            assertEquals(raf.getFilePointer(), 2);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
     public void encoderTest() {
         Buffer buffer = node.toBuffer();
         System.out.println(buffer);

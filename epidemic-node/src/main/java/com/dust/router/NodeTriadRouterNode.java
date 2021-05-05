@@ -46,13 +46,17 @@ public class NodeTriadRouterNode extends NodeTriad {
         //[头信息][节点id][节点host长度][节点host][节点port长度][节点port]
 
         int headIndex = 0;
-        while (headIndex < NODE_HEAD.length) {
+        while (headIndex < NODE_HEAD.length && raf.getFilePointer() < raf.length()) {
             int n = raf.readInt();
             if (n == NODE_HEAD[headIndex]) {
                 headIndex++;
             } else {
                 headIndex = 0;
             }
+        }
+        if (headIndex < NODE_HEAD.length) {
+            //找不到合格数据
+            return null;
         }
 
         //nodeId固定长度40

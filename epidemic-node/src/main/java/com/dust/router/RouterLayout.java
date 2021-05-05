@@ -35,7 +35,10 @@ public abstract class RouterLayout {
      */
     protected RandomAccessFile snapshot = null;
 
+    protected NodeConfig config;
+
     protected RouterLayout(NodeConfig config) throws IOException {
+        this.config = config;
         String tmp = config.getRouterPath();
         if (!tmp.endsWith("/")) {
             tmp += "/";

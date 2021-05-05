@@ -19,6 +19,8 @@ public class NodeConfig {
 
     private int bucketKey;
 
+    private String nodeSalt;
+
     public NodeConfig(Properties properties) {
 
     }

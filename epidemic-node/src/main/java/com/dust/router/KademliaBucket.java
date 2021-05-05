@@ -21,13 +21,11 @@ public class KademliaBucket {
     private int bucketSize;
 
     public KademliaBucket(int maxSize, String myNode) {
-        this.buckets = new ArrayList[160];
         this.k = maxSize;
-        this.bucketSize = 1;
         this.myNode = myNode;
-        this.nodeCache = new PriorityQueue<>(k, (n1, n2) -> Integer.compare(n2.getUpdateTime(), n1.getUpdateTime()));
+        this.bucketSize = 1;
 
-        this.buckets[0] = new ArrayList<NodeTriadRouterNode>(k);
+        init();
     }
 
     /**
@@ -35,7 +33,13 @@ public class KademliaBucket {
      * 将桶中的所有节点数据全部清除
      */
     public void clear() {
+        init();
+    }
 
+    private void init() {
+        this.buckets = new ArrayList[160];
+        this.nodeCache = new PriorityQueue<>(k, (n1, n2) -> Integer.compare(n2.getUpdateTime(), n1.getUpdateTime()));
+        this.buckets[0] = new ArrayList<NodeTriadRouterNode>(k);
     }
 
     /**
@@ -75,6 +79,7 @@ public class KademliaBucket {
                 buckets[prevIndex] = oldBucket;
                 if ((prevIndex + 1) < buckets.length) {
                     buckets[prevIndex + 1] = newBucket;
+                    bucketSize += 1;
                 }
             }
         } else {

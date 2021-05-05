@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
@@ -26,6 +27,15 @@ public class EpidemicUtils {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 生成一个随机的节点id
+     * @param salt 用于生成的干扰字符串
+     */
+    public static String randomNodeId(String salt) {
+        String str = System.currentTimeMillis() + salt;
+        return getSHA1(str.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
