@@ -5,6 +5,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -12,6 +16,31 @@ import java.util.function.Function;
  * 主要承担的功能就是在整个存储节点层次的部分简单的功能，过于复杂的功能需要使用新的模块
  */
 public class EpidemicUtils {
+
+    private static MessageDigest messageDigest;
+
+    static {
+        try {
+            messageDigest = MessageDigest.getInstance("SHA");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 计算SHA1的值
+     */
+    public static String getSHA1(byte[] data) {
+        if (Objects.isNull(messageDigest)) {
+            return null;
+        }
+        byte[] cipherBytes = messageDigest.digest(data);
+        StringBuilder sb = new StringBuilder();
+        for (byte c : cipherBytes) {
+            sb.append(String.format("%02x", c));
+        }
+        return sb.toString();
+    }
 
 
     /**

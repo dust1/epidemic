@@ -25,11 +25,11 @@ public class EpidemicServer {
     private final StorageLayout storageLayout;
     private final RouterLayout routerLayout;
 
-    public static EpidemicServer create(NodeConfig config) {
+    public static EpidemicServer create(NodeConfig config) throws IOException {
         return new EpidemicServer(config);
     }
 
-    private EpidemicServer(NodeConfig nodeConfig) {
+    private EpidemicServer(NodeConfig nodeConfig) throws IOException {
         this.config = nodeConfig;
         this.storageLayout = new FileStorageLayout(config);
         this.routerLayout = new KademliaRouterLayout(config);

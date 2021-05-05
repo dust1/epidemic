@@ -37,7 +37,9 @@ public class KademliaRouterLayout extends RouterLayout {
         }
         bucket.clear();
 
-        snapshot = new RandomAccessFile(f, "rw");
+        if (Objects.isNull(snapshot)) {
+            snapshot = new RandomAccessFile(f, "rw");
+        }
         snapshot.seek(0);
         //尝试获取文件的读写锁
         FileChannel fileChannel = snapshot.getChannel();
@@ -45,7 +47,7 @@ public class KademliaRouterLayout extends RouterLayout {
         final int objLen = getPersistenceNodeSize();
         final long objNum = (long) Math.ceil(fileLen / objLen);
         for (long i = 0; i < objNum; i++) {
-            var node = NodeTriadRouterNode.fromFile(fileChannel);
+            var node = NodeTriadRouterNode.fromFile(snapshot);
             if (Objects.nonNull(node)) {
                 bucket.add(node);
             }

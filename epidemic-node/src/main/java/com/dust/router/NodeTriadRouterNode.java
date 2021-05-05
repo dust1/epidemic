@@ -1,11 +1,11 @@
 package com.dust.router;
 
+import lombok.ToString;
+
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 
 /**
  * 存储在Bucket中的网络节点路由表
@@ -30,55 +30,35 @@ public class NodeTriadRouterNode extends NodeTriad {
 
     /**
      * 尝试从文件中读取一个网络存储节点
-     * @param channel 文件通道
+     * @param raf 文件通道
      * @return 如果能够读取到，则返回新建的对象；否则返回null
      */
-    public static NodeTriadRouterNode fromFile(FileChannel channel) throws IOException {
+    public static NodeTriadRouterNode fromFile(RandomAccessFile raf) throws IOException {
         //网络节点在文件中的存储信息结构如下
         //[头信息][节点id][节点host长度][节点host][节点port长度][节点port]
 
-        ByteBuffer headBuffer = ByteBuffer.allocate(2);
         int headIndex = 0;
         while (headIndex < NODE_HEAD.length) {
-            int len = channel.read(headBuffer);
-            if (len == -1) {
-                return null;
-            }
-            headBuffer.flip();
-            int num = headBuffer.asIntBuffer().get();
-            if (num == NODE_HEAD[headIndex]) {
+            int n = raf.readInt();
+            if (n == NODE_HEAD[headIndex]) {
                 headIndex++;
             } else {
                 headIndex = 0;
             }
-            headBuffer.clear();
         }
 
-        //TODO 可以将这个步骤抽象一下。毕竟很多代码相同
-        ByteBuffer idBuffer = ByteBuffer.allocate(40);
-        channel.read(idBuffer);
-        idBuffer.flip();
-        String nodeId = idBuffer.toString();
+        //nodeId固定长度40
+        byte[] nodeBytes = new byte[40];
+        raf.readFully(nodeBytes);
+        String nodeId = new String(nodeBytes, StandardCharsets.UTF_8);
 
-        ByteBuffer hostLenBuffer = ByteBuffer.allocate(1);
-        channel.read(hostLenBuffer);
-        hostLenBuffer.flip();
-        int hostLen = hostLenBuffer.asIntBuffer().get();
+        int hostLen = raf.readInt();
 
-        ByteBuffer hostBuffer = ByteBuffer.allocate(hostLen);
-        channel.read(hostBuffer);
-        hostBuffer.flip();
-        String host = hostBuffer.toString();
+        byte[] hostBytes = new byte[hostLen];
+        raf.readFully(hostBytes);
+        String host = new String(hostBytes, StandardCharsets.UTF_8);
 
-        ByteBuffer portLenBuffer = ByteBuffer.allocate(1);
-        channel.read(portLenBuffer);
-        portLenBuffer.flip();
-        int portLen = portLenBuffer.asIntBuffer().get();
-
-        ByteBuffer portBuffer = ByteBuffer.allocate(portLen);
-        channel.read(portBuffer);
-        portBuffer.flip();
-        int port = portBuffer.asIntBuffer().get();
+        int port = raf.readInt();
 
         return new NodeTriadRouterNode(nodeId, host, port);
     }
@@ -87,9 +67,26 @@ public class NodeTriadRouterNode extends NodeTriad {
      * 将网络节点三元组转化为持久化到本地的字节数据
      * @return 节点id、节点端口、节点host组成的字节数组信息
      */
-    public static Buffer toFile() {
-        //TODO
-        return null;
+    public ByteBuffer toBuffer() {
+        int hostLen = getHost().length();
+        int sumLen = NODE_HEAD.length * 4 + 40 + 4 + hostLen + 4;
+        ByteBuffer resutl = ByteBuffer.allocate(sumLen);
+
+        //16
+        for (int head : NODE_HEAD) {
+            resutl.putInt(head);
+        }
+        //40
+        resutl.put(getKey().getBytes(StandardCharsets.UTF_8));
+        //4
+        resutl.putInt(hostLen);
+        //n
+        resutl.put(getHost().getBytes(StandardCharsets.UTF_8));
+        //4
+        resutl.putInt(getPort());
+        return resutl;
     }
+
+
 
 }

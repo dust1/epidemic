@@ -38,8 +38,8 @@ public class BTreeManager {
      * 添加元素
      * @return 返回数据节点信息，后续的文件写入都通过这个对象写入，而不是通过目录
      */
-    public DataNode insert(String key, String fileName) {
-        TreeNode result = root.insert(key, fileName);
+    public DataNode insert(String key) {
+        TreeNode result = root.insert(key);
         if (Objects.nonNull(result)) {
             root = result;
         }
