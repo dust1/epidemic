@@ -47,6 +47,14 @@ public class BTreeManager {
     }
 
     /**
+     * 直接添加一个DataNode对象
+     */
+    public void insert(DataNode dataNode) {
+        DataNode newDataNode = insert(dataNode.getFileId());
+        newDataNode.loadByDataNode(dataNode);
+    }
+
+    /**
      * 获取树的最小元素
      */
     private LeafTreeNode findMin() {

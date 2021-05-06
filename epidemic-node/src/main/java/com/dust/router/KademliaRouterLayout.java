@@ -43,6 +43,7 @@ public class KademliaRouterLayout extends RouterLayout {
     public void load() throws IOException {
         File f = new File(routerPath, SNAPSHOT_FILENAME);
         if (!f.exists()) {
+            //不存在快照文件
             bucket = new KademliaBucket(config.getBucketKey(), myId);
             return;
         }

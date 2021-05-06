@@ -2,7 +2,13 @@ package com.dust.storage.btree;
 
 import com.dust.storage.StorageLayout;
 import com.dust.storage.buffer.ReusableBuffer;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -15,6 +21,8 @@ import java.util.*;
  *
  * 每个DataNode只会对应一个文件块
  */
+@Getter
+@Setter
 public class DataNode {
 
     //初始化完成，但还无法开始工作。因为还没有载入存储系统
@@ -27,11 +35,9 @@ public class DataNode {
     private static final int DESTROY    = 2;
 
     /**
-     * 虚拟id，这个只是存入文件的id
-     * 注意这有两个文件id，一个是对于用户与目录树来说的文件id，这个id用于叶子节点检索
-     * 还有一个文件id表示的是.data文件的id
+     * 持久化数据的文件开头
      */
-    private String key;
+    private static final byte[] HEAD = {0xd, 0xa, 0xd, 0xe};
 
     /**
      * 文件虚拟对象的状态
@@ -39,24 +45,86 @@ public class DataNode {
     private int working;
 
     /**
-     * 存储对象
+     * 文件id
      */
-    private StorageLayout storageLayout;
+    private String fileId;
 
+    /**
+     * 文件所在的.data文件名称
+     */
+    private String dataName;
 
-    public DataNode(String key) {
-        this.key = key;
-        this.working = 0;
+    /**
+     * 文件所在偏移地址
+     */
+    private long offset;
+
+    /**
+     * 文件大小
+     */
+    private long size;
+
+    private DataNode(String fileId) {
+        this.fileId = fileId;
+        this.working = INIT;
+    }
+
+    private DataNode(String fileId, String dataName, long offset, long size) {
+        this.fileId = fileId;
+        this.dataName = dataName;
+        this.offset = offset;
+        this.size = size;
+        this.working = WORKING;
+    }
+
+    public static DataNode byFileId(String fileId) {
+        return new DataNode(fileId);
     }
 
     /**
-     * 给存储节点添加存储系统对象
-     * @param storageLayout 添加的存储系统对象
+     * 根据持久化文件创建DataNode对象
+     * @param raf 文件句柄
+     * @return 创建的文件呢元数据对象
      */
-    public void init(StorageLayout storageLayout) {
-        assert Objects.nonNull(storageLayout);
-        this.storageLayout = storageLayout;
-        working = 1;
+    public static DataNode byFile(RandomAccessFile raf) throws IOException {
+        FileChannel channel = raf.getChannel();
+        int index = 0;
+        while (index < HEAD.length && raf.getFilePointer() < raf.length()) {
+            if (raf.readByte() == HEAD[index]) {
+                index += 1;
+            } else {
+                index = 0;
+            }
+        }
+        if (index < HEAD.length)
+            return null;
+
+        byte[] keyData = new byte[40];
+        raf.readFully(keyData);
+        String key = new String(keyData, StandardCharsets.UTF_8);
+
+        raf.readFully(keyData);
+        String fileName = new String(keyData, StandardCharsets.UTF_8) + ".data";
+
+        long offset = raf.readLong();
+        long fileSize = raf.readLong();
+
+        return new DataNode(key, fileName, offset, fileSize);
+    }
+
+    /**
+     * 将给定的DataNode对象的所有信息都转储到自身
+     * @param dataNode 需要被复制的数据来源对象
+     */
+    public void loadByDataNode(DataNode dataNode) {
+        if (Objects.isNull(dataNode))
+            return;
+
+        this.fileId = dataNode.getFileId();
+        this.dataName = dataNode.getDataName();
+        this.offset = dataNode.getOffset();
+        this.size = dataNode.getSize();
+        this.working = WORKING;
     }
 
     /**
@@ -78,37 +146,6 @@ public class DataNode {
 //
 //        return encode(writeResult);
         return false;
-    }
-
-    /**
-     * 读取这个DataNode对应的文件块数据
-     * @return 读取到的文件块数据，如果返回对象为null则表示文件不存在
-     */
-    public ReusableBuffer read() {
-//        checkStatus();
-//
-//        FileAndObj fileAndObj = decode(objectId);
-//        if (Objects.isNull(fileAndObj)) {
-//            return ObjectInformation.fail("传入的objectId格式错误");
-//        }
-//
-//        try {
-//            FileMetadata md = storageLayout.getFileMetadata(fileAndObj.getFileId());
-//            if (Objects.isNull(md)) {
-//                return ObjectInformation.fail("不存在的.data文件");
-//            }
-//
-//            long version = md.getLatestObjectVersionByObj(fileAndObj.objNo);
-//            if (version == -1) {
-//                return ObjectInformation.fail("不存在的对象版本");
-//            }
-//
-//            return storageLayout.readObject(fileAndObj.fileId, md, fileAndObj.objNo, 0, -1, version);
-//        } catch (IOException e) {
-//            //TODO 读取失败记录日志
-//            return ObjectInformation.fail(e.getMessage());
-//        }
-        return null;
     }
 
     /**

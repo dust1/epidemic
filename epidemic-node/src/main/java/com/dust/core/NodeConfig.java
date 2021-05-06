@@ -21,6 +21,12 @@ public class NodeConfig {
 
     private String nodeSalt;
 
+    private String saveDir;
+
+    private String snapshotSize;
+
+    private int orderNum;
+
     public NodeConfig(Properties properties) {
 
     }

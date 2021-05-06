@@ -68,7 +68,7 @@ public class LeafTreeNode extends AbstractTreeNode {
         System.arraycopy(keys, pos, keys, pos + 1, size - pos);
         System.arraycopy(dataNodes, pos, dataNodes, pos + 1, size - pos);
         keys[pos] = k;
-        dataNodes[pos] = new DataNode(k);
+        dataNodes[pos] = DataNode.byFileId(k);
         size += 1;
 
         if (size >= orderNum) {

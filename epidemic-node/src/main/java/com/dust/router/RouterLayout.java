@@ -1,5 +1,6 @@
 package com.dust.router;
 
+import com.dust.core.Layout;
 import com.dust.core.NodeConfig;
 import com.dust.fundation.EpidemicUtils;
 
@@ -12,7 +13,7 @@ import java.util.List;
  * 通用的路由接口
  * 由于每种路由表的实现结构都不一样，因此这里不应该保存路由表的原始对象，而是应该记录路由表的通用参数以及对外接口
  */
-public abstract class RouterLayout {
+public abstract class RouterLayout extends Layout {
 
     /**
      * 网络路由模块的版本名称
@@ -29,11 +30,6 @@ public abstract class RouterLayout {
      */
     protected final String routerPath;
 
-    /**
-     * 对快照文件进行随机读写的对象
-     * 默认不会初始化
-     */
-    protected RandomAccessFile snapshot = null;
 
     protected NodeConfig config;
 
