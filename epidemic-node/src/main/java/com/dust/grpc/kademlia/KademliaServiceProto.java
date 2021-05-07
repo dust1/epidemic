@@ -57,17 +57,19 @@ public final class KademliaServiceProto {
       "deId\030\001 \001(\t\022\021\n\ttimestamp\030\002 \001(\005\")\n\014StoreRe" +
       "quest\022\013\n\003key\030\001 \001(\t\022\014\n\004data\030\002 \001(\014\"-\n\rStor" +
       "eResponse\022\014\n\004code\030\001 \001(\005\022\016\n\006errmsg\030\002 \001(\t\"" +
-      "\032\n\013FindRequest\022\013\n\003key\030\001 \001(\t\">\n\020FindNodeR" +
+      "\032\n\013FindRequest\022\013\n\003key\030\001 \001(\t\"\\\n\020FindNodeR" +
       "esponse\022\014\n\004host\030\001 \001(\t\022\014\n\004port\030\002 \001(\005\022\016\n\006n" +
-      "odeId\030\003 \001(\t\"M\n\021FindValueResponse\022\014\n\004host" +
-      "\030\001 \001(\t\022\014\n\004port\030\002 \001(\005\022\016\n\006nodeId\030\003 \001(\t\022\014\n\004" +
-      "data\030\004 \001(\0142\305\001\n\017KademliaService\022$\n\004Ping\022\014" +
-      ".PingPackage\032\014.PingPackage\"\000\022(\n\005Store\022\r." +
-      "StoreRequest\032\016.StoreResponse\"\000\022/\n\010FindNo" +
-      "de\022\014.FindRequest\032\021.FindNodeResponse\"\0000\001\022" +
-      "1\n\tfindValue\022\014.FindRequest\032\022.FindValueRe" +
-      "sponse\"\0000\001B3\n\026com.dust.grpc.kademliaB\024Ka" +
-      "demliaServiceProtoP\001\210\001\001b\006proto3"
+      "odeId\030\003 \001(\t\022\014\n\004code\030\004 \001(\005\022\016\n\006errmsg\030\005 \001(" +
+      "\t\"y\n\021FindValueResponse\022\014\n\004code\030\001 \001(\005\022\014\n\004" +
+      "mode\030\002 \001(\005\022\014\n\004host\030\003 \001(\t\022\014\n\004port\030\004 \001(\005\022\016" +
+      "\n\006nodeId\030\005 \001(\t\022\014\n\004data\030\006 \001(\014\022\016\n\006errmsg\030\007" +
+      " \001(\t2\305\001\n\017KademliaService\022$\n\004Ping\022\014.PingP" +
+      "ackage\032\014.PingPackage\"\000\022(\n\005Store\022\r.StoreR" +
+      "equest\032\016.StoreResponse\"\000\022/\n\010FindNode\022\014.F" +
+      "indRequest\032\021.FindNodeResponse\"\0000\001\0221\n\tfin" +
+      "dValue\022\014.FindRequest\032\022.FindValueResponse" +
+      "\"\0000\001B3\n\026com.dust.grpc.kademliaB\024Kademlia" +
+      "ServiceProtoP\001\210\001\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -102,13 +104,13 @@ public final class KademliaServiceProto {
     internal_static_FindNodeResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_FindNodeResponse_descriptor,
-        new String[] { "Host", "Port", "NodeId", });
+        new String[] { "Host", "Port", "NodeId", "Code", "Errmsg", });
     internal_static_FindValueResponse_descriptor =
       getDescriptor().getMessageTypes().get(5);
     internal_static_FindValueResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_FindValueResponse_descriptor,
-        new String[] { "Host", "Port", "NodeId", "Data", });
+        new String[] { "Code", "Mode", "Host", "Port", "NodeId", "Data", "Errmsg", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

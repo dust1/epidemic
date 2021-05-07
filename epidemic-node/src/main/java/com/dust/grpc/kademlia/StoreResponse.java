@@ -13,7 +13,7 @@ package com.dust.grpc.kademlia;
 public final class StoreResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:StoreResponse)
-        StoreResponseOrBuilder {
+    StoreResponseOrBuilder {
 private static final long serialVersionUID = 0L;
   // Use StoreResponse.newBuilder() to construct.
   private StoreResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
@@ -320,7 +320,7 @@ private static final long serialVersionUID = 0L;
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
       // @@protoc_insertion_point(builder_implements:StoreResponse)
-          StoreResponseOrBuilder {
+      StoreResponseOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return KademliaServiceProto.internal_static_StoreResponse_descriptor;

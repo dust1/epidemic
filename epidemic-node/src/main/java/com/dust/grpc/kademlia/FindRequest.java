@@ -13,7 +13,7 @@ package com.dust.grpc.kademlia;
 public final class FindRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:FindRequest)
-        FindRequestOrBuilder {
+    FindRequestOrBuilder {
 private static final long serialVersionUID = 0L;
   // Use FindRequest.newBuilder() to construct.
   private FindRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
@@ -293,7 +293,7 @@ private static final long serialVersionUID = 0L;
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
       // @@protoc_insertion_point(builder_implements:FindRequest)
-          FindRequestOrBuilder {
+      FindRequestOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return KademliaServiceProto.internal_static_FindRequest_descriptor;

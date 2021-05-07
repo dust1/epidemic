@@ -48,13 +48,20 @@ message FindNodeResponse {
     string host = 1;
     int32 port = 2;
     string nodeId = 3;
+
+    int32 code = 4;
+    string errmsg = 5;
 }
 
-//寻找文件呢返回，如果文件不存在则返回离这个文件最近的三元组<IP地址、端口、节点id>列表，否则直接返回值
+//寻找文件返回，如果文件不存在则返回离这个文件最近的三元组<IP地址、端口、节点id>列表，否则直接返回值
 message FindValueResponse {
-    string host = 1;
-    int32 port = 2;
-    string nodeId = 3;
+    int32 code = 1;
+    int32 mode = 2;
+    string host = 3;
+    int32 port = 4;
+    string nodeId = 5;
 
-    bytes data = 4;
+    bytes data = 6;
+
+    string errmsg = 7;
 }

@@ -13,7 +13,7 @@ package com.dust.grpc.kademlia;
 public final class FindNodeResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:FindNodeResponse)
-        FindNodeResponseOrBuilder {
+    FindNodeResponseOrBuilder {
 private static final long serialVersionUID = 0L;
   // Use FindNodeResponse.newBuilder() to construct.
   private FindNodeResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
@@ -22,6 +22,7 @@ private static final long serialVersionUID = 0L;
   private FindNodeResponse() {
     host_ = "";
     nodeId_ = "";
+    errmsg_ = "";
   }
 
   @Override
@@ -69,6 +70,17 @@ private static final long serialVersionUID = 0L;
             String s = input.readStringRequireUtf8();
 
             nodeId_ = s;
+            break;
+          }
+          case 32: {
+
+            code_ = input.readInt32();
+            break;
+          }
+          case 42: {
+            String s = input.readStringRequireUtf8();
+
+            errmsg_ = s;
             break;
           }
           default: {
@@ -190,6 +202,55 @@ private static final long serialVersionUID = 0L;
     }
   }
 
+  public static final int CODE_FIELD_NUMBER = 4;
+  private int code_;
+  /**
+   * <code>int32 code = 4;</code>
+   * @return The code.
+   */
+  @Override
+  public int getCode() {
+    return code_;
+  }
+
+  public static final int ERRMSG_FIELD_NUMBER = 5;
+  private volatile Object errmsg_;
+  /**
+   * <code>string errmsg = 5;</code>
+   * @return The errmsg.
+   */
+  @Override
+  public String getErrmsg() {
+    Object ref = errmsg_;
+    if (ref instanceof String) {
+      return (String) ref;
+    } else {
+      com.google.protobuf.ByteString bs =
+          (com.google.protobuf.ByteString) ref;
+      String s = bs.toStringUtf8();
+      errmsg_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>string errmsg = 5;</code>
+   * @return The bytes for errmsg.
+   */
+  @Override
+  public com.google.protobuf.ByteString
+      getErrmsgBytes() {
+    Object ref = errmsg_;
+    if (ref instanceof String) {
+      com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (String) ref);
+      errmsg_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
   private byte memoizedIsInitialized = -1;
   @Override
   public final boolean isInitialized() {
@@ -213,6 +274,12 @@ private static final long serialVersionUID = 0L;
     if (!getNodeIdBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 3, nodeId_);
     }
+    if (code_ != 0) {
+      output.writeInt32(4, code_);
+    }
+    if (!getErrmsgBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 5, errmsg_);
+    }
     unknownFields.writeTo(output);
   }
 
@@ -231,6 +298,13 @@ private static final long serialVersionUID = 0L;
     }
     if (!getNodeIdBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, nodeId_);
+    }
+    if (code_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(4, code_);
+    }
+    if (!getErrmsgBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, errmsg_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -253,6 +327,10 @@ private static final long serialVersionUID = 0L;
         != other.getPort()) return false;
     if (!getNodeId()
         .equals(other.getNodeId())) return false;
+    if (getCode()
+        != other.getCode()) return false;
+    if (!getErrmsg()
+        .equals(other.getErrmsg())) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -270,6 +348,10 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getPort();
     hash = (37 * hash) + NODEID_FIELD_NUMBER;
     hash = (53 * hash) + getNodeId().hashCode();
+    hash = (37 * hash) + CODE_FIELD_NUMBER;
+    hash = (53 * hash) + getCode();
+    hash = (37 * hash) + ERRMSG_FIELD_NUMBER;
+    hash = (53 * hash) + getErrmsg().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -375,7 +457,7 @@ private static final long serialVersionUID = 0L;
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
       // @@protoc_insertion_point(builder_implements:FindNodeResponse)
-          FindNodeResponseOrBuilder {
+      FindNodeResponseOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return KademliaServiceProto.internal_static_FindNodeResponse_descriptor;
@@ -413,6 +495,10 @@ private static final long serialVersionUID = 0L;
 
       nodeId_ = "";
 
+      code_ = 0;
+
+      errmsg_ = "";
+
       return this;
     }
 
@@ -442,6 +528,8 @@ private static final long serialVersionUID = 0L;
       result.host_ = host_;
       result.port_ = port_;
       result.nodeId_ = nodeId_;
+      result.code_ = code_;
+      result.errmsg_ = errmsg_;
       onBuilt();
       return result;
     }
@@ -499,6 +587,13 @@ private static final long serialVersionUID = 0L;
       }
       if (!other.getNodeId().isEmpty()) {
         nodeId_ = other.nodeId_;
+        onChanged();
+      }
+      if (other.getCode() != 0) {
+        setCode(other.getCode());
+      }
+      if (!other.getErrmsg().isEmpty()) {
+        errmsg_ = other.errmsg_;
         onChanged();
       }
       this.mergeUnknownFields(other.unknownFields);
@@ -709,6 +804,113 @@ private static final long serialVersionUID = 0L;
   checkByteStringIsUtf8(value);
 
       nodeId_ = value;
+      onChanged();
+      return this;
+    }
+
+    private int code_ ;
+    /**
+     * <code>int32 code = 4;</code>
+     * @return The code.
+     */
+    @Override
+    public int getCode() {
+      return code_;
+    }
+    /**
+     * <code>int32 code = 4;</code>
+     * @param value The code to set.
+     * @return This builder for chaining.
+     */
+    public Builder setCode(int value) {
+
+      code_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 code = 4;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearCode() {
+
+      code_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private Object errmsg_ = "";
+    /**
+     * <code>string errmsg = 5;</code>
+     * @return The errmsg.
+     */
+    public String getErrmsg() {
+      Object ref = errmsg_;
+      if (!(ref instanceof String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        errmsg_ = s;
+        return s;
+      } else {
+        return (String) ref;
+      }
+    }
+    /**
+     * <code>string errmsg = 5;</code>
+     * @return The bytes for errmsg.
+     */
+    public com.google.protobuf.ByteString
+        getErrmsgBytes() {
+      Object ref = errmsg_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (String) ref);
+        errmsg_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string errmsg = 5;</code>
+     * @param value The errmsg to set.
+     * @return This builder for chaining.
+     */
+    public Builder setErrmsg(
+        String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+
+      errmsg_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string errmsg = 5;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearErrmsg() {
+
+      errmsg_ = getDefaultInstance().getErrmsg();
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string errmsg = 5;</code>
+     * @param value The bytes for errmsg to set.
+     * @return This builder for chaining.
+     */
+    public Builder setErrmsgBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+
+      errmsg_ = value;
       onChanged();
       return this;
     }

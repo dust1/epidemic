@@ -70,14 +70,6 @@ public abstract class RouterLayout extends Layout {
     public abstract void addNode(NodeTriad newNode);
 
     /**
-     * 传入一个文件id，如果当前节点不存在该文件，则返回一个距离该文件所在服务器最近的K个节点信息三元组集合；
-     * 如果存在则返回一个文件句柄，RPCs通过句柄读取文件内容。
-     * @param fileId 传入的文件di
-     * @return 如上所示
-     */
-    public abstract FindValueResult findValue(String fileId);
-
-    /**
      * 检查当前的实现版本与给定的版本是否兼容
      * @param version 检查的版本
      * @return 如果兼容则返回true，否则返回false
@@ -107,5 +99,10 @@ public abstract class RouterLayout extends Layout {
     protected void persistence() throws IOException {
         //...
     }
+
+    /**
+     * 获取当前节点id信息
+     */
+    public abstract String getMyId();
 
 }

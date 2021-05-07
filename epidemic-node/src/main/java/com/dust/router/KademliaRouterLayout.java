@@ -84,6 +84,11 @@ public class KademliaRouterLayout extends RouterLayout {
     }
 
     @Override
+    public String getMyId() {
+        return myId;
+    }
+
+    @Override
     public List<NodeTriad> findNode(String key) {
         return null;
     }
@@ -91,11 +96,6 @@ public class KademliaRouterLayout extends RouterLayout {
     @Override
     public void addNode(NodeTriad newNode) {
 
-    }
-
-    @Override
-    public FindValueResult findValue(String fileId) {
-        return null;
     }
 
     @Override

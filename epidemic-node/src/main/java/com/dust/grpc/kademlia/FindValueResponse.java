@@ -5,7 +5,7 @@ package com.dust.grpc.kademlia;
 
 /**
  * <pre>
- *寻找文件呢返回，如果文件不存在则返回离这个文件最近的三元组&lt;IP地址、端口、节点id&gt;列表，否则直接返回值
+ *寻找文件返回，如果文件不存在则返回离这个文件最近的三元组&lt;IP地址、端口、节点id&gt;列表，否则直接返回值
  * </pre>
  *
  * Protobuf type {@code FindValueResponse}
@@ -13,7 +13,7 @@ package com.dust.grpc.kademlia;
 public final class FindValueResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:FindValueResponse)
-        FindValueResponseOrBuilder {
+    FindValueResponseOrBuilder {
 private static final long serialVersionUID = 0L;
   // Use FindValueResponse.newBuilder() to construct.
   private FindValueResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
@@ -23,6 +23,7 @@ private static final long serialVersionUID = 0L;
     host_ = "";
     nodeId_ = "";
     data_ = com.google.protobuf.ByteString.EMPTY;
+    errmsg_ = "";
   }
 
   @Override
@@ -55,26 +56,42 @@ private static final long serialVersionUID = 0L;
           case 0:
             done = true;
             break;
-          case 10: {
-            String s = input.readStringRequireUtf8();
+          case 8: {
 
-            host_ = s;
+            code_ = input.readInt32();
             break;
           }
           case 16: {
 
-            port_ = input.readInt32();
+            mode_ = input.readInt32();
             break;
           }
           case 26: {
             String s = input.readStringRequireUtf8();
 
+            host_ = s;
+            break;
+          }
+          case 32: {
+
+            port_ = input.readInt32();
+            break;
+          }
+          case 42: {
+            String s = input.readStringRequireUtf8();
+
             nodeId_ = s;
             break;
           }
-          case 34: {
+          case 50: {
 
             data_ = input.readBytes();
+            break;
+          }
+          case 58: {
+            String s = input.readStringRequireUtf8();
+
+            errmsg_ = s;
             break;
           }
           default: {
@@ -109,10 +126,32 @@ private static final long serialVersionUID = 0L;
             FindValueResponse.class, FindValueResponse.Builder.class);
   }
 
-  public static final int HOST_FIELD_NUMBER = 1;
+  public static final int CODE_FIELD_NUMBER = 1;
+  private int code_;
+  /**
+   * <code>int32 code = 1;</code>
+   * @return The code.
+   */
+  @Override
+  public int getCode() {
+    return code_;
+  }
+
+  public static final int MODE_FIELD_NUMBER = 2;
+  private int mode_;
+  /**
+   * <code>int32 mode = 2;</code>
+   * @return The mode.
+   */
+  @Override
+  public int getMode() {
+    return mode_;
+  }
+
+  public static final int HOST_FIELD_NUMBER = 3;
   private volatile Object host_;
   /**
-   * <code>string host = 1;</code>
+   * <code>string host = 3;</code>
    * @return The host.
    */
   @Override
@@ -129,7 +168,7 @@ private static final long serialVersionUID = 0L;
     }
   }
   /**
-   * <code>string host = 1;</code>
+   * <code>string host = 3;</code>
    * @return The bytes for host.
    */
   @Override
@@ -147,10 +186,10 @@ private static final long serialVersionUID = 0L;
     }
   }
 
-  public static final int PORT_FIELD_NUMBER = 2;
+  public static final int PORT_FIELD_NUMBER = 4;
   private int port_;
   /**
-   * <code>int32 port = 2;</code>
+   * <code>int32 port = 4;</code>
    * @return The port.
    */
   @Override
@@ -158,10 +197,10 @@ private static final long serialVersionUID = 0L;
     return port_;
   }
 
-  public static final int NODEID_FIELD_NUMBER = 3;
+  public static final int NODEID_FIELD_NUMBER = 5;
   private volatile Object nodeId_;
   /**
-   * <code>string nodeId = 3;</code>
+   * <code>string nodeId = 5;</code>
    * @return The nodeId.
    */
   @Override
@@ -178,7 +217,7 @@ private static final long serialVersionUID = 0L;
     }
   }
   /**
-   * <code>string nodeId = 3;</code>
+   * <code>string nodeId = 5;</code>
    * @return The bytes for nodeId.
    */
   @Override
@@ -196,15 +235,53 @@ private static final long serialVersionUID = 0L;
     }
   }
 
-  public static final int DATA_FIELD_NUMBER = 4;
+  public static final int DATA_FIELD_NUMBER = 6;
   private com.google.protobuf.ByteString data_;
   /**
-   * <code>bytes data = 4;</code>
+   * <code>bytes data = 6;</code>
    * @return The data.
    */
   @Override
   public com.google.protobuf.ByteString getData() {
     return data_;
+  }
+
+  public static final int ERRMSG_FIELD_NUMBER = 7;
+  private volatile Object errmsg_;
+  /**
+   * <code>string errmsg = 7;</code>
+   * @return The errmsg.
+   */
+  @Override
+  public String getErrmsg() {
+    Object ref = errmsg_;
+    if (ref instanceof String) {
+      return (String) ref;
+    } else {
+      com.google.protobuf.ByteString bs =
+          (com.google.protobuf.ByteString) ref;
+      String s = bs.toStringUtf8();
+      errmsg_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>string errmsg = 7;</code>
+   * @return The bytes for errmsg.
+   */
+  @Override
+  public com.google.protobuf.ByteString
+      getErrmsgBytes() {
+    Object ref = errmsg_;
+    if (ref instanceof String) {
+      com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (String) ref);
+      errmsg_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
   }
 
   private byte memoizedIsInitialized = -1;
@@ -221,17 +298,26 @@ private static final long serialVersionUID = 0L;
   @Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
+    if (code_ != 0) {
+      output.writeInt32(1, code_);
+    }
+    if (mode_ != 0) {
+      output.writeInt32(2, mode_);
+    }
     if (!getHostBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, host_);
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 3, host_);
     }
     if (port_ != 0) {
-      output.writeInt32(2, port_);
+      output.writeInt32(4, port_);
     }
     if (!getNodeIdBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 3, nodeId_);
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 5, nodeId_);
     }
     if (!data_.isEmpty()) {
-      output.writeBytes(4, data_);
+      output.writeBytes(6, data_);
+    }
+    if (!getErrmsgBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 7, errmsg_);
     }
     unknownFields.writeTo(output);
   }
@@ -242,19 +328,30 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
+    if (code_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(1, code_);
+    }
+    if (mode_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(2, mode_);
+    }
     if (!getHostBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, host_);
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, host_);
     }
     if (port_ != 0) {
       size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(2, port_);
+        .computeInt32Size(4, port_);
     }
     if (!getNodeIdBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, nodeId_);
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, nodeId_);
     }
     if (!data_.isEmpty()) {
       size += com.google.protobuf.CodedOutputStream
-        .computeBytesSize(4, data_);
+        .computeBytesSize(6, data_);
+    }
+    if (!getErrmsgBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(7, errmsg_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -271,6 +368,10 @@ private static final long serialVersionUID = 0L;
     }
     FindValueResponse other = (FindValueResponse) obj;
 
+    if (getCode()
+        != other.getCode()) return false;
+    if (getMode()
+        != other.getMode()) return false;
     if (!getHost()
         .equals(other.getHost())) return false;
     if (getPort()
@@ -279,6 +380,8 @@ private static final long serialVersionUID = 0L;
         .equals(other.getNodeId())) return false;
     if (!getData()
         .equals(other.getData())) return false;
+    if (!getErrmsg()
+        .equals(other.getErrmsg())) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -290,6 +393,10 @@ private static final long serialVersionUID = 0L;
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
+    hash = (37 * hash) + CODE_FIELD_NUMBER;
+    hash = (53 * hash) + getCode();
+    hash = (37 * hash) + MODE_FIELD_NUMBER;
+    hash = (53 * hash) + getMode();
     hash = (37 * hash) + HOST_FIELD_NUMBER;
     hash = (53 * hash) + getHost().hashCode();
     hash = (37 * hash) + PORT_FIELD_NUMBER;
@@ -298,6 +405,8 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getNodeId().hashCode();
     hash = (37 * hash) + DATA_FIELD_NUMBER;
     hash = (53 * hash) + getData().hashCode();
+    hash = (37 * hash) + ERRMSG_FIELD_NUMBER;
+    hash = (53 * hash) + getErrmsg().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -395,7 +504,7 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <pre>
-   *寻找文件呢返回，如果文件不存在则返回离这个文件最近的三元组&lt;IP地址、端口、节点id&gt;列表，否则直接返回值
+   *寻找文件返回，如果文件不存在则返回离这个文件最近的三元组&lt;IP地址、端口、节点id&gt;列表，否则直接返回值
    * </pre>
    *
    * Protobuf type {@code FindValueResponse}
@@ -403,7 +512,7 @@ private static final long serialVersionUID = 0L;
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
       // @@protoc_insertion_point(builder_implements:FindValueResponse)
-          FindValueResponseOrBuilder {
+      FindValueResponseOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return KademliaServiceProto.internal_static_FindValueResponse_descriptor;
@@ -435,6 +544,10 @@ private static final long serialVersionUID = 0L;
     @Override
     public Builder clear() {
       super.clear();
+      code_ = 0;
+
+      mode_ = 0;
+
       host_ = "";
 
       port_ = 0;
@@ -442,6 +555,8 @@ private static final long serialVersionUID = 0L;
       nodeId_ = "";
 
       data_ = com.google.protobuf.ByteString.EMPTY;
+
+      errmsg_ = "";
 
       return this;
     }
@@ -469,10 +584,13 @@ private static final long serialVersionUID = 0L;
     @Override
     public FindValueResponse buildPartial() {
       FindValueResponse result = new FindValueResponse(this);
+      result.code_ = code_;
+      result.mode_ = mode_;
       result.host_ = host_;
       result.port_ = port_;
       result.nodeId_ = nodeId_;
       result.data_ = data_;
+      result.errmsg_ = errmsg_;
       onBuilt();
       return result;
     }
@@ -521,6 +639,12 @@ private static final long serialVersionUID = 0L;
 
     public Builder mergeFrom(FindValueResponse other) {
       if (other == FindValueResponse.getDefaultInstance()) return this;
+      if (other.getCode() != 0) {
+        setCode(other.getCode());
+      }
+      if (other.getMode() != 0) {
+        setMode(other.getMode());
+      }
       if (!other.getHost().isEmpty()) {
         host_ = other.host_;
         onChanged();
@@ -534,6 +658,10 @@ private static final long serialVersionUID = 0L;
       }
       if (other.getData() != com.google.protobuf.ByteString.EMPTY) {
         setData(other.getData());
+      }
+      if (!other.getErrmsg().isEmpty()) {
+        errmsg_ = other.errmsg_;
+        onChanged();
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -564,9 +692,71 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
+    private int code_ ;
+    /**
+     * <code>int32 code = 1;</code>
+     * @return The code.
+     */
+    @Override
+    public int getCode() {
+      return code_;
+    }
+    /**
+     * <code>int32 code = 1;</code>
+     * @param value The code to set.
+     * @return This builder for chaining.
+     */
+    public Builder setCode(int value) {
+
+      code_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 code = 1;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearCode() {
+
+      code_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private int mode_ ;
+    /**
+     * <code>int32 mode = 2;</code>
+     * @return The mode.
+     */
+    @Override
+    public int getMode() {
+      return mode_;
+    }
+    /**
+     * <code>int32 mode = 2;</code>
+     * @param value The mode to set.
+     * @return This builder for chaining.
+     */
+    public Builder setMode(int value) {
+
+      mode_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 mode = 2;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearMode() {
+
+      mode_ = 0;
+      onChanged();
+      return this;
+    }
+
     private Object host_ = "";
     /**
-     * <code>string host = 1;</code>
+     * <code>string host = 3;</code>
      * @return The host.
      */
     public String getHost() {
@@ -582,7 +772,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string host = 1;</code>
+     * <code>string host = 3;</code>
      * @return The bytes for host.
      */
     public com.google.protobuf.ByteString
@@ -599,7 +789,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string host = 1;</code>
+     * <code>string host = 3;</code>
      * @param value The host to set.
      * @return This builder for chaining.
      */
@@ -614,7 +804,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>string host = 1;</code>
+     * <code>string host = 3;</code>
      * @return This builder for chaining.
      */
     public Builder clearHost() {
@@ -624,7 +814,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>string host = 1;</code>
+     * <code>string host = 3;</code>
      * @param value The bytes for host to set.
      * @return This builder for chaining.
      */
@@ -642,7 +832,7 @@ private static final long serialVersionUID = 0L;
 
     private int port_ ;
     /**
-     * <code>int32 port = 2;</code>
+     * <code>int32 port = 4;</code>
      * @return The port.
      */
     @Override
@@ -650,7 +840,7 @@ private static final long serialVersionUID = 0L;
       return port_;
     }
     /**
-     * <code>int32 port = 2;</code>
+     * <code>int32 port = 4;</code>
      * @param value The port to set.
      * @return This builder for chaining.
      */
@@ -661,7 +851,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>int32 port = 2;</code>
+     * <code>int32 port = 4;</code>
      * @return This builder for chaining.
      */
     public Builder clearPort() {
@@ -673,7 +863,7 @@ private static final long serialVersionUID = 0L;
 
     private Object nodeId_ = "";
     /**
-     * <code>string nodeId = 3;</code>
+     * <code>string nodeId = 5;</code>
      * @return The nodeId.
      */
     public String getNodeId() {
@@ -689,7 +879,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string nodeId = 3;</code>
+     * <code>string nodeId = 5;</code>
      * @return The bytes for nodeId.
      */
     public com.google.protobuf.ByteString
@@ -706,7 +896,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string nodeId = 3;</code>
+     * <code>string nodeId = 5;</code>
      * @param value The nodeId to set.
      * @return This builder for chaining.
      */
@@ -721,7 +911,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>string nodeId = 3;</code>
+     * <code>string nodeId = 5;</code>
      * @return This builder for chaining.
      */
     public Builder clearNodeId() {
@@ -731,7 +921,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>string nodeId = 3;</code>
+     * <code>string nodeId = 5;</code>
      * @param value The bytes for nodeId to set.
      * @return This builder for chaining.
      */
@@ -749,7 +939,7 @@ private static final long serialVersionUID = 0L;
 
     private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
     /**
-     * <code>bytes data = 4;</code>
+     * <code>bytes data = 6;</code>
      * @return The data.
      */
     @Override
@@ -757,7 +947,7 @@ private static final long serialVersionUID = 0L;
       return data_;
     }
     /**
-     * <code>bytes data = 4;</code>
+     * <code>bytes data = 6;</code>
      * @param value The data to set.
      * @return This builder for chaining.
      */
@@ -771,12 +961,88 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>bytes data = 4;</code>
+     * <code>bytes data = 6;</code>
      * @return This builder for chaining.
      */
     public Builder clearData() {
 
       data_ = getDefaultInstance().getData();
+      onChanged();
+      return this;
+    }
+
+    private Object errmsg_ = "";
+    /**
+     * <code>string errmsg = 7;</code>
+     * @return The errmsg.
+     */
+    public String getErrmsg() {
+      Object ref = errmsg_;
+      if (!(ref instanceof String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        errmsg_ = s;
+        return s;
+      } else {
+        return (String) ref;
+      }
+    }
+    /**
+     * <code>string errmsg = 7;</code>
+     * @return The bytes for errmsg.
+     */
+    public com.google.protobuf.ByteString
+        getErrmsgBytes() {
+      Object ref = errmsg_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (String) ref);
+        errmsg_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string errmsg = 7;</code>
+     * @param value The errmsg to set.
+     * @return This builder for chaining.
+     */
+    public Builder setErrmsg(
+        String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+
+      errmsg_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string errmsg = 7;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearErrmsg() {
+
+      errmsg_ = getDefaultInstance().getErrmsg();
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string errmsg = 7;</code>
+     * @param value The bytes for errmsg to set.
+     * @return This builder for chaining.
+     */
+    public Builder setErrmsgBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+
+      errmsg_ = value;
       onChanged();
       return this;
     }

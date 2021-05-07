@@ -8,38 +8,62 @@ public interface FindValueResponseOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>string host = 1;</code>
+   * <code>int32 code = 1;</code>
+   * @return The code.
+   */
+  int getCode();
+
+  /**
+   * <code>int32 mode = 2;</code>
+   * @return The mode.
+   */
+  int getMode();
+
+  /**
+   * <code>string host = 3;</code>
    * @return The host.
    */
   String getHost();
   /**
-   * <code>string host = 1;</code>
+   * <code>string host = 3;</code>
    * @return The bytes for host.
    */
   com.google.protobuf.ByteString
       getHostBytes();
 
   /**
-   * <code>int32 port = 2;</code>
+   * <code>int32 port = 4;</code>
    * @return The port.
    */
   int getPort();
 
   /**
-   * <code>string nodeId = 3;</code>
+   * <code>string nodeId = 5;</code>
    * @return The nodeId.
    */
   String getNodeId();
   /**
-   * <code>string nodeId = 3;</code>
+   * <code>string nodeId = 5;</code>
    * @return The bytes for nodeId.
    */
   com.google.protobuf.ByteString
       getNodeIdBytes();
 
   /**
-   * <code>bytes data = 4;</code>
+   * <code>bytes data = 6;</code>
    * @return The data.
    */
   com.google.protobuf.ByteString getData();
+
+  /**
+   * <code>string errmsg = 7;</code>
+   * @return The errmsg.
+   */
+  String getErrmsg();
+  /**
+   * <code>string errmsg = 7;</code>
+   * @return The bytes for errmsg.
+   */
+  com.google.protobuf.ByteString
+      getErrmsgBytes();
 }

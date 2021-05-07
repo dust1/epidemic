@@ -23,29 +23,29 @@ public final class KademliaServiceGrpc {
   public static final String SERVICE_NAME = "KademliaService";
 
   // Static method descriptors that strictly reflect the proto.
-  private static volatile io.grpc.MethodDescriptor<com.dust.grpc.kademlia.PingPackage,
-      com.dust.grpc.kademlia.PingPackage> getPingMethod;
+  private static volatile io.grpc.MethodDescriptor<PingPackage,
+      PingPackage> getPingMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "Ping",
-      requestType = com.dust.grpc.kademlia.PingPackage.class,
-      responseType = com.dust.grpc.kademlia.PingPackage.class,
+      requestType = PingPackage.class,
+      responseType = PingPackage.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<com.dust.grpc.kademlia.PingPackage,
-      com.dust.grpc.kademlia.PingPackage> getPingMethod() {
-    io.grpc.MethodDescriptor<com.dust.grpc.kademlia.PingPackage, com.dust.grpc.kademlia.PingPackage> getPingMethod;
+  public static io.grpc.MethodDescriptor<PingPackage,
+      PingPackage> getPingMethod() {
+    io.grpc.MethodDescriptor<PingPackage, PingPackage> getPingMethod;
     if ((getPingMethod = KademliaServiceGrpc.getPingMethod) == null) {
       synchronized (KademliaServiceGrpc.class) {
         if ((getPingMethod = KademliaServiceGrpc.getPingMethod) == null) {
           KademliaServiceGrpc.getPingMethod = getPingMethod =
-              io.grpc.MethodDescriptor.<com.dust.grpc.kademlia.PingPackage, com.dust.grpc.kademlia.PingPackage>newBuilder()
+              io.grpc.MethodDescriptor.<PingPackage, PingPackage>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "Ping"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.dust.grpc.kademlia.PingPackage.getDefaultInstance()))
+                  PingPackage.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.dust.grpc.kademlia.PingPackage.getDefaultInstance()))
+                  PingPackage.getDefaultInstance()))
               .setSchemaDescriptor(new KademliaServiceMethodDescriptorSupplier("Ping"))
               .build();
         }
@@ -54,29 +54,29 @@ public final class KademliaServiceGrpc {
     return getPingMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<com.dust.grpc.kademlia.StoreRequest,
-      com.dust.grpc.kademlia.StoreResponse> getStoreMethod;
+  private static volatile io.grpc.MethodDescriptor<StoreRequest,
+      StoreResponse> getStoreMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "Store",
-      requestType = com.dust.grpc.kademlia.StoreRequest.class,
-      responseType = com.dust.grpc.kademlia.StoreResponse.class,
+      requestType = StoreRequest.class,
+      responseType = StoreResponse.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<com.dust.grpc.kademlia.StoreRequest,
-      com.dust.grpc.kademlia.StoreResponse> getStoreMethod() {
-    io.grpc.MethodDescriptor<com.dust.grpc.kademlia.StoreRequest, com.dust.grpc.kademlia.StoreResponse> getStoreMethod;
+  public static io.grpc.MethodDescriptor<StoreRequest,
+      StoreResponse> getStoreMethod() {
+    io.grpc.MethodDescriptor<StoreRequest, StoreResponse> getStoreMethod;
     if ((getStoreMethod = KademliaServiceGrpc.getStoreMethod) == null) {
       synchronized (KademliaServiceGrpc.class) {
         if ((getStoreMethod = KademliaServiceGrpc.getStoreMethod) == null) {
           KademliaServiceGrpc.getStoreMethod = getStoreMethod =
-              io.grpc.MethodDescriptor.<com.dust.grpc.kademlia.StoreRequest, com.dust.grpc.kademlia.StoreResponse>newBuilder()
+              io.grpc.MethodDescriptor.<StoreRequest, StoreResponse>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "Store"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.dust.grpc.kademlia.StoreRequest.getDefaultInstance()))
+                  StoreRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.dust.grpc.kademlia.StoreResponse.getDefaultInstance()))
+                  StoreResponse.getDefaultInstance()))
               .setSchemaDescriptor(new KademliaServiceMethodDescriptorSupplier("Store"))
               .build();
         }
@@ -85,29 +85,29 @@ public final class KademliaServiceGrpc {
     return getStoreMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<com.dust.grpc.kademlia.FindRequest,
-      com.dust.grpc.kademlia.FindNodeResponse> getFindNodeMethod;
+  private static volatile io.grpc.MethodDescriptor<FindRequest,
+      FindNodeResponse> getFindNodeMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "FindNode",
-      requestType = com.dust.grpc.kademlia.FindRequest.class,
-      responseType = com.dust.grpc.kademlia.FindNodeResponse.class,
+      requestType = FindRequest.class,
+      responseType = FindNodeResponse.class,
       methodType = io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
-  public static io.grpc.MethodDescriptor<com.dust.grpc.kademlia.FindRequest,
-      com.dust.grpc.kademlia.FindNodeResponse> getFindNodeMethod() {
-    io.grpc.MethodDescriptor<com.dust.grpc.kademlia.FindRequest, com.dust.grpc.kademlia.FindNodeResponse> getFindNodeMethod;
+  public static io.grpc.MethodDescriptor<FindRequest,
+      FindNodeResponse> getFindNodeMethod() {
+    io.grpc.MethodDescriptor<FindRequest, FindNodeResponse> getFindNodeMethod;
     if ((getFindNodeMethod = KademliaServiceGrpc.getFindNodeMethod) == null) {
       synchronized (KademliaServiceGrpc.class) {
         if ((getFindNodeMethod = KademliaServiceGrpc.getFindNodeMethod) == null) {
           KademliaServiceGrpc.getFindNodeMethod = getFindNodeMethod =
-              io.grpc.MethodDescriptor.<com.dust.grpc.kademlia.FindRequest, com.dust.grpc.kademlia.FindNodeResponse>newBuilder()
+              io.grpc.MethodDescriptor.<FindRequest, FindNodeResponse>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "FindNode"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.dust.grpc.kademlia.FindRequest.getDefaultInstance()))
+                  FindRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.dust.grpc.kademlia.FindNodeResponse.getDefaultInstance()))
+                  FindNodeResponse.getDefaultInstance()))
               .setSchemaDescriptor(new KademliaServiceMethodDescriptorSupplier("FindNode"))
               .build();
         }
@@ -116,29 +116,29 @@ public final class KademliaServiceGrpc {
     return getFindNodeMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<com.dust.grpc.kademlia.FindRequest,
-      com.dust.grpc.kademlia.FindValueResponse> getFindValueMethod;
+  private static volatile io.grpc.MethodDescriptor<FindRequest,
+      FindValueResponse> getFindValueMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "findValue",
-      requestType = com.dust.grpc.kademlia.FindRequest.class,
-      responseType = com.dust.grpc.kademlia.FindValueResponse.class,
+      requestType = FindRequest.class,
+      responseType = FindValueResponse.class,
       methodType = io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
-  public static io.grpc.MethodDescriptor<com.dust.grpc.kademlia.FindRequest,
-      com.dust.grpc.kademlia.FindValueResponse> getFindValueMethod() {
-    io.grpc.MethodDescriptor<com.dust.grpc.kademlia.FindRequest, com.dust.grpc.kademlia.FindValueResponse> getFindValueMethod;
+  public static io.grpc.MethodDescriptor<FindRequest,
+      FindValueResponse> getFindValueMethod() {
+    io.grpc.MethodDescriptor<FindRequest, FindValueResponse> getFindValueMethod;
     if ((getFindValueMethod = KademliaServiceGrpc.getFindValueMethod) == null) {
       synchronized (KademliaServiceGrpc.class) {
         if ((getFindValueMethod = KademliaServiceGrpc.getFindValueMethod) == null) {
           KademliaServiceGrpc.getFindValueMethod = getFindValueMethod =
-              io.grpc.MethodDescriptor.<com.dust.grpc.kademlia.FindRequest, com.dust.grpc.kademlia.FindValueResponse>newBuilder()
+              io.grpc.MethodDescriptor.<FindRequest, FindValueResponse>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "findValue"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.dust.grpc.kademlia.FindRequest.getDefaultInstance()))
+                  FindRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.dust.grpc.kademlia.FindValueResponse.getDefaultInstance()))
+                  FindValueResponse.getDefaultInstance()))
               .setSchemaDescriptor(new KademliaServiceMethodDescriptorSupplier("findValue"))
               .build();
         }
@@ -182,8 +182,8 @@ public final class KademliaServiceGrpc {
      * Ping函数
      * </pre>
      */
-    public void ping(com.dust.grpc.kademlia.PingPackage request,
-        io.grpc.stub.StreamObserver<com.dust.grpc.kademlia.PingPackage> responseObserver) {
+    public void ping(PingPackage request,
+                     io.grpc.stub.StreamObserver<PingPackage> responseObserver) {
       asyncUnimplementedUnaryCall(getPingMethod(), responseObserver);
     }
 
@@ -192,8 +192,8 @@ public final class KademliaServiceGrpc {
      * 存储
      * </pre>
      */
-    public void store(com.dust.grpc.kademlia.StoreRequest request,
-        io.grpc.stub.StreamObserver<com.dust.grpc.kademlia.StoreResponse> responseObserver) {
+    public void store(StoreRequest request,
+                      io.grpc.stub.StreamObserver<StoreResponse> responseObserver) {
       asyncUnimplementedUnaryCall(getStoreMethod(), responseObserver);
     }
 
@@ -202,8 +202,8 @@ public final class KademliaServiceGrpc {
      * 寻找节点
      * </pre>
      */
-    public void findNode(com.dust.grpc.kademlia.FindRequest request,
-        io.grpc.stub.StreamObserver<com.dust.grpc.kademlia.FindNodeResponse> responseObserver) {
+    public void findNode(FindRequest request,
+                         io.grpc.stub.StreamObserver<FindNodeResponse> responseObserver) {
       asyncUnimplementedUnaryCall(getFindNodeMethod(), responseObserver);
     }
 
@@ -212,8 +212,8 @@ public final class KademliaServiceGrpc {
      * 寻找值
      * </pre>
      */
-    public void findValue(com.dust.grpc.kademlia.FindRequest request,
-        io.grpc.stub.StreamObserver<com.dust.grpc.kademlia.FindValueResponse> responseObserver) {
+    public void findValue(FindRequest request,
+                          io.grpc.stub.StreamObserver<FindValueResponse> responseObserver) {
       asyncUnimplementedUnaryCall(getFindValueMethod(), responseObserver);
     }
 
@@ -223,29 +223,29 @@ public final class KademliaServiceGrpc {
             getPingMethod(),
             asyncUnaryCall(
               new MethodHandlers<
-                com.dust.grpc.kademlia.PingPackage,
-                com.dust.grpc.kademlia.PingPackage>(
+                PingPackage,
+                PingPackage>(
                   this, METHODID_PING)))
           .addMethod(
             getStoreMethod(),
             asyncUnaryCall(
               new MethodHandlers<
-                com.dust.grpc.kademlia.StoreRequest,
-                com.dust.grpc.kademlia.StoreResponse>(
+                StoreRequest,
+                StoreResponse>(
                   this, METHODID_STORE)))
           .addMethod(
             getFindNodeMethod(),
             asyncServerStreamingCall(
               new MethodHandlers<
-                com.dust.grpc.kademlia.FindRequest,
-                com.dust.grpc.kademlia.FindNodeResponse>(
+                FindRequest,
+                FindNodeResponse>(
                   this, METHODID_FIND_NODE)))
           .addMethod(
             getFindValueMethod(),
             asyncServerStreamingCall(
               new MethodHandlers<
-                com.dust.grpc.kademlia.FindRequest,
-                com.dust.grpc.kademlia.FindValueResponse>(
+                FindRequest,
+                FindValueResponse>(
                   this, METHODID_FIND_VALUE)))
           .build();
     }
@@ -277,8 +277,8 @@ public final class KademliaServiceGrpc {
      * Ping函数
      * </pre>
      */
-    public void ping(com.dust.grpc.kademlia.PingPackage request,
-        io.grpc.stub.StreamObserver<com.dust.grpc.kademlia.PingPackage> responseObserver) {
+    public void ping(PingPackage request,
+                     io.grpc.stub.StreamObserver<PingPackage> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getPingMethod(), getCallOptions()), request, responseObserver);
     }
@@ -288,8 +288,8 @@ public final class KademliaServiceGrpc {
      * 存储
      * </pre>
      */
-    public void store(com.dust.grpc.kademlia.StoreRequest request,
-        io.grpc.stub.StreamObserver<com.dust.grpc.kademlia.StoreResponse> responseObserver) {
+    public void store(StoreRequest request,
+                      io.grpc.stub.StreamObserver<StoreResponse> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getStoreMethod(), getCallOptions()), request, responseObserver);
     }
@@ -299,8 +299,8 @@ public final class KademliaServiceGrpc {
      * 寻找节点
      * </pre>
      */
-    public void findNode(com.dust.grpc.kademlia.FindRequest request,
-        io.grpc.stub.StreamObserver<com.dust.grpc.kademlia.FindNodeResponse> responseObserver) {
+    public void findNode(FindRequest request,
+                         io.grpc.stub.StreamObserver<FindNodeResponse> responseObserver) {
       asyncServerStreamingCall(
           getChannel().newCall(getFindNodeMethod(), getCallOptions()), request, responseObserver);
     }
@@ -310,8 +310,8 @@ public final class KademliaServiceGrpc {
      * 寻找值
      * </pre>
      */
-    public void findValue(com.dust.grpc.kademlia.FindRequest request,
-        io.grpc.stub.StreamObserver<com.dust.grpc.kademlia.FindValueResponse> responseObserver) {
+    public void findValue(FindRequest request,
+                          io.grpc.stub.StreamObserver<FindValueResponse> responseObserver) {
       asyncServerStreamingCall(
           getChannel().newCall(getFindValueMethod(), getCallOptions()), request, responseObserver);
     }
@@ -343,7 +343,7 @@ public final class KademliaServiceGrpc {
      * Ping函数
      * </pre>
      */
-    public com.dust.grpc.kademlia.PingPackage ping(com.dust.grpc.kademlia.PingPackage request) {
+    public PingPackage ping(PingPackage request) {
       return blockingUnaryCall(
           getChannel(), getPingMethod(), getCallOptions(), request);
     }
@@ -353,7 +353,7 @@ public final class KademliaServiceGrpc {
      * 存储
      * </pre>
      */
-    public com.dust.grpc.kademlia.StoreResponse store(com.dust.grpc.kademlia.StoreRequest request) {
+    public StoreResponse store(StoreRequest request) {
       return blockingUnaryCall(
           getChannel(), getStoreMethod(), getCallOptions(), request);
     }
@@ -363,8 +363,8 @@ public final class KademliaServiceGrpc {
      * 寻找节点
      * </pre>
      */
-    public java.util.Iterator<com.dust.grpc.kademlia.FindNodeResponse> findNode(
-        com.dust.grpc.kademlia.FindRequest request) {
+    public java.util.Iterator<FindNodeResponse> findNode(
+        FindRequest request) {
       return blockingServerStreamingCall(
           getChannel(), getFindNodeMethod(), getCallOptions(), request);
     }
@@ -374,8 +374,8 @@ public final class KademliaServiceGrpc {
      * 寻找值
      * </pre>
      */
-    public java.util.Iterator<com.dust.grpc.kademlia.FindValueResponse> findValue(
-        com.dust.grpc.kademlia.FindRequest request) {
+    public java.util.Iterator<FindValueResponse> findValue(
+        FindRequest request) {
       return blockingServerStreamingCall(
           getChannel(), getFindValueMethod(), getCallOptions(), request);
     }
@@ -407,8 +407,8 @@ public final class KademliaServiceGrpc {
      * Ping函数
      * </pre>
      */
-    public com.google.common.util.concurrent.ListenableFuture<com.dust.grpc.kademlia.PingPackage> ping(
-        com.dust.grpc.kademlia.PingPackage request) {
+    public com.google.common.util.concurrent.ListenableFuture<PingPackage> ping(
+        PingPackage request) {
       return futureUnaryCall(
           getChannel().newCall(getPingMethod(), getCallOptions()), request);
     }
@@ -418,8 +418,8 @@ public final class KademliaServiceGrpc {
      * 存储
      * </pre>
      */
-    public com.google.common.util.concurrent.ListenableFuture<com.dust.grpc.kademlia.StoreResponse> store(
-        com.dust.grpc.kademlia.StoreRequest request) {
+    public com.google.common.util.concurrent.ListenableFuture<StoreResponse> store(
+        StoreRequest request) {
       return futureUnaryCall(
           getChannel().newCall(getStoreMethod(), getCallOptions()), request);
     }
@@ -448,20 +448,20 @@ public final class KademliaServiceGrpc {
     public void invoke(Req request, io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
         case METHODID_PING:
-          serviceImpl.ping((com.dust.grpc.kademlia.PingPackage) request,
-              (io.grpc.stub.StreamObserver<com.dust.grpc.kademlia.PingPackage>) responseObserver);
+          serviceImpl.ping((PingPackage) request,
+              (io.grpc.stub.StreamObserver<PingPackage>) responseObserver);
           break;
         case METHODID_STORE:
-          serviceImpl.store((com.dust.grpc.kademlia.StoreRequest) request,
-              (io.grpc.stub.StreamObserver<com.dust.grpc.kademlia.StoreResponse>) responseObserver);
+          serviceImpl.store((StoreRequest) request,
+              (io.grpc.stub.StreamObserver<StoreResponse>) responseObserver);
           break;
         case METHODID_FIND_NODE:
-          serviceImpl.findNode((com.dust.grpc.kademlia.FindRequest) request,
-              (io.grpc.stub.StreamObserver<com.dust.grpc.kademlia.FindNodeResponse>) responseObserver);
+          serviceImpl.findNode((FindRequest) request,
+              (io.grpc.stub.StreamObserver<FindNodeResponse>) responseObserver);
           break;
         case METHODID_FIND_VALUE:
-          serviceImpl.findValue((com.dust.grpc.kademlia.FindRequest) request,
-              (io.grpc.stub.StreamObserver<com.dust.grpc.kademlia.FindValueResponse>) responseObserver);
+          serviceImpl.findValue((FindRequest) request,
+              (io.grpc.stub.StreamObserver<FindValueResponse>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -485,7 +485,7 @@ public final class KademliaServiceGrpc {
 
     @Override
     public com.google.protobuf.Descriptors.FileDescriptor getFileDescriptor() {
-      return com.dust.grpc.kademlia.KademliaServiceProto.getDescriptor();
+      return KademliaServiceProto.getDescriptor();
     }
 
     @Override

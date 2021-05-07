@@ -1,14 +1,18 @@
 package com.dust.storage;
 
 import com.dust.core.NodeConfig;
+import com.dust.grpc.kademlia.StoreRequest;
+import com.dust.grpc.kademlia.StoreResponse;
 import com.dust.storage.btree.BTreeManager;
 import com.dust.storage.btree.DataNode;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Objects;
+import java.util.Optional;
 
 public class FileStorageLayout extends StorageLayout {
 
@@ -52,6 +56,16 @@ public class FileStorageLayout extends StorageLayout {
         }
 
         snapshot = new RandomAccessFile(minFile, "rw");
+    }
+
+    @Override
+    public Optional<ByteBuffer> find(String fileId) throws IOException {
+        return Optional.empty();
+    }
+
+    @Override
+    public StoreResponse store(StoreRequest storeRequest) throws IOException {
+        return null;
     }
 
 }

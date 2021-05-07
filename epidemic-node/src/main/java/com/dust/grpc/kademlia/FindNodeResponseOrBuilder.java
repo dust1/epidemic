@@ -36,4 +36,22 @@ public interface FindNodeResponseOrBuilder extends
    */
   com.google.protobuf.ByteString
       getNodeIdBytes();
+
+  /**
+   * <code>int32 code = 4;</code>
+   * @return The code.
+   */
+  int getCode();
+
+  /**
+   * <code>string errmsg = 5;</code>
+   * @return The errmsg.
+   */
+  String getErrmsg();
+  /**
+   * <code>string errmsg = 5;</code>
+   * @return The bytes for errmsg.
+   */
+  com.google.protobuf.ByteString
+      getErrmsgBytes();
 }
