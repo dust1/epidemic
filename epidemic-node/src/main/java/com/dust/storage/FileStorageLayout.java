@@ -36,7 +36,9 @@ public class FileStorageLayout extends StorageLayout {
         if (Objects.isNull(mdFiles) || mdFiles.length == 0) {
             return;
         }
+        File minFile = mdFiles[0];
         for (File mdFile : mdFiles) {
+            minFile = minFile.length() > mdFile.length() ? mdFile : minFile;
             RandomAccessFile raf = new RandomAccessFile(mdFile, "rw");
             raf.seek(0);
             final FileChannel channel = raf.getChannel();
@@ -49,6 +51,7 @@ public class FileStorageLayout extends StorageLayout {
             }
         }
 
+        snapshot = new RandomAccessFile(minFile, "rw");
     }
 
 }

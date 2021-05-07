@@ -51,6 +51,7 @@ public class DataNode {
 
     /**
      * 文件所在的.data文件名称
+     * 不携带.data后缀
      */
     private String dataName;
 
@@ -104,12 +105,30 @@ public class DataNode {
         String key = new String(keyData, StandardCharsets.UTF_8);
 
         raf.readFully(keyData);
-        String fileName = new String(keyData, StandardCharsets.UTF_8) + ".data";
+        String fileName = new String(keyData, StandardCharsets.UTF_8);
 
         long offset = raf.readLong();
         long fileSize = raf.readLong();
 
         return new DataNode(key, fileName, offset, fileSize);
+    }
+
+
+    /**
+     * 将这个DataNode持久化到磁盘中
+     * @param raf 要写入的元数据文件的句柄。该句柄的写入为单线程
+     */
+    public void toFile(RandomAccessFile raf) throws IOException {
+        //持久化过程中不能对外提供服务
+        working = INIT;
+
+        try (FileChannel channel = raf.getChannel()) {
+            raf.write(HEAD);
+            raf.write(getFileId().getBytes(StandardCharsets.UTF_8));
+            raf.write(getDataName().getBytes(StandardCharsets.UTF_8));
+            raf.writeLong(getOffset());
+            raf.writeLong(getSize());
+        }
     }
 
     /**
@@ -125,27 +144,6 @@ public class DataNode {
         this.offset = dataNode.getOffset();
         this.size = dataNode.getSize();
         this.working = WORKING;
-    }
-
-    /**
-     * 写入数据
-     * 由于文件数据通过RPC传输，采用GRPC传输，一次传输并创建一个文件块。即每个DataNode只能被写入一次
-     * @return 如果写入失则返回false，否则返回true
-     */
-    public boolean write(ReusableBuffer data) {
-//        checkStatus();
-//        WriteResult writeResult;
-//        try {
-//            writeResult = storageLayout.writeObject(data, true);
-//        } catch (IOException e) {
-//            //TODO 写入文件失败，记录日志
-//            return null;
-//        }
-//        assert Objects.nonNull(writeResult);
-//        dataInfo.load(writeResult);
-//
-//        return encode(writeResult);
-        return false;
     }
 
     /**
