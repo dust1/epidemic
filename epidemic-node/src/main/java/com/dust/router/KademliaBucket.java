@@ -124,4 +124,33 @@ public class KademliaBucket {
         add(node);
     }
 
+    /**
+     * 根据给定的nodeId，查询跟这个nodeId接近的k个节点三元组
+     * @param nodeId 要查询的nodeId
+     * @return 与这个nodeId接近的节点三元组集合
+     */
+    public List<NodeTriad> findNode(String nodeId) {
+        List<NodeTriad> result = new ArrayList<>(k);
+        int startIndex = EpidemicUtils.getDis(nodeId, myNode);
+        Queue<Integer> indexQueue = new LinkedList<>();
+        indexQueue.add(startIndex);
+        boolean[] used = new boolean[160];
+        while (!indexQueue.isEmpty() && result.size() < k) {
+            Integer index = indexQueue.poll();
+            if (index < 0 || index >= used.length || used[index]) {
+                continue;
+            }
+            var bucket = buckets[index];
+            for (int i = 0; i < bucket.size() && result.size() < k; i++) {
+                var node = bucket.get(i);
+                result.add(node);
+            }
+            used[index] = true;
+            indexQueue.add(index + 1);
+            indexQueue.add(index - 1);
+         }
+        return result;
+    }
+
+
 }

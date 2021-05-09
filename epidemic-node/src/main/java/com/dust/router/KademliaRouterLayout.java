@@ -87,7 +87,7 @@ public class KademliaRouterLayout extends RouterLayout {
 
     @Override
     public List<NodeTriad> findNode(String key) {
-        return null;
+        return bucket.findNode(key);
     }
 
     @Override
