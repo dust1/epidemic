@@ -1,6 +1,8 @@
 package com.dust.router;
 
 
+import com.dust.fundation.EpidemicUtils;
+
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -14,7 +16,7 @@ public class NodeTriadRouterNode extends NodeTriad {
     /**
      * 节点数据写入过程中的头信息
      */
-    private static final int[] NODE_HEAD = {0xca, 0xfe, 0xba, 0xbe};
+    private static final byte[] NODE_HEAD = {0xc, 0xa, 0xf, 0xe, 0xb, 0xa, 0xb, 0xe};
 
     /**
      * 更新时间
@@ -42,29 +44,16 @@ public class NodeTriadRouterNode extends NodeTriad {
      */
     public static NodeTriadRouterNode fromFile(RandomAccessFile raf) throws IOException {
         //网络节点在文件中的存储信息结构如下
-        //[头信息][节点id][节点host长度][节点host][节点port长度][节点port]
+        //[头信息][节点id][节点host长度][节点host][节点port]
 
-        int headIndex = 0;
-        while (headIndex < NODE_HEAD.length && raf.getFilePointer() < raf.length()) {
-            int n = raf.readInt();
-            if (n == NODE_HEAD[headIndex]) {
-                headIndex++;
-            } else {
-                headIndex = 0;
-            }
-        }
-        if (headIndex < NODE_HEAD.length) {
-            //找不到合格数据
+        if (!EpidemicUtils.checkHead(NODE_HEAD, raf)) {
             return null;
         }
 
         //nodeId固定长度40
-        byte[] nodeBytes = new byte[40];
-        raf.readFully(nodeBytes);
-        String nodeId = new String(nodeBytes, StandardCharsets.UTF_8);
+        String nodeId = EpidemicUtils.readToSHA1(raf);
 
         int hostLen = raf.readInt();
-
         byte[] hostBytes = new byte[hostLen];
         raf.readFully(hostBytes);
         String host = new String(hostBytes, StandardCharsets.UTF_8);
@@ -80,13 +69,12 @@ public class NodeTriadRouterNode extends NodeTriad {
      */
     public ByteBuffer toBuffer() {
         int hostLen = getHost().length();
-        int sumLen = NODE_HEAD.length * 4 + 40 + 4 + hostLen + 4;
+        int sumLen = NODE_HEAD.length + 40 + 4 + hostLen + 4;
         ByteBuffer resutl = ByteBuffer.allocate(sumLen);
 
-        //16
-        for (int head : NODE_HEAD) {
-            resutl.putInt(head);
-        }
+        //8
+        resutl.put(NODE_HEAD);
+
         //40
         resutl.put(getKey().getBytes(StandardCharsets.UTF_8));
         //4

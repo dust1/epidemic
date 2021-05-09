@@ -1,5 +1,7 @@
 package com.dust.storage.btree;
 
+import com.dust.fundation.EpidemicUtils;
+import com.dust.storage.FileStorageLayout;
 import com.dust.storage.StorageLayout;
 import com.dust.storage.buffer.ReusableBuffer;
 import lombok.Getter;
@@ -22,17 +24,7 @@ import java.util.*;
  * 每个DataNode只会对应一个文件块
  */
 @Getter
-@Setter
 public class DataNode {
-
-    //初始化完成，但还无法开始工作。因为还没有载入存储系统
-    private static final int INIT       = 0;
-
-    //已经载入存储系统，可以开始工作
-    private static final int WORKING    = 1;
-
-    //要被释放，无法继续提供服务
-    private static final int DESTROY    = 2;
 
     /**
      * 持久化数据的文件开头
@@ -42,12 +34,26 @@ public class DataNode {
     /**
      * 文件虚拟对象的状态
      */
-    private int working;
+    private int status;
 
     /**
      * 文件id
      */
     private String fileId;
+
+    /**
+     * 逻辑删除标志
+     */
+    private byte deleted;
+
+    /**
+     * 文件类型
+     * 0：数据文件
+     *  - 数据文件的文件内容是文件本身信息
+     * 1：质子文件
+     *  - 文件内容是这个文件保存的三元组信息【1.0版本暂不实现】
+     */
+    private byte type;
 
     /**
      * 文件所在的.data文件名称
@@ -65,17 +71,27 @@ public class DataNode {
      */
     private long size;
 
+    /**
+     * 元数据所在.md文件的偏移地址
+     */
+    private long mdOffset;
+
     private DataNode(String fileId) {
         this.fileId = fileId;
-        this.working = INIT;
+        this.status = 0;
     }
 
-    private DataNode(String fileId, String dataName, long offset, long size) {
+    private DataNode(String fileId, byte deleted, byte type,
+                     String dataName, long offset, long size,
+                     long mdOffset) {
         this.fileId = fileId;
+        this.deleted = deleted;
+        this.type = type;
         this.dataName = dataName;
         this.offset = offset;
         this.size = size;
-        this.working = WORKING;
+        this.mdOffset = mdOffset;
+        this.status = 1;
     }
 
     public static DataNode byFileId(String fileId) {
@@ -85,34 +101,44 @@ public class DataNode {
     /**
      * 根据持久化文件创建DataNode对象
      * @param raf 文件句柄
+     * @param dataName 元数据所在的文件名，带后缀
      * @return 创建的文件呢元数据对象
      */
-    public static DataNode byFile(RandomAccessFile raf) throws IOException {
-        FileChannel channel = raf.getChannel();
-        int index = 0;
-        while (index < HEAD.length && raf.getFilePointer() < raf.length()) {
-            if (raf.readByte() == HEAD[index]) {
-                index += 1;
-            } else {
-                index = 0;
-            }
-        }
-        if (index < HEAD.length)
+    public static DataNode byFile(RandomAccessFile raf, String dataName) throws IOException {
+        long mdOffset = raf.getFilePointer();
+        if (!EpidemicUtils.checkHead(HEAD, raf)) {
             return null;
+        }
 
-        byte[] keyData = new byte[40];
-        raf.readFully(keyData);
-        String key = new String(keyData, StandardCharsets.UTF_8);
+        String key = EpidemicUtils.readToSHA1(raf);
 
-        raf.readFully(keyData);
-        String fileName = new String(keyData, StandardCharsets.UTF_8);
+        byte deleted = raf.readByte();
+        byte type = raf.readByte();
 
         long offset = raf.readLong();
         long fileSize = raf.readLong();
 
-        return new DataNode(key, fileName, offset, fileSize);
+        if (dataName.endsWith(FileStorageLayout.MD_SUFFIX)) {
+            dataName = dataName.substring(0, dataName.lastIndexOf("."));
+        }
+        return new DataNode(key, deleted, type, dataName,
+                offset, fileSize, mdOffset);
     }
 
+    /**
+     * 加载DataNode对象，这个方法通常在{@code DataNode.byFileId()}创建对象之后调用。
+     * 传入的是存储过程中产生的各种元数据信息
+     */
+    public void load(byte type, String dataName, long offset,
+                     long size, long mdOffset) {
+        this.deleted = 0;
+        this.type = type;
+        this.dataName = dataName;
+        this.offset = offset;
+        this.size = size;
+        this.mdOffset = mdOffset;
+        this.status = 1;
+    }
 
     /**
      * 将这个DataNode持久化到磁盘中
@@ -120,15 +146,22 @@ public class DataNode {
      */
     public void toFile(RandomAccessFile raf) throws IOException {
         //持久化过程中不能对外提供服务
-        working = INIT;
+        status = 0;
+        raf.write(HEAD);
+        raf.write(fileId.getBytes(StandardCharsets.UTF_8));
+        raf.writeByte(deleted);
+        raf.writeByte(type);
+        raf.writeLong(offset);
+        raf.writeLong(size);
+        status = 1;
+    }
 
-        try (FileChannel channel = raf.getChannel()) {
-            raf.write(HEAD);
-            raf.write(getFileId().getBytes(StandardCharsets.UTF_8));
-            raf.write(getDataName().getBytes(StandardCharsets.UTF_8));
-            raf.writeLong(getOffset());
-            raf.writeLong(getSize());
-        }
+    /**
+     * 删除自身
+     */
+    public void delete() {
+        this.deleted = 1;
+        this.status = 2;
     }
 
     /**
@@ -138,37 +171,14 @@ public class DataNode {
     public void loadByDataNode(DataNode dataNode) {
         if (Objects.isNull(dataNode))
             return;
-
+        this.deleted = dataNode.getDeleted();
+        this.type = dataNode.getType();
         this.fileId = dataNode.getFileId();
         this.dataName = dataNode.getDataName();
         this.offset = dataNode.getOffset();
         this.size = dataNode.getSize();
-        this.working = WORKING;
-    }
-
-    /**
-     * 检查当前节点能否正常提供服务
-     */
-    private void checkStatus() {
-        if (working != WORKING) {
-            throw new RuntimeException("当前的DataNode状态已经无法提供正常读写服务。当前状态码：" + working);
-        }
-    }
-
-    /**
-     * 释放文件空间
-     * 这里的释放只是进行标记删除，物理删除需要等到垃圾回收机制启动
-     */
-    public boolean destroy() {
-//        if (working == INIT) {
-//            //这个节点并没有关联到物理磁盘，直接返回，等待GC将其回收
-//            return true;
-//        }
-//        working = DESTROY;
-
-
-        //TODO 释放磁盘空间
-        return false;
+        this.mdOffset = dataNode.getMdOffset();
+        this.status = 1;
     }
 
 }

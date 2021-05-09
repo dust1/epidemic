@@ -88,7 +88,7 @@ private static final long serialVersionUID = 0L;
       internalGetFieldAccessorTable() {
     return KademliaServiceProto.internal_static_FindRequest_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            FindRequest.class, FindRequest.Builder.class);
+            FindRequest.class, Builder.class);
   }
 
   public static final int KEY_FIELD_NUMBER = 1;
@@ -103,7 +103,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof String) {
       return (String) ref;
     } else {
-      com.google.protobuf.ByteString bs =
+      com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       String s = bs.toStringUtf8();
       key_ = s;
@@ -119,7 +119,7 @@ private static final long serialVersionUID = 0L;
       getKeyBytes() {
     Object ref = key_;
     if (ref instanceof String) {
-      com.google.protobuf.ByteString b =
+      com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (String) ref);
       key_ = b;
@@ -304,7 +304,7 @@ private static final long serialVersionUID = 0L;
         internalGetFieldAccessorTable() {
       return KademliaServiceProto.internal_static_FindRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              FindRequest.class, FindRequest.Builder.class);
+              FindRequest.class, Builder.class);
     }
 
     // Construct using com.dust.grpc.kademlia.FindRequest.newBuilder()
@@ -460,7 +460,7 @@ private static final long serialVersionUID = 0L;
         getKeyBytes() {
       Object ref = key_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
+        com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (String) ref);
         key_ = b;
@@ -479,7 +479,7 @@ private static final long serialVersionUID = 0L;
       if (value == null) {
     throw new NullPointerException();
   }
-
+  
       key_ = value;
       onChanged();
       return this;
@@ -489,7 +489,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearKey() {
-
+      
       key_ = getDefaultInstance().getKey();
       onChanged();
       return this;
@@ -505,7 +505,7 @@ private static final long serialVersionUID = 0L;
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-
+      
       key_ = value;
       onChanged();
       return this;

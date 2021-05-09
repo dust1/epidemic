@@ -3,8 +3,8 @@
 
 package com.dust.grpc.kademlia;
 
-public interface PingPackageOrBuilder extends
-    // @@protoc_insertion_point(interface_extends:PingPackage)
+public interface PingRequestOrBuilder extends
+    // @@protoc_insertion_point(interface_extends:PingRequest)
     com.google.protobuf.MessageOrBuilder {
 
   /**
@@ -24,4 +24,10 @@ public interface PingPackageOrBuilder extends
    * @return The timestamp.
    */
   int getTimestamp();
+
+  /**
+   * <code>int32 port = 3;</code>
+   * @return The port.
+   */
+  int getPort();
 }

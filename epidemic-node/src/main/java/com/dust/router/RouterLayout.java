@@ -105,4 +105,9 @@ public abstract class RouterLayout extends Layout {
      */
     public abstract String getMyId();
 
+    /**
+     * 某个节点ping到当前节点
+     */
+    public abstract void ping(String nodeId, String host, int port);
+
 }

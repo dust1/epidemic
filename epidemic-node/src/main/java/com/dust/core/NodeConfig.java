@@ -23,7 +23,7 @@ public class NodeConfig {
 
     private String saveDir;
 
-    private String snapshotSize;
+    private String chunkSize;
 
     private int orderNum;
 

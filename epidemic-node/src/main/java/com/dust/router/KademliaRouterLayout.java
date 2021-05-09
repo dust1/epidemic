@@ -11,6 +11,7 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class KademliaRouterLayout extends RouterLayout {
 
@@ -55,28 +56,19 @@ public class KademliaRouterLayout extends RouterLayout {
         //尝试获取文件的读写锁
         final FileChannel fileChannel = snapshot.getChannel();
 
-        int index = 0;
-        while (index < HEAD.length && snapshot.getFilePointer() < snapshot.length()) {
-            if (snapshot.readByte() == HEAD[index]) {
-                index += 1;
-            } else {
-                index = 0;
-            }
-        }
-        if (index < HEAD.length) {
+        if (!EpidemicUtils.checkHead(HEAD, snapshot)) {
             snapshot.seek(0);
             fileChannel.close();
             return;
         }
-        byte[] myNodeDatas = new byte[40];
-        snapshot.readFully(myNodeDatas);
-        this.myId = new String(myNodeDatas, StandardCharsets.UTF_8);
+
+        this.myId = EpidemicUtils.readToSHA1(snapshot);
         this.bucket = new KademliaBucket(config.getBucketKey(), myId);
 
         while (snapshot.getFilePointer() < snapshot.length()) {
             var node = NodeTriadRouterNode.fromFile(snapshot);
             if (Objects.isNull(node)) {
-                break;
+                continue;
             }
             bucket.add(node);
         }
@@ -86,6 +78,11 @@ public class KademliaRouterLayout extends RouterLayout {
     @Override
     public String getMyId() {
         return myId;
+    }
+
+    @Override
+    public void ping(String nodeId, String host, int port) {
+        bucket.ping(nodeId, host, port);
     }
 
     @Override

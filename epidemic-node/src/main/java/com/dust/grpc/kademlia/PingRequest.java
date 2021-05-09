@@ -5,21 +5,21 @@ package com.dust.grpc.kademlia;
 
 /**
  * <pre>
- *ping函数发起的请求，携带发起者的id以及发起时间，收到ping之后的节点将id修改成自身id，时间不变原样返回
+ *ping函数发起的请求，携带发起者的id、网络端口和发起时间
  * </pre>
  *
- * Protobuf type {@code PingPackage}
+ * Protobuf type {@code PingRequest}
  */
-public final class PingPackage extends
+public final class PingRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:PingPackage)
-    PingPackageOrBuilder {
+    // @@protoc_insertion_point(message_implements:PingRequest)
+    PingRequestOrBuilder {
 private static final long serialVersionUID = 0L;
-  // Use PingPackage.newBuilder() to construct.
-  private PingPackage(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+  // Use PingRequest.newBuilder() to construct.
+  private PingRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
-  private PingPackage() {
+  private PingRequest() {
     nodeId_ = "";
   }
 
@@ -27,7 +27,7 @@ private static final long serialVersionUID = 0L;
   @SuppressWarnings({"unused"})
   protected Object newInstance(
       UnusedPrivateParameter unused) {
-    return new PingPackage();
+    return new PingRequest();
   }
 
   @Override
@@ -35,7 +35,7 @@ private static final long serialVersionUID = 0L;
   getUnknownFields() {
     return this.unknownFields;
   }
-  private PingPackage(
+  private PingRequest(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -64,6 +64,11 @@ private static final long serialVersionUID = 0L;
             timestamp_ = input.readInt32();
             break;
           }
+          case 24: {
+
+            port_ = input.readInt32();
+            break;
+          }
           default: {
             if (!parseUnknownField(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -85,15 +90,15 @@ private static final long serialVersionUID = 0L;
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return KademliaServiceProto.internal_static_PingPackage_descriptor;
+    return KademliaServiceProto.internal_static_PingRequest_descriptor;
   }
 
   @Override
   protected FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return KademliaServiceProto.internal_static_PingPackage_fieldAccessorTable
+    return KademliaServiceProto.internal_static_PingRequest_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            PingPackage.class, PingPackage.Builder.class);
+            PingRequest.class, Builder.class);
   }
 
   public static final int NODEID_FIELD_NUMBER = 1;
@@ -108,7 +113,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof String) {
       return (String) ref;
     } else {
-      com.google.protobuf.ByteString bs =
+      com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       String s = bs.toStringUtf8();
       nodeId_ = s;
@@ -124,7 +129,7 @@ private static final long serialVersionUID = 0L;
       getNodeIdBytes() {
     Object ref = nodeId_;
     if (ref instanceof String) {
-      com.google.protobuf.ByteString b =
+      com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (String) ref);
       nodeId_ = b;
@@ -143,6 +148,17 @@ private static final long serialVersionUID = 0L;
   @Override
   public int getTimestamp() {
     return timestamp_;
+  }
+
+  public static final int PORT_FIELD_NUMBER = 3;
+  private int port_;
+  /**
+   * <code>int32 port = 3;</code>
+   * @return The port.
+   */
+  @Override
+  public int getPort() {
+    return port_;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -165,6 +181,9 @@ private static final long serialVersionUID = 0L;
     if (timestamp_ != 0) {
       output.writeInt32(2, timestamp_);
     }
+    if (port_ != 0) {
+      output.writeInt32(3, port_);
+    }
     unknownFields.writeTo(output);
   }
 
@@ -181,6 +200,10 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeInt32Size(2, timestamp_);
     }
+    if (port_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(3, port_);
+    }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
     return size;
@@ -191,15 +214,17 @@ private static final long serialVersionUID = 0L;
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof PingPackage)) {
+    if (!(obj instanceof PingRequest)) {
       return super.equals(obj);
     }
-    PingPackage other = (PingPackage) obj;
+    PingRequest other = (PingRequest) obj;
 
     if (!getNodeId()
         .equals(other.getNodeId())) return false;
     if (getTimestamp()
         != other.getTimestamp()) return false;
+    if (getPort()
+        != other.getPort()) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -215,74 +240,76 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getNodeId().hashCode();
     hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
     hash = (53 * hash) + getTimestamp();
+    hash = (37 * hash) + PORT_FIELD_NUMBER;
+    hash = (53 * hash) + getPort();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
   }
 
-  public static PingPackage parseFrom(
+  public static PingRequest parseFrom(
       java.nio.ByteBuffer data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static PingPackage parseFrom(
+  public static PingRequest parseFrom(
       java.nio.ByteBuffer data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static PingPackage parseFrom(
+  public static PingRequest parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static PingPackage parseFrom(
+  public static PingRequest parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static PingPackage parseFrom(byte[] data)
+  public static PingRequest parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static PingPackage parseFrom(
+  public static PingRequest parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static PingPackage parseFrom(java.io.InputStream input)
+  public static PingRequest parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static PingPackage parseFrom(
+  public static PingRequest parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static PingPackage parseDelimitedFrom(java.io.InputStream input)
+  public static PingRequest parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static PingPackage parseDelimitedFrom(
+  public static PingRequest parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static PingPackage parseFrom(
+  public static PingRequest parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static PingPackage parseFrom(
+  public static PingRequest parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -295,7 +322,7 @@ private static final long serialVersionUID = 0L;
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(PingPackage prototype) {
+  public static Builder newBuilder(PingRequest prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
   @Override
@@ -312,29 +339,29 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <pre>
-   *ping函数发起的请求，携带发起者的id以及发起时间，收到ping之后的节点将id修改成自身id，时间不变原样返回
+   *ping函数发起的请求，携带发起者的id、网络端口和发起时间
    * </pre>
    *
-   * Protobuf type {@code PingPackage}
+   * Protobuf type {@code PingRequest}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:PingPackage)
-      PingPackageOrBuilder {
+      // @@protoc_insertion_point(builder_implements:PingRequest)
+      PingRequestOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return KademliaServiceProto.internal_static_PingPackage_descriptor;
+      return KademliaServiceProto.internal_static_PingRequest_descriptor;
     }
 
     @Override
     protected FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return KademliaServiceProto.internal_static_PingPackage_fieldAccessorTable
+      return KademliaServiceProto.internal_static_PingRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              PingPackage.class, PingPackage.Builder.class);
+              PingRequest.class, Builder.class);
     }
 
-    // Construct using com.dust.grpc.kademlia.PingPackage.newBuilder()
+    // Construct using com.dust.grpc.kademlia.PingRequest.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
@@ -356,23 +383,25 @@ private static final long serialVersionUID = 0L;
 
       timestamp_ = 0;
 
+      port_ = 0;
+
       return this;
     }
 
     @Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return KademliaServiceProto.internal_static_PingPackage_descriptor;
+      return KademliaServiceProto.internal_static_PingRequest_descriptor;
     }
 
     @Override
-    public PingPackage getDefaultInstanceForType() {
-      return PingPackage.getDefaultInstance();
+    public PingRequest getDefaultInstanceForType() {
+      return PingRequest.getDefaultInstance();
     }
 
     @Override
-    public PingPackage build() {
-      PingPackage result = buildPartial();
+    public PingRequest build() {
+      PingRequest result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
@@ -380,10 +409,11 @@ private static final long serialVersionUID = 0L;
     }
 
     @Override
-    public PingPackage buildPartial() {
-      PingPackage result = new PingPackage(this);
+    public PingRequest buildPartial() {
+      PingRequest result = new PingRequest(this);
       result.nodeId_ = nodeId_;
       result.timestamp_ = timestamp_;
+      result.port_ = port_;
       onBuilt();
       return result;
     }
@@ -422,22 +452,25 @@ private static final long serialVersionUID = 0L;
     }
     @Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof PingPackage) {
-        return mergeFrom((PingPackage)other);
+      if (other instanceof PingRequest) {
+        return mergeFrom((PingRequest)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(PingPackage other) {
-      if (other == PingPackage.getDefaultInstance()) return this;
+    public Builder mergeFrom(PingRequest other) {
+      if (other == PingRequest.getDefaultInstance()) return this;
       if (!other.getNodeId().isEmpty()) {
         nodeId_ = other.nodeId_;
         onChanged();
       }
       if (other.getTimestamp() != 0) {
         setTimestamp(other.getTimestamp());
+      }
+      if (other.getPort() != 0) {
+        setPort(other.getPort());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -454,11 +487,11 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      PingPackage parsedMessage = null;
+      PingRequest parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (PingPackage) e.getUnfinishedMessage();
+        parsedMessage = (PingRequest) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -493,7 +526,7 @@ private static final long serialVersionUID = 0L;
         getNodeIdBytes() {
       Object ref = nodeId_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
+        com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (String) ref);
         nodeId_ = b;
@@ -512,7 +545,7 @@ private static final long serialVersionUID = 0L;
       if (value == null) {
     throw new NullPointerException();
   }
-
+  
       nodeId_ = value;
       onChanged();
       return this;
@@ -522,7 +555,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearNodeId() {
-
+      
       nodeId_ = getDefaultInstance().getNodeId();
       onChanged();
       return this;
@@ -538,7 +571,7 @@ private static final long serialVersionUID = 0L;
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-
+      
       nodeId_ = value;
       onChanged();
       return this;
@@ -559,7 +592,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setTimestamp(int value) {
-
+      
       timestamp_ = value;
       onChanged();
       return this;
@@ -569,8 +602,39 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearTimestamp() {
-
+      
       timestamp_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private int port_ ;
+    /**
+     * <code>int32 port = 3;</code>
+     * @return The port.
+     */
+    @Override
+    public int getPort() {
+      return port_;
+    }
+    /**
+     * <code>int32 port = 3;</code>
+     * @param value The port to set.
+     * @return This builder for chaining.
+     */
+    public Builder setPort(int value) {
+      
+      port_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 port = 3;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearPort() {
+      
+      port_ = 0;
       onChanged();
       return this;
     }
@@ -587,41 +651,41 @@ private static final long serialVersionUID = 0L;
     }
 
 
-    // @@protoc_insertion_point(builder_scope:PingPackage)
+    // @@protoc_insertion_point(builder_scope:PingRequest)
   }
 
-  // @@protoc_insertion_point(class_scope:PingPackage)
-  private static final PingPackage DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:PingRequest)
+  private static final PingRequest DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new PingPackage();
+    DEFAULT_INSTANCE = new PingRequest();
   }
 
-  public static PingPackage getDefaultInstance() {
+  public static PingRequest getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static final com.google.protobuf.Parser<PingPackage>
-      PARSER = new com.google.protobuf.AbstractParser<PingPackage>() {
+  private static final com.google.protobuf.Parser<PingRequest>
+      PARSER = new com.google.protobuf.AbstractParser<PingRequest>() {
     @Override
-    public PingPackage parsePartialFrom(
+    public PingRequest parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return new PingPackage(input, extensionRegistry);
+      return new PingRequest(input, extensionRegistry);
     }
   };
 
-  public static com.google.protobuf.Parser<PingPackage> parser() {
+  public static com.google.protobuf.Parser<PingRequest> parser() {
     return PARSER;
   }
 
   @Override
-  public com.google.protobuf.Parser<PingPackage> getParserForType() {
+  public com.google.protobuf.Parser<PingRequest> getParserForType() {
     return PARSER;
   }
 
   @Override
-  public PingPackage getDefaultInstanceForType() {
+  public PingRequest getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 

@@ -8,7 +8,7 @@ option java_generic_services = true;
 // 定义的一个服务
 service KademliaService {
   // Ping函数
-  rpc Ping(PingPackage) returns (PingPackage) {}
+  rpc Ping(PingRequest) returns (PingResponse) {}
 
   // 存储
   rpc Store(StoreRequest) returns (StoreResponse) {}
@@ -20,10 +20,16 @@ service KademliaService {
   rpc findValue(FindRequest) returns (stream FindValueResponse) {}
 }
 
-//ping函数发起的请求，携带发起者的id以及发起时间，收到ping之后的节点将id修改成自身id，时间不变原样返回
-message PingPackage {
+//ping函数发起的请求，携带发起者的id、网络端口和发起时间
+message PingRequest {
     string nodeId = 1;
     int32 timestamp = 2;
+    int32 port = 3;
+}
+
+//ping函数响应，只返回ping时候的请求中的时间戳信息
+message PingResponse {
+    int32 timestamp = 1;
 }
 
 //存储请求，携带有一个sha1编码的key和数据对象。其中key还是该对象的checksum

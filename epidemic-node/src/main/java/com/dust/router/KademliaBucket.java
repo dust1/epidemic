@@ -12,7 +12,7 @@ public class KademliaBucket {
 
     private int k;
 
-    private List[] buckets;
+    private List<NodeTriadRouterNode>[] buckets;
 
     private String myNode;
 
@@ -37,21 +37,21 @@ public class KademliaBucket {
     }
 
     private void init() {
-        this.buckets = new ArrayList[160];
+        this.buckets = new List[160];
         this.nodeCache = new PriorityQueue<>(k, (n1, n2) -> Integer.compare(n2.getUpdateTime(), n1.getUpdateTime()));
-        this.buckets[0] = new ArrayList<NodeTriadRouterNode>(k);
+        this.buckets[0] = new ArrayList<>(k);
     }
 
     /**
      * 往桶中添加一个路由表
-     * @param node
+     * @param node 要添加的路由信息
      */
     public void add(NodeTriadRouterNode node) {
-        int prevIndex = EpidemicUtils.getDis(node.getKey(), myNode);
-        if (prevIndex >= buckets.length) {
-            prevIndex = buckets.length - 1;
+        if (node.getKey().equals(myNode)) {
+            return;
         }
-        List<NodeTriadRouterNode> bucket = buckets[prevIndex];
+        int prevIndex = EpidemicUtils.getDis(node.getKey(), myNode);
+        var bucket = buckets[prevIndex];
 
         if (bucket.size() >= k) {
             //拆分桶。两种情况：1.存在后续桶。将新节点放入cache中等待垃圾回收进行重新排布；2.不存在后续桶。创建新桶
@@ -88,5 +88,40 @@ public class KademliaBucket {
         }
     }
 
+    /**
+     * 有一个节点进行ping槽走，检查本地路由表中是否有该节点，如果有则更新他的updatetime，如果没有则追加
+     * @param nodeId 发起ping的节点id
+     * @param host 发起ping的节点ip
+     * @param port 发起ping的节点端口
+     */
+    public void ping(String nodeId, String host, int port) {
+        if (nodeId.equals(myNode)) {
+            return;
+        }
+        int index = EpidemicUtils.getDis(nodeId, myNode);
+
+        //如果路由表中存在
+        var bucket = buckets[index];
+        for (var node : bucket) {
+            if (node.getKey().equals(nodeId)) {
+                node.updateTime();
+                return;
+            }
+        }
+
+        //如果缓存队列中存在
+        for (var node : nodeCache) {
+            if (node.getKey().equals(nodeId)) {
+                nodeCache.remove(node);
+                node.updateTime();
+                nodeCache.add(node);
+                return;
+            }
+        }
+
+        //都不存在表示这是一个新的节点,创建
+        var node = new NodeTriadRouterNode(nodeId, host, port);
+        add(node);
+    }
 
 }

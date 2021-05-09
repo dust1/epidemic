@@ -2,6 +2,7 @@ package com.dust;
 
 import com.dust.core.NodeConfig;
 import com.dust.fundation.StartedFunction;
+import com.dust.grpc.ClientAddressInterceptor;
 import com.dust.grpc.EpidemicService;
 import com.dust.router.KademliaRouterLayout;
 import com.dust.router.RouterLayout;
@@ -9,6 +10,7 @@ import com.dust.storage.FileStorageLayout;
 import com.dust.storage.StorageLayout;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import io.grpc.ServerInterceptors;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -34,7 +36,10 @@ public class EpidemicServer {
         this.storageLayout = new FileStorageLayout(config);
         this.routerLayout = new KademliaRouterLayout(config);
         this.server = ServerBuilder.forPort(nodeConfig.getPort())
-                .addService(new EpidemicService(storageLayout, routerLayout))
+                .addService(ServerInterceptors.intercept(
+                        new EpidemicService(storageLayout, routerLayout),
+                        new ClientAddressInterceptor()
+                ))
                 .build();
     }
 

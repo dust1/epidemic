@@ -20,12 +20,12 @@ public  abstract class KademliaService
      * Ping函数
      * </pre>
      *
-     * <code>rpc Ping(.PingPackage) returns (.PingPackage);</code>
+     * <code>rpc Ping(.PingRequest) returns (.PingResponse);</code>
      */
     public abstract void ping(
-            com.google.protobuf.RpcController controller,
-            PingPackage request,
-            com.google.protobuf.RpcCallback<PingPackage> done);
+        com.google.protobuf.RpcController controller,
+        PingRequest request,
+        com.google.protobuf.RpcCallback<PingResponse> done);
 
     /**
      * <pre>
@@ -35,9 +35,9 @@ public  abstract class KademliaService
      * <code>rpc Store(.StoreRequest) returns (.StoreResponse);</code>
      */
     public abstract void store(
-            com.google.protobuf.RpcController controller,
-            StoreRequest request,
-            com.google.protobuf.RpcCallback<StoreResponse> done);
+        com.google.protobuf.RpcController controller,
+        StoreRequest request,
+        com.google.protobuf.RpcCallback<StoreResponse> done);
 
     /**
      * <pre>
@@ -47,9 +47,9 @@ public  abstract class KademliaService
      * <code>rpc FindNode(.FindRequest) returns (stream .FindNodeResponse);</code>
      */
     public abstract void findNode(
-            com.google.protobuf.RpcController controller,
-            FindRequest request,
-            com.google.protobuf.RpcCallback<FindNodeResponse> done);
+        com.google.protobuf.RpcController controller,
+        FindRequest request,
+        com.google.protobuf.RpcCallback<FindNodeResponse> done);
 
     /**
      * <pre>
@@ -59,9 +59,9 @@ public  abstract class KademliaService
      * <code>rpc findValue(.FindRequest) returns (stream .FindValueResponse);</code>
      */
     public abstract void findValue(
-            com.google.protobuf.RpcController controller,
-            FindRequest request,
-            com.google.protobuf.RpcCallback<FindValueResponse> done);
+        com.google.protobuf.RpcController controller,
+        FindRequest request,
+        com.google.protobuf.RpcCallback<FindValueResponse> done);
 
   }
 
@@ -71,8 +71,8 @@ public  abstract class KademliaService
       @Override
       public  void ping(
           com.google.protobuf.RpcController controller,
-          PingPackage request,
-          com.google.protobuf.RpcCallback<PingPackage> done) {
+          PingRequest request,
+          com.google.protobuf.RpcCallback<PingResponse> done) {
         impl.ping(controller, request, done);
       }
 
@@ -123,7 +123,7 @@ public  abstract class KademliaService
         }
         switch(method.getIndex()) {
           case 0:
-            return impl.ping(controller, (PingPackage)request);
+            return impl.ping(controller, (PingRequest)request);
           case 1:
             return impl.store(controller, (StoreRequest)request);
           case 2:
@@ -145,7 +145,7 @@ public  abstract class KademliaService
         }
         switch(method.getIndex()) {
           case 0:
-            return PingPackage.getDefaultInstance();
+            return PingRequest.getDefaultInstance();
           case 1:
             return StoreRequest.getDefaultInstance();
           case 2:
@@ -167,7 +167,7 @@ public  abstract class KademliaService
         }
         switch(method.getIndex()) {
           case 0:
-            return PingPackage.getDefaultInstance();
+            return PingResponse.getDefaultInstance();
           case 1:
             return StoreResponse.getDefaultInstance();
           case 2:
@@ -187,12 +187,12 @@ public  abstract class KademliaService
    * Ping函数
    * </pre>
    *
-   * <code>rpc Ping(.PingPackage) returns (.PingPackage);</code>
+   * <code>rpc Ping(.PingRequest) returns (.PingResponse);</code>
    */
   public abstract void ping(
       com.google.protobuf.RpcController controller,
-      PingPackage request,
-      com.google.protobuf.RpcCallback<PingPackage> done);
+      PingRequest request,
+      com.google.protobuf.RpcCallback<PingResponse> done);
 
   /**
    * <pre>
@@ -253,8 +253,8 @@ public  abstract class KademliaService
     }
     switch(method.getIndex()) {
       case 0:
-        this.ping(controller, (PingPackage)request,
-          com.google.protobuf.RpcUtil.<PingPackage>specializeCallback(
+        this.ping(controller, (PingRequest)request,
+          com.google.protobuf.RpcUtil.<PingResponse>specializeCallback(
             done));
         return;
       case 1:
@@ -287,7 +287,7 @@ public  abstract class KademliaService
     }
     switch(method.getIndex()) {
       case 0:
-        return PingPackage.getDefaultInstance();
+        return PingRequest.getDefaultInstance();
       case 1:
         return StoreRequest.getDefaultInstance();
       case 2:
@@ -309,7 +309,7 @@ public  abstract class KademliaService
     }
     switch(method.getIndex()) {
       case 0:
-        return PingPackage.getDefaultInstance();
+        return PingResponse.getDefaultInstance();
       case 1:
         return StoreResponse.getDefaultInstance();
       case 2:
@@ -339,17 +339,17 @@ public  abstract class KademliaService
 
     public  void ping(
         com.google.protobuf.RpcController controller,
-        PingPackage request,
-        com.google.protobuf.RpcCallback<PingPackage> done) {
+        PingRequest request,
+        com.google.protobuf.RpcCallback<PingResponse> done) {
       channel.callMethod(
         getDescriptor().getMethods().get(0),
         controller,
         request,
-        PingPackage.getDefaultInstance(),
+        PingResponse.getDefaultInstance(),
         com.google.protobuf.RpcUtil.generalizeCallback(
           done,
-          PingPackage.class,
-          PingPackage.getDefaultInstance()));
+          PingResponse.class,
+          PingResponse.getDefaultInstance()));
     }
 
     public  void store(
@@ -404,24 +404,24 @@ public  abstract class KademliaService
   }
 
   public interface BlockingInterface {
-    public PingPackage ping(
-            com.google.protobuf.RpcController controller,
-            PingPackage request)
+    public PingResponse ping(
+        com.google.protobuf.RpcController controller,
+        PingRequest request)
         throws com.google.protobuf.ServiceException;
 
     public StoreResponse store(
-            com.google.protobuf.RpcController controller,
-            StoreRequest request)
+        com.google.protobuf.RpcController controller,
+        StoreRequest request)
         throws com.google.protobuf.ServiceException;
 
     public FindNodeResponse findNode(
-            com.google.protobuf.RpcController controller,
-            FindRequest request)
+        com.google.protobuf.RpcController controller,
+        FindRequest request)
         throws com.google.protobuf.ServiceException;
 
     public FindValueResponse findValue(
-            com.google.protobuf.RpcController controller,
-            FindRequest request)
+        com.google.protobuf.RpcController controller,
+        FindRequest request)
         throws com.google.protobuf.ServiceException;
   }
 
@@ -432,15 +432,15 @@ public  abstract class KademliaService
 
     private final com.google.protobuf.BlockingRpcChannel channel;
 
-    public PingPackage ping(
+    public PingResponse ping(
         com.google.protobuf.RpcController controller,
-        PingPackage request)
+        PingRequest request)
         throws com.google.protobuf.ServiceException {
-      return (PingPackage) channel.callBlockingMethod(
+      return (PingResponse) channel.callBlockingMethod(
         getDescriptor().getMethods().get(0),
         controller,
         request,
-        PingPackage.getDefaultInstance());
+        PingResponse.getDefaultInstance());
     }
 
 

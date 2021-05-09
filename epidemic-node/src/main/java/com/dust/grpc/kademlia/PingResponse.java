@@ -5,29 +5,28 @@ package com.dust.grpc.kademlia;
 
 /**
  * <pre>
- *存储响应，code = 1表示成功；code = 0表示失败。当code = 0的时候errmsg才会有值
+ *ping函数响应，只返回ping时候的请求中的时间戳信息
  * </pre>
  *
- * Protobuf type {@code StoreResponse}
+ * Protobuf type {@code PingResponse}
  */
-public final class StoreResponse extends
+public final class PingResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:StoreResponse)
-    StoreResponseOrBuilder {
+    // @@protoc_insertion_point(message_implements:PingResponse)
+    PingResponseOrBuilder {
 private static final long serialVersionUID = 0L;
-  // Use StoreResponse.newBuilder() to construct.
-  private StoreResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+  // Use PingResponse.newBuilder() to construct.
+  private PingResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
-  private StoreResponse() {
-    errmsg_ = "";
+  private PingResponse() {
   }
 
   @Override
   @SuppressWarnings({"unused"})
   protected Object newInstance(
       UnusedPrivateParameter unused) {
-    return new StoreResponse();
+    return new PingResponse();
   }
 
   @Override
@@ -35,7 +34,7 @@ private static final long serialVersionUID = 0L;
   getUnknownFields() {
     return this.unknownFields;
   }
-  private StoreResponse(
+  private PingResponse(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -55,13 +54,7 @@ private static final long serialVersionUID = 0L;
             break;
           case 8: {
 
-            code_ = input.readInt32();
-            break;
-          }
-          case 18: {
-            String s = input.readStringRequireUtf8();
-
-            errmsg_ = s;
+            timestamp_ = input.readInt32();
             break;
           }
           default: {
@@ -85,64 +78,26 @@ private static final long serialVersionUID = 0L;
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return KademliaServiceProto.internal_static_StoreResponse_descriptor;
+    return KademliaServiceProto.internal_static_PingResponse_descriptor;
   }
 
   @Override
   protected FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return KademliaServiceProto.internal_static_StoreResponse_fieldAccessorTable
+    return KademliaServiceProto.internal_static_PingResponse_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            StoreResponse.class, Builder.class);
+            PingResponse.class, Builder.class);
   }
 
-  public static final int CODE_FIELD_NUMBER = 1;
-  private int code_;
+  public static final int TIMESTAMP_FIELD_NUMBER = 1;
+  private int timestamp_;
   /**
-   * <code>int32 code = 1;</code>
-   * @return The code.
+   * <code>int32 timestamp = 1;</code>
+   * @return The timestamp.
    */
   @Override
-  public int getCode() {
-    return code_;
-  }
-
-  public static final int ERRMSG_FIELD_NUMBER = 2;
-  private volatile Object errmsg_;
-  /**
-   * <code>string errmsg = 2;</code>
-   * @return The errmsg.
-   */
-  @Override
-  public String getErrmsg() {
-    Object ref = errmsg_;
-    if (ref instanceof String) {
-      return (String) ref;
-    } else {
-      com.google.protobuf.ByteString bs = 
-          (com.google.protobuf.ByteString) ref;
-      String s = bs.toStringUtf8();
-      errmsg_ = s;
-      return s;
-    }
-  }
-  /**
-   * <code>string errmsg = 2;</code>
-   * @return The bytes for errmsg.
-   */
-  @Override
-  public com.google.protobuf.ByteString
-      getErrmsgBytes() {
-    Object ref = errmsg_;
-    if (ref instanceof String) {
-      com.google.protobuf.ByteString b = 
-          com.google.protobuf.ByteString.copyFromUtf8(
-              (String) ref);
-      errmsg_ = b;
-      return b;
-    } else {
-      return (com.google.protobuf.ByteString) ref;
-    }
+  public int getTimestamp() {
+    return timestamp_;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -159,11 +114,8 @@ private static final long serialVersionUID = 0L;
   @Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (code_ != 0) {
-      output.writeInt32(1, code_);
-    }
-    if (!getErrmsgBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 2, errmsg_);
+    if (timestamp_ != 0) {
+      output.writeInt32(1, timestamp_);
     }
     unknownFields.writeTo(output);
   }
@@ -174,12 +126,9 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (code_ != 0) {
+    if (timestamp_ != 0) {
       size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(1, code_);
-    }
-    if (!getErrmsgBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, errmsg_);
+        .computeInt32Size(1, timestamp_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -191,15 +140,13 @@ private static final long serialVersionUID = 0L;
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof StoreResponse)) {
+    if (!(obj instanceof PingResponse)) {
       return super.equals(obj);
     }
-    StoreResponse other = (StoreResponse) obj;
+    PingResponse other = (PingResponse) obj;
 
-    if (getCode()
-        != other.getCode()) return false;
-    if (!getErrmsg()
-        .equals(other.getErrmsg())) return false;
+    if (getTimestamp()
+        != other.getTimestamp()) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -211,78 +158,76 @@ private static final long serialVersionUID = 0L;
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
-    hash = (37 * hash) + CODE_FIELD_NUMBER;
-    hash = (53 * hash) + getCode();
-    hash = (37 * hash) + ERRMSG_FIELD_NUMBER;
-    hash = (53 * hash) + getErrmsg().hashCode();
+    hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
+    hash = (53 * hash) + getTimestamp();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
   }
 
-  public static StoreResponse parseFrom(
+  public static PingResponse parseFrom(
       java.nio.ByteBuffer data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static StoreResponse parseFrom(
+  public static PingResponse parseFrom(
       java.nio.ByteBuffer data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static StoreResponse parseFrom(
+  public static PingResponse parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static StoreResponse parseFrom(
+  public static PingResponse parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static StoreResponse parseFrom(byte[] data)
+  public static PingResponse parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static StoreResponse parseFrom(
+  public static PingResponse parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static StoreResponse parseFrom(java.io.InputStream input)
+  public static PingResponse parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static StoreResponse parseFrom(
+  public static PingResponse parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static StoreResponse parseDelimitedFrom(java.io.InputStream input)
+  public static PingResponse parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static StoreResponse parseDelimitedFrom(
+  public static PingResponse parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static StoreResponse parseFrom(
+  public static PingResponse parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static StoreResponse parseFrom(
+  public static PingResponse parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -295,7 +240,7 @@ private static final long serialVersionUID = 0L;
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(StoreResponse prototype) {
+  public static Builder newBuilder(PingResponse prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
   @Override
@@ -312,29 +257,29 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <pre>
-   *存储响应，code = 1表示成功；code = 0表示失败。当code = 0的时候errmsg才会有值
+   *ping函数响应，只返回ping时候的请求中的时间戳信息
    * </pre>
    *
-   * Protobuf type {@code StoreResponse}
+   * Protobuf type {@code PingResponse}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:StoreResponse)
-      StoreResponseOrBuilder {
+      // @@protoc_insertion_point(builder_implements:PingResponse)
+      PingResponseOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return KademliaServiceProto.internal_static_StoreResponse_descriptor;
+      return KademliaServiceProto.internal_static_PingResponse_descriptor;
     }
 
     @Override
     protected FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return KademliaServiceProto.internal_static_StoreResponse_fieldAccessorTable
+      return KademliaServiceProto.internal_static_PingResponse_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              StoreResponse.class, Builder.class);
+              PingResponse.class, Builder.class);
     }
 
-    // Construct using com.dust.grpc.kademlia.StoreResponse.newBuilder()
+    // Construct using com.dust.grpc.kademlia.PingResponse.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
@@ -352,9 +297,7 @@ private static final long serialVersionUID = 0L;
     @Override
     public Builder clear() {
       super.clear();
-      code_ = 0;
-
-      errmsg_ = "";
+      timestamp_ = 0;
 
       return this;
     }
@@ -362,17 +305,17 @@ private static final long serialVersionUID = 0L;
     @Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return KademliaServiceProto.internal_static_StoreResponse_descriptor;
+      return KademliaServiceProto.internal_static_PingResponse_descriptor;
     }
 
     @Override
-    public StoreResponse getDefaultInstanceForType() {
-      return StoreResponse.getDefaultInstance();
+    public PingResponse getDefaultInstanceForType() {
+      return PingResponse.getDefaultInstance();
     }
 
     @Override
-    public StoreResponse build() {
-      StoreResponse result = buildPartial();
+    public PingResponse build() {
+      PingResponse result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
@@ -380,10 +323,9 @@ private static final long serialVersionUID = 0L;
     }
 
     @Override
-    public StoreResponse buildPartial() {
-      StoreResponse result = new StoreResponse(this);
-      result.code_ = code_;
-      result.errmsg_ = errmsg_;
+    public PingResponse buildPartial() {
+      PingResponse result = new PingResponse(this);
+      result.timestamp_ = timestamp_;
       onBuilt();
       return result;
     }
@@ -422,22 +364,18 @@ private static final long serialVersionUID = 0L;
     }
     @Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof StoreResponse) {
-        return mergeFrom((StoreResponse)other);
+      if (other instanceof PingResponse) {
+        return mergeFrom((PingResponse)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(StoreResponse other) {
-      if (other == StoreResponse.getDefaultInstance()) return this;
-      if (other.getCode() != 0) {
-        setCode(other.getCode());
-      }
-      if (!other.getErrmsg().isEmpty()) {
-        errmsg_ = other.errmsg_;
-        onChanged();
+    public Builder mergeFrom(PingResponse other) {
+      if (other == PingResponse.getDefaultInstance()) return this;
+      if (other.getTimestamp() != 0) {
+        setTimestamp(other.getTimestamp());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -454,11 +392,11 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      StoreResponse parsedMessage = null;
+      PingResponse parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (StoreResponse) e.getUnfinishedMessage();
+        parsedMessage = (PingResponse) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -468,109 +406,33 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private int code_ ;
+    private int timestamp_ ;
     /**
-     * <code>int32 code = 1;</code>
-     * @return The code.
+     * <code>int32 timestamp = 1;</code>
+     * @return The timestamp.
      */
     @Override
-    public int getCode() {
-      return code_;
+    public int getTimestamp() {
+      return timestamp_;
     }
     /**
-     * <code>int32 code = 1;</code>
-     * @param value The code to set.
+     * <code>int32 timestamp = 1;</code>
+     * @param value The timestamp to set.
      * @return This builder for chaining.
      */
-    public Builder setCode(int value) {
+    public Builder setTimestamp(int value) {
       
-      code_ = value;
+      timestamp_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>int32 code = 1;</code>
+     * <code>int32 timestamp = 1;</code>
      * @return This builder for chaining.
      */
-    public Builder clearCode() {
+    public Builder clearTimestamp() {
       
-      code_ = 0;
-      onChanged();
-      return this;
-    }
-
-    private Object errmsg_ = "";
-    /**
-     * <code>string errmsg = 2;</code>
-     * @return The errmsg.
-     */
-    public String getErrmsg() {
-      Object ref = errmsg_;
-      if (!(ref instanceof String)) {
-        com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        errmsg_ = s;
-        return s;
-      } else {
-        return (String) ref;
-      }
-    }
-    /**
-     * <code>string errmsg = 2;</code>
-     * @return The bytes for errmsg.
-     */
-    public com.google.protobuf.ByteString
-        getErrmsgBytes() {
-      Object ref = errmsg_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
-        errmsg_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-    /**
-     * <code>string errmsg = 2;</code>
-     * @param value The errmsg to set.
-     * @return This builder for chaining.
-     */
-    public Builder setErrmsg(
-        String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  
-      errmsg_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>string errmsg = 2;</code>
-     * @return This builder for chaining.
-     */
-    public Builder clearErrmsg() {
-      
-      errmsg_ = getDefaultInstance().getErrmsg();
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>string errmsg = 2;</code>
-     * @param value The bytes for errmsg to set.
-     * @return This builder for chaining.
-     */
-    public Builder setErrmsgBytes(
-        com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      
-      errmsg_ = value;
+      timestamp_ = 0;
       onChanged();
       return this;
     }
@@ -587,41 +449,41 @@ private static final long serialVersionUID = 0L;
     }
 
 
-    // @@protoc_insertion_point(builder_scope:StoreResponse)
+    // @@protoc_insertion_point(builder_scope:PingResponse)
   }
 
-  // @@protoc_insertion_point(class_scope:StoreResponse)
-  private static final StoreResponse DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:PingResponse)
+  private static final PingResponse DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new StoreResponse();
+    DEFAULT_INSTANCE = new PingResponse();
   }
 
-  public static StoreResponse getDefaultInstance() {
+  public static PingResponse getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static final com.google.protobuf.Parser<StoreResponse>
-      PARSER = new com.google.protobuf.AbstractParser<StoreResponse>() {
+  private static final com.google.protobuf.Parser<PingResponse>
+      PARSER = new com.google.protobuf.AbstractParser<PingResponse>() {
     @Override
-    public StoreResponse parsePartialFrom(
+    public PingResponse parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return new StoreResponse(input, extensionRegistry);
+      return new PingResponse(input, extensionRegistry);
     }
   };
 
-  public static com.google.protobuf.Parser<StoreResponse> parser() {
+  public static com.google.protobuf.Parser<PingResponse> parser() {
     return PARSER;
   }
 
   @Override
-  public com.google.protobuf.Parser<StoreResponse> getParserForType() {
+  public com.google.protobuf.Parser<PingResponse> getParserForType() {
     return PARSER;
   }
 
   @Override
-  public StoreResponse getDefaultInstanceForType() {
+  public PingResponse getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 

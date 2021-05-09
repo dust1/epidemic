@@ -21,15 +21,15 @@ public abstract class StorageLayout extends Layout {
     protected String saveDir;
 
     /**
-     * 快照文件的大小
+     * 存储文件块的限制大小
      */
-    protected long snapshotSize;
+    protected long chunkSize;
 
     protected StorageLayout(NodeConfig config) {
         this.saveDir = config.getSaveDir();
-        this.snapshotSize = strSizeToLong(config.getSnapshotSize());
-        if (snapshotSize <= 0) {
-            throw new InvalidParameterException("快照文件大小参数异常:" + config.getSnapshotSize());
+        this.chunkSize = strSizeToLong(config.getChunkSize());
+        if (chunkSize <= 0) {
+            throw new InvalidParameterException("快照文件大小参数异常:" + config.getChunkSize());
         }
     }
 
@@ -69,11 +69,19 @@ public abstract class StorageLayout extends Layout {
 
     /**
      * 保存数据
-     * @return 返回保存的结果
      * @throws IOException
      *      如果保存失败
      */
-    public abstract StoreResponse store(StoreRequest storeRequest) throws IOException;
+    public abstract void store(StoreRequest storeRequest) throws IOException;
 
+    /**
+     * 根据文件id删除对应的文件
+     * 这里的删除只是逻辑删除，真正磁盘上的删除需要等到垃圾回收之后
+     * @param fileId 要删除的文件id
+     * @return 如果删除成功则返回true，否则返回false
+     * @throws IOException
+     *      磁盘读写失败
+     */
+    public abstract boolean delete(String fileId) throws IOException;
 
 }

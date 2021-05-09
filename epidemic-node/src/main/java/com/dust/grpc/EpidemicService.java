@@ -2,10 +2,8 @@ package com.dust.grpc;
 
 import com.dust.grpc.kademlia.FindValueResponse;
 import com.dust.grpc.kademlia.KademliaServiceGrpc;
-import com.dust.grpc.kademlia.PingPackage;
+import com.dust.grpc.kademlia.PingResponse;
 import com.dust.grpc.kademlia.StoreResponse;
-import com.dust.router.FindValueResult;
-import com.dust.router.KademliaRouterLayout;
 import com.dust.router.NodeTriad;
 import com.dust.router.RouterLayout;
 import com.dust.storage.StorageLayout;
@@ -13,6 +11,7 @@ import com.google.protobuf.ByteString;
 import io.grpc.stub.StreamObserver;
 
 import java.io.IOException;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Optional;
@@ -37,11 +36,16 @@ public class EpidemicService extends KademliaServiceGrpc.KademliaServiceImplBase
     }
 
     @Override
-    public void ping(com.dust.grpc.kademlia.PingPackage request, StreamObserver<com.dust.grpc.kademlia.PingPackage> responseObserver) {
-        PingPackage result =request.toBuilder().setNodeId(routerLayout.getMyId())
+    public void ping(com.dust.grpc.kademlia.PingRequest request, StreamObserver<com.dust.grpc.kademlia.PingResponse> responseObserver) {
+        String nodeId = request.getNodeId();
+        SocketAddress clientAddress = ClientAddressInterceptor.CLIENT_ADDRESS.get();
+        String clientIp = clientAddress.toString();
+        int port = request.getPort();
+        routerLayout.ping(nodeId, clientIp, port);
+        PingResponse res = PingResponse.newBuilder()
                 .setTimestamp(request.getTimestamp())
                 .build();
-        responseObserver.onNext(result);
+        responseObserver.onNext(res);
         responseObserver.onCompleted();
     }
 
@@ -49,7 +53,10 @@ public class EpidemicService extends KademliaServiceGrpc.KademliaServiceImplBase
     public void store(com.dust.grpc.kademlia.StoreRequest request, StreamObserver<com.dust.grpc.kademlia.StoreResponse> responseObserver) {
         StoreResponse response;
         try {
-            response = storageLayout.store(request);
+            storageLayout.store(request);
+            response = StoreResponse.newBuilder()
+                        .setCode(1)
+                        .build();
         } catch (IOException e) {
             response = StoreResponse.newBuilder()
                     .setCode(0)

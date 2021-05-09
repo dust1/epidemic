@@ -1,16 +1,15 @@
 package com.dust.fundation;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -21,12 +20,53 @@ public class EpidemicUtils {
 
     private static MessageDigest messageDigest;
 
+    //SHA1字符串长度
+    private static final int SHA1_LENGTH = 40;
+
     static {
         try {
             messageDigest = MessageDigest.getInstance("SHA");
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 从文件句柄中读取SHA1编码后的字符串
+     * @param raf 要读取的文件句柄
+     * @return 如果存在则返回字符串，否则返回null，表示已经到文件末尾
+     * @throws IOException
+     *      读写文件失败
+     */
+    public static String readToSHA1(RandomAccessFile raf) throws IOException {
+        int RemainingLen = (int) (raf.length() - raf.getFilePointer());
+        if (RemainingLen < SHA1_LENGTH) {
+            return "";
+        }
+
+        byte[] data = new byte[SHA1_LENGTH];
+        raf.readFully(data);
+        return new String(data, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * 根据传入的文件头信心检查所在的文件句柄是否存在该文件头
+     * @param head 要检查的文件头
+     * @param raf 要检查的文件句柄
+     * @return 如果存在则返回true，且句柄指针指向文件头之后的数据
+     * @throws IOException
+     *      读取文件失败
+     */
+    public static boolean checkHead(byte[] head, RandomAccessFile raf) throws IOException {
+        int index = 0;
+        while (index < head.length && raf.getFilePointer() < raf.length()) {
+            if (raf.readByte() == head[index]) {
+                index += 1;
+            } else {
+                index = 0;
+            }
+        }
+        return index >= head.length;
     }
 
     /**
@@ -99,7 +139,6 @@ public class EpidemicUtils {
         return sb.toString();
     }
 
-
     /**
      * 在指定目录检查给定版本文件名的版本信息并确定当前版本是否兼容。
      * @param  versionPath 版本文件保存的路径
@@ -132,7 +171,7 @@ public class EpidemicUtils {
                     throw new IOException("读取版本文件失败" + versionFile.getPath());
                 }
             }
-            int versionOnDisk = Integer.valueOf(text.toString());
+            int versionOnDisk = Integer.parseInt(text.toString());
             if (!isCompatibleVersion.apply(versionOnDisk)) {
                 throw new IOException("本地的版本文件与当前系统并不兼容！" + versionName);
             }

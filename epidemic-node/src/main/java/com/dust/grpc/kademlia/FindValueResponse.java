@@ -123,7 +123,7 @@ private static final long serialVersionUID = 0L;
       internalGetFieldAccessorTable() {
     return KademliaServiceProto.internal_static_FindValueResponse_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            FindValueResponse.class, FindValueResponse.Builder.class);
+            FindValueResponse.class, Builder.class);
   }
 
   public static final int CODE_FIELD_NUMBER = 1;
@@ -160,7 +160,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof String) {
       return (String) ref;
     } else {
-      com.google.protobuf.ByteString bs =
+      com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       String s = bs.toStringUtf8();
       host_ = s;
@@ -176,7 +176,7 @@ private static final long serialVersionUID = 0L;
       getHostBytes() {
     Object ref = host_;
     if (ref instanceof String) {
-      com.google.protobuf.ByteString b =
+      com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (String) ref);
       host_ = b;
@@ -209,7 +209,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof String) {
       return (String) ref;
     } else {
-      com.google.protobuf.ByteString bs =
+      com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       String s = bs.toStringUtf8();
       nodeId_ = s;
@@ -225,7 +225,7 @@ private static final long serialVersionUID = 0L;
       getNodeIdBytes() {
     Object ref = nodeId_;
     if (ref instanceof String) {
-      com.google.protobuf.ByteString b =
+      com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (String) ref);
       nodeId_ = b;
@@ -258,7 +258,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof String) {
       return (String) ref;
     } else {
-      com.google.protobuf.ByteString bs =
+      com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       String s = bs.toStringUtf8();
       errmsg_ = s;
@@ -274,7 +274,7 @@ private static final long serialVersionUID = 0L;
       getErrmsgBytes() {
     Object ref = errmsg_;
     if (ref instanceof String) {
-      com.google.protobuf.ByteString b =
+      com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (String) ref);
       errmsg_ = b;
@@ -523,7 +523,7 @@ private static final long serialVersionUID = 0L;
         internalGetFieldAccessorTable() {
       return KademliaServiceProto.internal_static_FindValueResponse_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              FindValueResponse.class, FindValueResponse.Builder.class);
+              FindValueResponse.class, Builder.class);
     }
 
     // Construct using com.dust.grpc.kademlia.FindValueResponse.newBuilder()
@@ -707,7 +707,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setCode(int value) {
-
+      
       code_ = value;
       onChanged();
       return this;
@@ -717,7 +717,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearCode() {
-
+      
       code_ = 0;
       onChanged();
       return this;
@@ -738,7 +738,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setMode(int value) {
-
+      
       mode_ = value;
       onChanged();
       return this;
@@ -748,7 +748,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearMode() {
-
+      
       mode_ = 0;
       onChanged();
       return this;
@@ -779,7 +779,7 @@ private static final long serialVersionUID = 0L;
         getHostBytes() {
       Object ref = host_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
+        com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (String) ref);
         host_ = b;
@@ -798,7 +798,7 @@ private static final long serialVersionUID = 0L;
       if (value == null) {
     throw new NullPointerException();
   }
-
+  
       host_ = value;
       onChanged();
       return this;
@@ -808,7 +808,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearHost() {
-
+      
       host_ = getDefaultInstance().getHost();
       onChanged();
       return this;
@@ -824,7 +824,7 @@ private static final long serialVersionUID = 0L;
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-
+      
       host_ = value;
       onChanged();
       return this;
@@ -845,7 +845,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setPort(int value) {
-
+      
       port_ = value;
       onChanged();
       return this;
@@ -855,7 +855,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearPort() {
-
+      
       port_ = 0;
       onChanged();
       return this;
@@ -886,7 +886,7 @@ private static final long serialVersionUID = 0L;
         getNodeIdBytes() {
       Object ref = nodeId_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
+        com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (String) ref);
         nodeId_ = b;
@@ -905,7 +905,7 @@ private static final long serialVersionUID = 0L;
       if (value == null) {
     throw new NullPointerException();
   }
-
+  
       nodeId_ = value;
       onChanged();
       return this;
@@ -915,7 +915,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearNodeId() {
-
+      
       nodeId_ = getDefaultInstance().getNodeId();
       onChanged();
       return this;
@@ -931,7 +931,7 @@ private static final long serialVersionUID = 0L;
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-
+      
       nodeId_ = value;
       onChanged();
       return this;
@@ -955,7 +955,7 @@ private static final long serialVersionUID = 0L;
       if (value == null) {
     throw new NullPointerException();
   }
-
+  
       data_ = value;
       onChanged();
       return this;
@@ -965,7 +965,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearData() {
-
+      
       data_ = getDefaultInstance().getData();
       onChanged();
       return this;
@@ -996,7 +996,7 @@ private static final long serialVersionUID = 0L;
         getErrmsgBytes() {
       Object ref = errmsg_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
+        com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (String) ref);
         errmsg_ = b;
@@ -1015,7 +1015,7 @@ private static final long serialVersionUID = 0L;
       if (value == null) {
     throw new NullPointerException();
   }
-
+  
       errmsg_ = value;
       onChanged();
       return this;
@@ -1025,7 +1025,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearErrmsg() {
-
+      
       errmsg_ = getDefaultInstance().getErrmsg();
       onChanged();
       return this;
@@ -1041,7 +1041,7 @@ private static final long serialVersionUID = 0L;
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-
+      
       errmsg_ = value;
       onChanged();
       return this;
