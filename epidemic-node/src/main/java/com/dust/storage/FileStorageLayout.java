@@ -85,7 +85,28 @@ public class FileStorageLayout extends StorageLayout {
 
     @Override
     public Optional<ByteBuffer> find(String fileId) throws IOException {
-        return Optional.empty();
+        var node = catalog.find(fileId);
+        if (Objects.isNull(node)) {
+            return Optional.empty();
+        }
+        return Optional.of(read(node));
+    }
+
+    /**
+     * 根据dataNode对象读取对应的文件信息
+     * @param node 要读取的文件元数据
+     * @return 如果存在则返回，否则返回null
+     */
+    private ByteBuffer read(DataNode node) throws IOException {
+        String fileName = node.getDataName() + DATA_SUFFIX;
+        var raf = new RandomAccessFile(new File(saveDir, fileName), "r");
+        final var channel = raf.getChannel();
+        ByteBuffer result = ByteBuffer.allocate((int) node.getSize());
+        try (raf; channel) {
+            raf.seek(node.getOffset());
+            channel.read(result);
+        }
+        return result;
     }
 
     /**

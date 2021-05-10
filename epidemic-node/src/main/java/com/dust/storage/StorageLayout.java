@@ -4,6 +4,7 @@ import com.dust.core.Layout;
 import com.dust.core.NodeConfig;
 import com.dust.grpc.kademlia.StoreRequest;
 import com.dust.grpc.kademlia.StoreResponse;
+import com.dust.storage.btree.DataNode;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
