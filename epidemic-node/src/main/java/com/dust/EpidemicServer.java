@@ -35,7 +35,7 @@ public class EpidemicServer {
         this.config = nodeConfig;
         this.storageLayout = new FileStorageLayout(config);
         this.routerLayout = new KademliaRouterLayout(config);
-        this.server = ServerBuilder.forPort(nodeConfig.getPort())
+        this.server = ServerBuilder.forPort(nodeConfig.getNodePort())
                 .addService(ServerInterceptors.intercept(
                         new EpidemicService(storageLayout, routerLayout),
                         new ClientAddressInterceptor()

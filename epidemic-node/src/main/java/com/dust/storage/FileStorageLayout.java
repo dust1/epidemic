@@ -45,7 +45,7 @@ public class FileStorageLayout extends StorageLayout {
 
     @Override
     public void load() throws IOException {
-        File dir = new File(saveDir);
+        File dir = new File(storagePath);
         if (!dir.exists()) {
             if (!dir.mkdirs()) {
                 throw new IOException("创建文件夹失败：" + dir.getPath());
@@ -99,7 +99,7 @@ public class FileStorageLayout extends StorageLayout {
      */
     private ByteBuffer read(DataNode node) throws IOException {
         String fileName = node.getDataName() + DATA_SUFFIX;
-        var raf = new RandomAccessFile(new File(saveDir, fileName), "r");
+        var raf = new RandomAccessFile(new File(storagePath, fileName), "r");
         final var channel = raf.getChannel();
         ByteBuffer result = ByteBuffer.allocate((int) node.getSize());
         try (raf; channel) {
@@ -145,8 +145,8 @@ public class FileStorageLayout extends StorageLayout {
         writeData.close();
 
         String newName = EpidemicUtils.randomNodeId(config.getNodeSalt());
-        writeMD = new RandomAccessFile(new File(saveDir, newName + MD_SUFFIX), "rw");
-        writeData = new RandomAccessFile(new File(saveDir, newName + DATA_SUFFIX), "rw");
+        writeMD = new RandomAccessFile(new File(storagePath, newName + MD_SUFFIX), "rw");
+        writeData = new RandomAccessFile(new File(storagePath, newName + DATA_SUFFIX), "rw");
         writeName = newName;
     }
 

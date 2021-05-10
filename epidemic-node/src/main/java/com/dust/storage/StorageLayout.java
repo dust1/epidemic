@@ -19,7 +19,7 @@ public abstract class StorageLayout extends Layout {
     /**
      * 文件保存目录
      */
-    protected String saveDir;
+    protected String storagePath;
 
     /**
      * 存储文件块的限制大小
@@ -27,7 +27,7 @@ public abstract class StorageLayout extends Layout {
     protected long chunkSize;
 
     protected StorageLayout(NodeConfig config) {
-        this.saveDir = config.getSaveDir();
+        this.storagePath = config.getStoragePath();
         this.chunkSize = strSizeToLong(config.getChunkSize());
         if (chunkSize <= 0) {
             throw new InvalidParameterException("快照文件大小参数异常:" + config.getChunkSize());
