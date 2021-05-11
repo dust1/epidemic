@@ -51,6 +51,7 @@ public class KademliaBucket {
             return;
         }
         int prevIndex = EpidemicUtils.getDis(node.getKey(), myNode);
+        prevIndex = prevIndex >= bucketSize ? bucketSize - 1 : prevIndex;
         var bucket = buckets[prevIndex];
 
         if (bucket.size() >= k) {
@@ -99,9 +100,10 @@ public class KademliaBucket {
             return;
         }
         int index = EpidemicUtils.getDis(nodeId, myNode);
+        index = index >= bucketSize ? bucketSize - 1 : index;
+        var bucket = buckets[index];
 
         //如果路由表中存在
-        var bucket = buckets[index];
         for (var node : bucket) {
             if (node.getKey().equals(nodeId)) {
                 node.updateTime();
@@ -152,5 +154,15 @@ public class KademliaBucket {
         return result;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[myId=").append(myNode).append(", ");
+        for (int i = 0; i < bucketSize; i++) {
+            var bucket = buckets[i];
+            sb.append("bucket").append(i).append("=[").append(bucket.toString()).append("], \r\n");
+        }
+        return sb.toString();
+    }
 
 }

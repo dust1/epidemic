@@ -12,8 +12,11 @@ import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.ServerInterceptors;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -58,6 +61,7 @@ public class EpidemicServer {
 
         server.start();
         rollback.apply();
+        System.out.println("server started..");
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             // Use stderr here since the logger may have been reset by its JVM shutdown hook.
             System.err.println("*** shutting down gRPC server since JVM is shutting down");
@@ -83,12 +87,31 @@ public class EpidemicServer {
     }
 
     /**
-     * 立刻结束服务，直到服务结束前线程等待
+     * 阻塞，直到虚拟机关闭
      */
-    public void shutdownNow() throws InterruptedException {
+    public void blockUntilShutdown() throws InterruptedException {
         if (server != null) {
             server.awaitTermination();
         }
     }
+
+//    public static void main(String[] args) {
+//        String configPath = "/Users/kous/Desktop/setting.conf";
+//        File confFile = new File(configPath);
+//        Properties properties = new Properties();
+//        try (var input = new FileReader(confFile)) {
+//            properties.load(input);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        NodeConfig config = new NodeConfig(properties);
+//        try {
+//            EpidemicServer server = new EpidemicServer(config);
+//            server.start();
+//            server.blockUntilShutdown();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 }

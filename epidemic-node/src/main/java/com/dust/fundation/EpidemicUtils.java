@@ -148,9 +148,9 @@ public class EpidemicUtils {
      * @throws IOException
      *      如果读取文件失败
      */
-    public static void checkAndwriteVersion(String versionPath, String versionName,
-                                            Function<Integer, Boolean> isCompatibleVersion,
-                                            String systemVersion) throws IOException {
+    public static void checkAndWriteVersion(String versionPath, String versionName,
+                                            Function<Long, Boolean> isCompatibleVersion,
+                                            long systemVersion) throws IOException {
         File dir = new File(versionPath);
         if (!dir.exists()) {
             boolean mkdirCheck = dir.mkdirs();
@@ -164,21 +164,18 @@ public class EpidemicUtils {
 
         File versionFile = new File(versionPath, versionName);
         if (versionFile.exists()) {
-            CharBuffer text = CharBuffer.allocate((int) versionFile.length());
-            try (var in = new FileReader(versionFile)) {
-                int readLen = in.read(text);
-                if (readLen < 0) {
-                    throw new IOException("读取版本文件失败" + versionFile.getPath());
+            RandomAccessFile raf = new RandomAccessFile(versionFile, "r");
+            try (raf) {
+                long version = raf.readLong();
+                if (!isCompatibleVersion.apply(version)) {
+                    throw new IOException("本地的版本文件与当前系统并不兼容！" + versionName);
                 }
             }
-            int versionOnDisk = Integer.parseInt(text.toString());
-            if (!isCompatibleVersion.apply(versionOnDisk)) {
-                throw new IOException("本地的版本文件与当前系统并不兼容！" + versionName);
-            }
         }
+
         final File tmpFile = new File(versionPath, versionName + "_tmp");
-        try (var out = new FileWriter(tmpFile)) {
-            out.write(systemVersion);
+        try (var out = new RandomAccessFile(tmpFile, "rw")) {
+            out.writeLong(systemVersion);
         }
         boolean renameResult = tmpFile.renameTo(versionFile);
         if (!renameResult) {

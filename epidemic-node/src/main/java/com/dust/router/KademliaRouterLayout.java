@@ -83,6 +83,7 @@ public class KademliaRouterLayout extends RouterLayout {
     @Override
     public void ping(String nodeId, String host, int port) {
         bucket.ping(nodeId, host, port);
+        System.out.println(bucket.toString());
     }
 
     @Override
@@ -96,13 +97,13 @@ public class KademliaRouterLayout extends RouterLayout {
     }
 
     @Override
-    protected boolean isCompatibleVersion(int version) {
-        return false;
+    protected boolean isCompatibleVersion(long version) {
+        return true;
     }
 
     @Override
-    protected String getVersion() {
-        return null;
+    protected long getVersion() {
+        return 1L;
     }
 
     @Override

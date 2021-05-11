@@ -86,6 +86,10 @@ public class NodeTriadRouterNode extends NodeTriad {
         return resutl;
     }
 
-
+    @Override
+    public String toString() {
+        return String.format("[nodeId=%s, host=%s, port=%d, updateTime=%d]",
+                getKey(), getHost(), getPort(), updateTime);
+    }
 
 }

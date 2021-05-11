@@ -14,7 +14,7 @@ public class EpidemicApplication {
     private static final String CONFIG_NAME = "setting.conf";
 
     public static void main(String[] args) {
-        if (args.length == 1) {
+        if (args.length < 1) {
             //TODO 没有配置文件参数
             System.exit(1);
             return;
@@ -32,7 +32,8 @@ public class EpidemicApplication {
             Properties properties = createProperties(confFile);
             EpidemicServer server = EpidemicServer.create(new NodeConfig(properties));
             server.start();
-        } catch (IOException e) {
+            server.blockUntilShutdown();
+        } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }

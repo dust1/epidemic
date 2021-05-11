@@ -18,7 +18,7 @@ public abstract class RouterLayout extends Layout {
     /**
      * 网络路由模块的版本名称
      */
-    public static final String VERSION_FILENAME = ".routerVersion";
+    public static final String VERSION_FILENAME = ".router_version";
 
     /**
      * 网络路由模块的快照文件名称
@@ -40,7 +40,7 @@ public abstract class RouterLayout extends Layout {
             tmp += "/";
         }
         //检查版本信息
-        EpidemicUtils.checkAndwriteVersion(tmp,
+        EpidemicUtils.checkAndWriteVersion(tmp,
                 VERSION_FILENAME, this::isCompatibleVersion, getVersion());
         this.routerPath = tmp;
     }
@@ -74,13 +74,13 @@ public abstract class RouterLayout extends Layout {
      * @param version 检查的版本
      * @return 如果兼容则返回true，否则返回false
      */
-    protected abstract boolean isCompatibleVersion(int version);
+    protected abstract boolean isCompatibleVersion(long version);
 
     /**
      * 获取当前系统的实现版本
      * @return 当前系统版本的string形式
      */
-    protected abstract String getVersion();
+    protected abstract long getVersion();
 
     /**
      * 获取持久化到本地的一个网络节点的大小

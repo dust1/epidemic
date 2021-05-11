@@ -2,6 +2,7 @@ package com.dust.storage;
 
 import com.dust.core.Layout;
 import com.dust.core.NodeConfig;
+import com.dust.fundation.EpidemicUtils;
 import com.dust.grpc.kademlia.StoreRequest;
 import com.dust.grpc.kademlia.StoreResponse;
 import com.dust.storage.btree.DataNode;
@@ -13,6 +14,11 @@ import java.util.Objects;
 import java.util.Optional;
 
 public abstract class StorageLayout extends Layout {
+
+    /**
+     * 存储模块的版本文件名称
+     */
+    public static final String VERSION_FILENAME = ".storage_version";
 
     protected NodeConfig config;
 
@@ -26,7 +32,14 @@ public abstract class StorageLayout extends Layout {
      */
     protected long chunkSize;
 
-    protected StorageLayout(NodeConfig config) {
+    protected StorageLayout(NodeConfig config) throws IOException {
+        String tmp = config.getStoragePath();
+        if (!tmp.endsWith("/")) {
+            tmp += "/";
+        }
+        EpidemicUtils.checkAndWriteVersion(tmp,
+                VERSION_FILENAME, this::isCompatibleVersion,
+                getVersion());
         this.storagePath = config.getStoragePath();
         this.chunkSize = strSizeToLong(config.getChunkSize());
         if (chunkSize <= 0) {
@@ -84,5 +97,18 @@ public abstract class StorageLayout extends Layout {
      *      磁盘读写失败
      */
     public abstract boolean delete(String fileId) throws IOException;
+
+    /**
+     * 检查当前的实现版本与给定的版本是否兼容
+     * @param version 检查的版本
+     * @return 如果兼容则返回true，否则返回false
+     */
+    protected abstract boolean isCompatibleVersion(long version);
+
+    /**
+     * 获取当前系统的实现版本
+     * @return 当前系统版本的string形式
+     */
+    protected abstract long getVersion();
 
 }

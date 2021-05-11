@@ -38,7 +38,7 @@ public class FileStorageLayout extends StorageLayout {
      */
     private final BTreeManager catalog;
 
-    public FileStorageLayout(NodeConfig config) {
+    public FileStorageLayout(NodeConfig config) throws IOException {
         super(config);
         catalog = BTreeManager.create(config.getOrderNum());
     }
@@ -153,6 +153,16 @@ public class FileStorageLayout extends StorageLayout {
     @Override
     public synchronized boolean delete(String fileId) throws IOException {
         return false;
+    }
+
+    @Override
+    protected boolean isCompatibleVersion(long version) {
+        return true;
+    }
+
+    @Override
+    protected long getVersion() {
+        return 1l;
     }
 
 }
