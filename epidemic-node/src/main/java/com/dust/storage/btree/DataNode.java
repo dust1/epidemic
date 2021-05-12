@@ -6,6 +6,7 @@ import com.dust.storage.StorageLayout;
 import com.dust.storage.buffer.ReusableBuffer;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -24,6 +25,7 @@ import java.util.*;
  * 每个DataNode只会对应一个文件块
  */
 @Getter
+@ToString
 public class DataNode {
 
     /**

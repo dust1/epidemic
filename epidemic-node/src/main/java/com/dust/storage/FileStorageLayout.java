@@ -9,6 +9,7 @@ import com.dust.storage.btree.DataNode;
 import com.google.protobuf.ByteString;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -56,6 +57,8 @@ public class FileStorageLayout extends StorageLayout {
         //读取所有元数据文件
         File[] mdFiles = dir.listFiles((f, name) -> name.endsWith(MD_SUFFIX));
         if (Objects.isNull(mdFiles) || mdFiles.length == 0) {
+            String fileName = EpidemicUtils.randomNodeId(config.getNodeSalt());
+            initFileIO(fileName);
             return;
         }
 
@@ -78,9 +81,35 @@ public class FileStorageLayout extends StorageLayout {
                 .min(Comparator.comparingLong(File::length))
                 .get();
         String fileName = minFile.getName();
-        writeName = fileName.substring(0, fileName.lastIndexOf("."));
-        writeMD = new RandomAccessFile(minFile, "rw");
-        writeData = new RandomAccessFile(new File(writeName, DATA_SUFFIX), "rw");
+        initFileIO(fileName);
+
+        printMetadata();
+    }
+
+    /**
+     * 打印元数据
+     */
+    private void printMetadata() {
+        var iter = catalog.iterator();
+        while (iter.hasNext()) {
+            var node = iter.next();
+            System.out.println(node.toString());
+        }
+    }
+
+    /**
+     * 文件SHA1ID初始化本地存储文件读取对象
+     * @param fileName SHA1id
+     * @throws FileNotFoundException
+     *  找不到文件
+     */
+    private void initFileIO(String fileName) throws FileNotFoundException {
+        if (fileName.endsWith(".md") || fileName.endsWith(".data")) {
+            fileName = fileName.substring(0, fileName.lastIndexOf("."));
+        }
+        writeName = fileName;
+        writeMD = new RandomAccessFile(new File(storagePath, fileName + MD_SUFFIX), "rw");
+        writeData = new RandomAccessFile(new File(storagePath, fileName + DATA_SUFFIX), "rw");
     }
 
     @Override

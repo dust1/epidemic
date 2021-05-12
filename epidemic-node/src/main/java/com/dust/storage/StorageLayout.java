@@ -33,6 +33,7 @@ public abstract class StorageLayout extends Layout {
     protected long chunkSize;
 
     protected StorageLayout(NodeConfig config) throws IOException {
+        this.config = config;
         String tmp = config.getStoragePath();
         if (!tmp.endsWith("/")) {
             tmp += "/";
@@ -43,7 +44,7 @@ public abstract class StorageLayout extends Layout {
         this.storagePath = config.getStoragePath();
         this.chunkSize = strSizeToLong(config.getChunkSize());
         if (chunkSize <= 0) {
-            throw new InvalidParameterException("快照文件大小参数异常:" + config.getChunkSize());
+            throw new InvalidParameterException("快照文件大小参数异常，错误的或者是不支持的大小配置:" + config.getChunkSize());
         }
     }
 
@@ -61,7 +62,16 @@ public abstract class StorageLayout extends Layout {
             //参数配置错误
             return -1;
         }
-        return 1;
+        size = size.toUpperCase();
+        String tmp = size.substring(0, size.length() - 2);;
+        if (size.endsWith("KB")) {
+            return Integer.parseInt(tmp) * 1024L;
+        } else if (size.endsWith("MB")) {
+            return Integer.parseInt(tmp) * 1024L * 1024L;
+        } else if (size.endsWith("GB")) {
+            return Integer.parseInt(tmp) * 1024L * 1024L * 1024L;
+        }
+        return -1;
     }
 
     /**
