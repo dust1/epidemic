@@ -8,20 +8,35 @@ public interface StoreRequestOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>string key = 1;</code>
-   * @return The key.
+   * <code>string fileId = 1;</code>
+   * @return The fileId.
    */
-  String getKey();
+  String getFileId();
   /**
-   * <code>string key = 1;</code>
-   * @return The bytes for key.
+   * <code>string fileId = 1;</code>
+   * @return The bytes for fileId.
    */
   com.google.protobuf.ByteString
-      getKeyBytes();
+      getFileIdBytes();
 
   /**
    * <code>bytes data = 2;</code>
    * @return The data.
    */
   com.google.protobuf.ByteString getData();
+
+  /**
+   * <code>.NodeInfo nodeInfo = 3;</code>
+   * @return Whether the nodeInfo field is set.
+   */
+  boolean hasNodeInfo();
+  /**
+   * <code>.NodeInfo nodeInfo = 3;</code>
+   * @return The nodeInfo.
+   */
+  NodeInfo getNodeInfo();
+  /**
+   * <code>.NodeInfo nodeInfo = 3;</code>
+   */
+  NodeInfoOrBuilder getNodeInfoOrBuilder();
 }

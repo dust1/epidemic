@@ -8,14 +8,29 @@ public interface FindRequestOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>string key = 1;</code>
-   * @return The key.
+   * <code>string targetId = 1;</code>
+   * @return The targetId.
    */
-  String getKey();
+  String getTargetId();
   /**
-   * <code>string key = 1;</code>
-   * @return The bytes for key.
+   * <code>string targetId = 1;</code>
+   * @return The bytes for targetId.
    */
   com.google.protobuf.ByteString
-      getKeyBytes();
+      getTargetIdBytes();
+
+  /**
+   * <code>.NodeInfo nodeInfo = 2;</code>
+   * @return Whether the nodeInfo field is set.
+   */
+  boolean hasNodeInfo();
+  /**
+   * <code>.NodeInfo nodeInfo = 2;</code>
+   * @return The nodeInfo.
+   */
+  NodeInfo getNodeInfo();
+  /**
+   * <code>.NodeInfo nodeInfo = 2;</code>
+   */
+  NodeInfoOrBuilder getNodeInfoOrBuilder();
 }

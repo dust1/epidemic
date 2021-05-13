@@ -5,29 +5,29 @@ package com.dust.grpc.kademlia;
 
 /**
  * <pre>
- *寻找请求，key既可以表示节点id，又可以表示文件id。具体根据请求的接口来判断
+ *节点发起请求的时候必须携带自身的网络信息，这样方便其他节点根据这些信息添加节点
  * </pre>
  *
- * Protobuf type {@code FindRequest}
+ * Protobuf type {@code NodeInfo}
  */
-public final class FindRequest extends
+public final class NodeInfo extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:FindRequest)
-    FindRequestOrBuilder {
+    // @@protoc_insertion_point(message_implements:NodeInfo)
+    NodeInfoOrBuilder {
 private static final long serialVersionUID = 0L;
-  // Use FindRequest.newBuilder() to construct.
-  private FindRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+  // Use NodeInfo.newBuilder() to construct.
+  private NodeInfo(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
-  private FindRequest() {
-    targetId_ = "";
+  private NodeInfo() {
+    nodeId_ = "";
   }
 
   @Override
   @SuppressWarnings({"unused"})
   protected Object newInstance(
       UnusedPrivateParameter unused) {
-    return new FindRequest();
+    return new NodeInfo();
   }
 
   @Override
@@ -35,7 +35,7 @@ private static final long serialVersionUID = 0L;
   getUnknownFields() {
     return this.unknownFields;
   }
-  private FindRequest(
+  private NodeInfo(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -56,20 +56,12 @@ private static final long serialVersionUID = 0L;
           case 10: {
             String s = input.readStringRequireUtf8();
 
-            targetId_ = s;
+            nodeId_ = s;
             break;
           }
-          case 18: {
-            NodeInfo.Builder subBuilder = null;
-            if (nodeInfo_ != null) {
-              subBuilder = nodeInfo_.toBuilder();
-            }
-            nodeInfo_ = input.readMessage(NodeInfo.parser(), extensionRegistry);
-            if (subBuilder != null) {
-              subBuilder.mergeFrom(nodeInfo_);
-              nodeInfo_ = subBuilder.buildPartial();
-            }
+          case 16: {
 
+            port_ = input.readInt32();
             break;
           }
           default: {
@@ -93,79 +85,76 @@ private static final long serialVersionUID = 0L;
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return KademliaServiceProto.internal_static_FindRequest_descriptor;
+    return KademliaServiceProto.internal_static_NodeInfo_descriptor;
   }
 
   @Override
   protected FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return KademliaServiceProto.internal_static_FindRequest_fieldAccessorTable
+    return KademliaServiceProto.internal_static_NodeInfo_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            FindRequest.class, Builder.class);
+            NodeInfo.class, Builder.class);
   }
 
-  public static final int TARGETID_FIELD_NUMBER = 1;
-  private volatile Object targetId_;
+  public static final int NODEID_FIELD_NUMBER = 1;
+  private volatile Object nodeId_;
   /**
-   * <code>string targetId = 1;</code>
-   * @return The targetId.
+   * <pre>
+   *发出信息的节点id
+   * </pre>
+   *
+   * <code>string nodeId = 1;</code>
+   * @return The nodeId.
    */
   @Override
-  public String getTargetId() {
-    Object ref = targetId_;
+  public String getNodeId() {
+    Object ref = nodeId_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
       com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       String s = bs.toStringUtf8();
-      targetId_ = s;
+      nodeId_ = s;
       return s;
     }
   }
   /**
-   * <code>string targetId = 1;</code>
-   * @return The bytes for targetId.
+   * <pre>
+   *发出信息的节点id
+   * </pre>
+   *
+   * <code>string nodeId = 1;</code>
+   * @return The bytes for nodeId.
    */
   @Override
   public com.google.protobuf.ByteString
-      getTargetIdBytes() {
-    Object ref = targetId_;
+      getNodeIdBytes() {
+    Object ref = nodeId_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (String) ref);
-      targetId_ = b;
+      nodeId_ = b;
       return b;
     } else {
       return (com.google.protobuf.ByteString) ref;
     }
   }
 
-  public static final int NODEINFO_FIELD_NUMBER = 2;
-  private NodeInfo nodeInfo_;
+  public static final int PORT_FIELD_NUMBER = 2;
+  private int port_;
   /**
-   * <code>.NodeInfo nodeInfo = 2;</code>
-   * @return Whether the nodeInfo field is set.
+   * <pre>
+   *发出信息的节点对外端口
+   * </pre>
+   *
+   * <code>int32 port = 2;</code>
+   * @return The port.
    */
   @Override
-  public boolean hasNodeInfo() {
-    return nodeInfo_ != null;
-  }
-  /**
-   * <code>.NodeInfo nodeInfo = 2;</code>
-   * @return The nodeInfo.
-   */
-  @Override
-  public NodeInfo getNodeInfo() {
-    return nodeInfo_ == null ? NodeInfo.getDefaultInstance() : nodeInfo_;
-  }
-  /**
-   * <code>.NodeInfo nodeInfo = 2;</code>
-   */
-  @Override
-  public NodeInfoOrBuilder getNodeInfoOrBuilder() {
-    return getNodeInfo();
+  public int getPort() {
+    return port_;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -182,11 +171,11 @@ private static final long serialVersionUID = 0L;
   @Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (!getTargetIdBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, targetId_);
+    if (!getNodeIdBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, nodeId_);
     }
-    if (nodeInfo_ != null) {
-      output.writeMessage(2, getNodeInfo());
+    if (port_ != 0) {
+      output.writeInt32(2, port_);
     }
     unknownFields.writeTo(output);
   }
@@ -197,12 +186,12 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (!getTargetIdBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, targetId_);
+    if (!getNodeIdBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, nodeId_);
     }
-    if (nodeInfo_ != null) {
+    if (port_ != 0) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(2, getNodeInfo());
+        .computeInt32Size(2, port_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -214,18 +203,15 @@ private static final long serialVersionUID = 0L;
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof FindRequest)) {
+    if (!(obj instanceof NodeInfo)) {
       return super.equals(obj);
     }
-    FindRequest other = (FindRequest) obj;
+    NodeInfo other = (NodeInfo) obj;
 
-    if (!getTargetId()
-        .equals(other.getTargetId())) return false;
-    if (hasNodeInfo() != other.hasNodeInfo()) return false;
-    if (hasNodeInfo()) {
-      if (!getNodeInfo()
-          .equals(other.getNodeInfo())) return false;
-    }
+    if (!getNodeId()
+        .equals(other.getNodeId())) return false;
+    if (getPort()
+        != other.getPort()) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -237,80 +223,78 @@ private static final long serialVersionUID = 0L;
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
-    hash = (37 * hash) + TARGETID_FIELD_NUMBER;
-    hash = (53 * hash) + getTargetId().hashCode();
-    if (hasNodeInfo()) {
-      hash = (37 * hash) + NODEINFO_FIELD_NUMBER;
-      hash = (53 * hash) + getNodeInfo().hashCode();
-    }
+    hash = (37 * hash) + NODEID_FIELD_NUMBER;
+    hash = (53 * hash) + getNodeId().hashCode();
+    hash = (37 * hash) + PORT_FIELD_NUMBER;
+    hash = (53 * hash) + getPort();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
   }
 
-  public static FindRequest parseFrom(
+  public static NodeInfo parseFrom(
       java.nio.ByteBuffer data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static FindRequest parseFrom(
+  public static NodeInfo parseFrom(
       java.nio.ByteBuffer data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static FindRequest parseFrom(
+  public static NodeInfo parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static FindRequest parseFrom(
+  public static NodeInfo parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static FindRequest parseFrom(byte[] data)
+  public static NodeInfo parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static FindRequest parseFrom(
+  public static NodeInfo parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static FindRequest parseFrom(java.io.InputStream input)
+  public static NodeInfo parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static FindRequest parseFrom(
+  public static NodeInfo parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static FindRequest parseDelimitedFrom(java.io.InputStream input)
+  public static NodeInfo parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static FindRequest parseDelimitedFrom(
+  public static NodeInfo parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static FindRequest parseFrom(
+  public static NodeInfo parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static FindRequest parseFrom(
+  public static NodeInfo parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -323,7 +307,7 @@ private static final long serialVersionUID = 0L;
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(FindRequest prototype) {
+  public static Builder newBuilder(NodeInfo prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
   @Override
@@ -340,29 +324,29 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <pre>
-   *寻找请求，key既可以表示节点id，又可以表示文件id。具体根据请求的接口来判断
+   *节点发起请求的时候必须携带自身的网络信息，这样方便其他节点根据这些信息添加节点
    * </pre>
    *
-   * Protobuf type {@code FindRequest}
+   * Protobuf type {@code NodeInfo}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:FindRequest)
-      FindRequestOrBuilder {
+      // @@protoc_insertion_point(builder_implements:NodeInfo)
+      NodeInfoOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return KademliaServiceProto.internal_static_FindRequest_descriptor;
+      return KademliaServiceProto.internal_static_NodeInfo_descriptor;
     }
 
     @Override
     protected FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return KademliaServiceProto.internal_static_FindRequest_fieldAccessorTable
+      return KademliaServiceProto.internal_static_NodeInfo_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              FindRequest.class, Builder.class);
+              NodeInfo.class, Builder.class);
     }
 
-    // Construct using com.dust.grpc.kademlia.FindRequest.newBuilder()
+    // Construct using com.dust.grpc.kademlia.NodeInfo.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
@@ -380,31 +364,27 @@ private static final long serialVersionUID = 0L;
     @Override
     public Builder clear() {
       super.clear();
-      targetId_ = "";
+      nodeId_ = "";
 
-      if (nodeInfoBuilder_ == null) {
-        nodeInfo_ = null;
-      } else {
-        nodeInfo_ = null;
-        nodeInfoBuilder_ = null;
-      }
+      port_ = 0;
+
       return this;
     }
 
     @Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return KademliaServiceProto.internal_static_FindRequest_descriptor;
+      return KademliaServiceProto.internal_static_NodeInfo_descriptor;
     }
 
     @Override
-    public FindRequest getDefaultInstanceForType() {
-      return FindRequest.getDefaultInstance();
+    public NodeInfo getDefaultInstanceForType() {
+      return NodeInfo.getDefaultInstance();
     }
 
     @Override
-    public FindRequest build() {
-      FindRequest result = buildPartial();
+    public NodeInfo build() {
+      NodeInfo result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
@@ -412,14 +392,10 @@ private static final long serialVersionUID = 0L;
     }
 
     @Override
-    public FindRequest buildPartial() {
-      FindRequest result = new FindRequest(this);
-      result.targetId_ = targetId_;
-      if (nodeInfoBuilder_ == null) {
-        result.nodeInfo_ = nodeInfo_;
-      } else {
-        result.nodeInfo_ = nodeInfoBuilder_.build();
-      }
+    public NodeInfo buildPartial() {
+      NodeInfo result = new NodeInfo(this);
+      result.nodeId_ = nodeId_;
+      result.port_ = port_;
       onBuilt();
       return result;
     }
@@ -458,22 +434,22 @@ private static final long serialVersionUID = 0L;
     }
     @Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof FindRequest) {
-        return mergeFrom((FindRequest)other);
+      if (other instanceof NodeInfo) {
+        return mergeFrom((NodeInfo)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(FindRequest other) {
-      if (other == FindRequest.getDefaultInstance()) return this;
-      if (!other.getTargetId().isEmpty()) {
-        targetId_ = other.targetId_;
+    public Builder mergeFrom(NodeInfo other) {
+      if (other == NodeInfo.getDefaultInstance()) return this;
+      if (!other.getNodeId().isEmpty()) {
+        nodeId_ = other.nodeId_;
         onChanged();
       }
-      if (other.hasNodeInfo()) {
-        mergeNodeInfo(other.getNodeInfo());
+      if (other.getPort() != 0) {
+        setPort(other.getPort());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -490,11 +466,11 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      FindRequest parsedMessage = null;
+      NodeInfo parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (FindRequest) e.getUnfinishedMessage();
+        parsedMessage = (NodeInfo) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -504,199 +480,143 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private Object targetId_ = "";
+    private Object nodeId_ = "";
     /**
-     * <code>string targetId = 1;</code>
-     * @return The targetId.
+     * <pre>
+     *发出信息的节点id
+     * </pre>
+     *
+     * <code>string nodeId = 1;</code>
+     * @return The nodeId.
      */
-    public String getTargetId() {
-      Object ref = targetId_;
+    public String getNodeId() {
+      Object ref = nodeId_;
       if (!(ref instanceof String)) {
         com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
-        targetId_ = s;
+        nodeId_ = s;
         return s;
       } else {
         return (String) ref;
       }
     }
     /**
-     * <code>string targetId = 1;</code>
-     * @return The bytes for targetId.
+     * <pre>
+     *发出信息的节点id
+     * </pre>
+     *
+     * <code>string nodeId = 1;</code>
+     * @return The bytes for nodeId.
      */
     public com.google.protobuf.ByteString
-        getTargetIdBytes() {
-      Object ref = targetId_;
+        getNodeIdBytes() {
+      Object ref = nodeId_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (String) ref);
-        targetId_ = b;
+        nodeId_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
     /**
-     * <code>string targetId = 1;</code>
-     * @param value The targetId to set.
+     * <pre>
+     *发出信息的节点id
+     * </pre>
+     *
+     * <code>string nodeId = 1;</code>
+     * @param value The nodeId to set.
      * @return This builder for chaining.
      */
-    public Builder setTargetId(
+    public Builder setNodeId(
         String value) {
       if (value == null) {
     throw new NullPointerException();
   }
   
-      targetId_ = value;
+      nodeId_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>string targetId = 1;</code>
+     * <pre>
+     *发出信息的节点id
+     * </pre>
+     *
+     * <code>string nodeId = 1;</code>
      * @return This builder for chaining.
      */
-    public Builder clearTargetId() {
+    public Builder clearNodeId() {
       
-      targetId_ = getDefaultInstance().getTargetId();
+      nodeId_ = getDefaultInstance().getNodeId();
       onChanged();
       return this;
     }
     /**
-     * <code>string targetId = 1;</code>
-     * @param value The bytes for targetId to set.
+     * <pre>
+     *发出信息的节点id
+     * </pre>
+     *
+     * <code>string nodeId = 1;</code>
+     * @param value The bytes for nodeId to set.
      * @return This builder for chaining.
      */
-    public Builder setTargetIdBytes(
+    public Builder setNodeIdBytes(
         com.google.protobuf.ByteString value) {
       if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
       
-      targetId_ = value;
+      nodeId_ = value;
       onChanged();
       return this;
     }
 
-    private NodeInfo nodeInfo_;
-    private com.google.protobuf.SingleFieldBuilderV3<
-        NodeInfo, NodeInfo.Builder, NodeInfoOrBuilder> nodeInfoBuilder_;
+    private int port_ ;
     /**
-     * <code>.NodeInfo nodeInfo = 2;</code>
-     * @return Whether the nodeInfo field is set.
+     * <pre>
+     *发出信息的节点对外端口
+     * </pre>
+     *
+     * <code>int32 port = 2;</code>
+     * @return The port.
      */
-    public boolean hasNodeInfo() {
-      return nodeInfoBuilder_ != null || nodeInfo_ != null;
+    @Override
+    public int getPort() {
+      return port_;
     }
     /**
-     * <code>.NodeInfo nodeInfo = 2;</code>
-     * @return The nodeInfo.
+     * <pre>
+     *发出信息的节点对外端口
+     * </pre>
+     *
+     * <code>int32 port = 2;</code>
+     * @param value The port to set.
+     * @return This builder for chaining.
      */
-    public NodeInfo getNodeInfo() {
-      if (nodeInfoBuilder_ == null) {
-        return nodeInfo_ == null ? NodeInfo.getDefaultInstance() : nodeInfo_;
-      } else {
-        return nodeInfoBuilder_.getMessage();
-      }
-    }
-    /**
-     * <code>.NodeInfo nodeInfo = 2;</code>
-     */
-    public Builder setNodeInfo(NodeInfo value) {
-      if (nodeInfoBuilder_ == null) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        nodeInfo_ = value;
-        onChanged();
-      } else {
-        nodeInfoBuilder_.setMessage(value);
-      }
-
-      return this;
-    }
-    /**
-     * <code>.NodeInfo nodeInfo = 2;</code>
-     */
-    public Builder setNodeInfo(
-        NodeInfo.Builder builderForValue) {
-      if (nodeInfoBuilder_ == null) {
-        nodeInfo_ = builderForValue.build();
-        onChanged();
-      } else {
-        nodeInfoBuilder_.setMessage(builderForValue.build());
-      }
-
-      return this;
-    }
-    /**
-     * <code>.NodeInfo nodeInfo = 2;</code>
-     */
-    public Builder mergeNodeInfo(NodeInfo value) {
-      if (nodeInfoBuilder_ == null) {
-        if (nodeInfo_ != null) {
-          nodeInfo_ =
-            NodeInfo.newBuilder(nodeInfo_).mergeFrom(value).buildPartial();
-        } else {
-          nodeInfo_ = value;
-        }
-        onChanged();
-      } else {
-        nodeInfoBuilder_.mergeFrom(value);
-      }
-
-      return this;
-    }
-    /**
-     * <code>.NodeInfo nodeInfo = 2;</code>
-     */
-    public Builder clearNodeInfo() {
-      if (nodeInfoBuilder_ == null) {
-        nodeInfo_ = null;
-        onChanged();
-      } else {
-        nodeInfo_ = null;
-        nodeInfoBuilder_ = null;
-      }
-
-      return this;
-    }
-    /**
-     * <code>.NodeInfo nodeInfo = 2;</code>
-     */
-    public NodeInfo.Builder getNodeInfoBuilder() {
+    public Builder setPort(int value) {
       
+      port_ = value;
       onChanged();
-      return getNodeInfoFieldBuilder().getBuilder();
+      return this;
     }
     /**
-     * <code>.NodeInfo nodeInfo = 2;</code>
+     * <pre>
+     *发出信息的节点对外端口
+     * </pre>
+     *
+     * <code>int32 port = 2;</code>
+     * @return This builder for chaining.
      */
-    public NodeInfoOrBuilder getNodeInfoOrBuilder() {
-      if (nodeInfoBuilder_ != null) {
-        return nodeInfoBuilder_.getMessageOrBuilder();
-      } else {
-        return nodeInfo_ == null ?
-            NodeInfo.getDefaultInstance() : nodeInfo_;
-      }
-    }
-    /**
-     * <code>.NodeInfo nodeInfo = 2;</code>
-     */
-    private com.google.protobuf.SingleFieldBuilderV3<
-        NodeInfo, NodeInfo.Builder, NodeInfoOrBuilder>
-        getNodeInfoFieldBuilder() {
-      if (nodeInfoBuilder_ == null) {
-        nodeInfoBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            NodeInfo, NodeInfo.Builder, NodeInfoOrBuilder>(
-                getNodeInfo(),
-                getParentForChildren(),
-                isClean());
-        nodeInfo_ = null;
-      }
-      return nodeInfoBuilder_;
+    public Builder clearPort() {
+      
+      port_ = 0;
+      onChanged();
+      return this;
     }
     @Override
     public final Builder setUnknownFields(
@@ -711,41 +631,41 @@ private static final long serialVersionUID = 0L;
     }
 
 
-    // @@protoc_insertion_point(builder_scope:FindRequest)
+    // @@protoc_insertion_point(builder_scope:NodeInfo)
   }
 
-  // @@protoc_insertion_point(class_scope:FindRequest)
-  private static final FindRequest DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:NodeInfo)
+  private static final NodeInfo DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new FindRequest();
+    DEFAULT_INSTANCE = new NodeInfo();
   }
 
-  public static FindRequest getDefaultInstance() {
+  public static NodeInfo getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static final com.google.protobuf.Parser<FindRequest>
-      PARSER = new com.google.protobuf.AbstractParser<FindRequest>() {
+  private static final com.google.protobuf.Parser<NodeInfo>
+      PARSER = new com.google.protobuf.AbstractParser<NodeInfo>() {
     @Override
-    public FindRequest parsePartialFrom(
+    public NodeInfo parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return new FindRequest(input, extensionRegistry);
+      return new NodeInfo(input, extensionRegistry);
     }
   };
 
-  public static com.google.protobuf.Parser<FindRequest> parser() {
+  public static com.google.protobuf.Parser<NodeInfo> parser() {
     return PARSER;
   }
 
   @Override
-  public com.google.protobuf.Parser<FindRequest> getParserForType() {
+  public com.google.protobuf.Parser<NodeInfo> getParserForType() {
     return PARSER;
   }
 
   @Override
-  public FindRequest getDefaultInstanceForType() {
+  public NodeInfo getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 

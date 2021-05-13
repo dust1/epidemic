@@ -20,7 +20,6 @@ private static final long serialVersionUID = 0L;
     super(builder);
   }
   private PingRequest() {
-    nodeId_ = "";
   }
 
   @Override
@@ -53,20 +52,22 @@ private static final long serialVersionUID = 0L;
           case 0:
             done = true;
             break;
-          case 10: {
-            String s = input.readStringRequireUtf8();
-
-            nodeId_ = s;
-            break;
-          }
-          case 16: {
+          case 8: {
 
             timestamp_ = input.readInt32();
             break;
           }
-          case 24: {
+          case 18: {
+            NodeInfo.Builder subBuilder = null;
+            if (nodeInfo_ != null) {
+              subBuilder = nodeInfo_.toBuilder();
+            }
+            nodeInfo_ = input.readMessage(NodeInfo.parser(), extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom(nodeInfo_);
+              nodeInfo_ = subBuilder.buildPartial();
+            }
 
-            port_ = input.readInt32();
             break;
           }
           default: {
@@ -101,48 +102,10 @@ private static final long serialVersionUID = 0L;
             PingRequest.class, Builder.class);
   }
 
-  public static final int NODEID_FIELD_NUMBER = 1;
-  private volatile Object nodeId_;
-  /**
-   * <code>string nodeId = 1;</code>
-   * @return The nodeId.
-   */
-  @Override
-  public String getNodeId() {
-    Object ref = nodeId_;
-    if (ref instanceof String) {
-      return (String) ref;
-    } else {
-      com.google.protobuf.ByteString bs = 
-          (com.google.protobuf.ByteString) ref;
-      String s = bs.toStringUtf8();
-      nodeId_ = s;
-      return s;
-    }
-  }
-  /**
-   * <code>string nodeId = 1;</code>
-   * @return The bytes for nodeId.
-   */
-  @Override
-  public com.google.protobuf.ByteString
-      getNodeIdBytes() {
-    Object ref = nodeId_;
-    if (ref instanceof String) {
-      com.google.protobuf.ByteString b = 
-          com.google.protobuf.ByteString.copyFromUtf8(
-              (String) ref);
-      nodeId_ = b;
-      return b;
-    } else {
-      return (com.google.protobuf.ByteString) ref;
-    }
-  }
-
-  public static final int TIMESTAMP_FIELD_NUMBER = 2;
+  public static final int TIMESTAMP_FIELD_NUMBER = 1;
   private int timestamp_;
   /**
-   * <code>int32 timestamp = 2;</code>
+   * <code>int32 timestamp = 1;</code>
    * @return The timestamp.
    */
   @Override
@@ -150,15 +113,30 @@ private static final long serialVersionUID = 0L;
     return timestamp_;
   }
 
-  public static final int PORT_FIELD_NUMBER = 3;
-  private int port_;
+  public static final int NODEINFO_FIELD_NUMBER = 2;
+  private NodeInfo nodeInfo_;
   /**
-   * <code>int32 port = 3;</code>
-   * @return The port.
+   * <code>.NodeInfo nodeInfo = 2;</code>
+   * @return Whether the nodeInfo field is set.
    */
   @Override
-  public int getPort() {
-    return port_;
+  public boolean hasNodeInfo() {
+    return nodeInfo_ != null;
+  }
+  /**
+   * <code>.NodeInfo nodeInfo = 2;</code>
+   * @return The nodeInfo.
+   */
+  @Override
+  public NodeInfo getNodeInfo() {
+    return nodeInfo_ == null ? NodeInfo.getDefaultInstance() : nodeInfo_;
+  }
+  /**
+   * <code>.NodeInfo nodeInfo = 2;</code>
+   */
+  @Override
+  public NodeInfoOrBuilder getNodeInfoOrBuilder() {
+    return getNodeInfo();
   }
 
   private byte memoizedIsInitialized = -1;
@@ -175,14 +153,11 @@ private static final long serialVersionUID = 0L;
   @Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (!getNodeIdBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, nodeId_);
-    }
     if (timestamp_ != 0) {
-      output.writeInt32(2, timestamp_);
+      output.writeInt32(1, timestamp_);
     }
-    if (port_ != 0) {
-      output.writeInt32(3, port_);
+    if (nodeInfo_ != null) {
+      output.writeMessage(2, getNodeInfo());
     }
     unknownFields.writeTo(output);
   }
@@ -193,16 +168,13 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (!getNodeIdBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, nodeId_);
-    }
     if (timestamp_ != 0) {
       size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(2, timestamp_);
+        .computeInt32Size(1, timestamp_);
     }
-    if (port_ != 0) {
+    if (nodeInfo_ != null) {
       size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(3, port_);
+        .computeMessageSize(2, getNodeInfo());
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -219,12 +191,13 @@ private static final long serialVersionUID = 0L;
     }
     PingRequest other = (PingRequest) obj;
 
-    if (!getNodeId()
-        .equals(other.getNodeId())) return false;
     if (getTimestamp()
         != other.getTimestamp()) return false;
-    if (getPort()
-        != other.getPort()) return false;
+    if (hasNodeInfo() != other.hasNodeInfo()) return false;
+    if (hasNodeInfo()) {
+      if (!getNodeInfo()
+          .equals(other.getNodeInfo())) return false;
+    }
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -236,12 +209,12 @@ private static final long serialVersionUID = 0L;
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
-    hash = (37 * hash) + NODEID_FIELD_NUMBER;
-    hash = (53 * hash) + getNodeId().hashCode();
     hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
     hash = (53 * hash) + getTimestamp();
-    hash = (37 * hash) + PORT_FIELD_NUMBER;
-    hash = (53 * hash) + getPort();
+    if (hasNodeInfo()) {
+      hash = (37 * hash) + NODEINFO_FIELD_NUMBER;
+      hash = (53 * hash) + getNodeInfo().hashCode();
+    }
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -379,12 +352,14 @@ private static final long serialVersionUID = 0L;
     @Override
     public Builder clear() {
       super.clear();
-      nodeId_ = "";
-
       timestamp_ = 0;
 
-      port_ = 0;
-
+      if (nodeInfoBuilder_ == null) {
+        nodeInfo_ = null;
+      } else {
+        nodeInfo_ = null;
+        nodeInfoBuilder_ = null;
+      }
       return this;
     }
 
@@ -411,9 +386,12 @@ private static final long serialVersionUID = 0L;
     @Override
     public PingRequest buildPartial() {
       PingRequest result = new PingRequest(this);
-      result.nodeId_ = nodeId_;
       result.timestamp_ = timestamp_;
-      result.port_ = port_;
+      if (nodeInfoBuilder_ == null) {
+        result.nodeInfo_ = nodeInfo_;
+      } else {
+        result.nodeInfo_ = nodeInfoBuilder_.build();
+      }
       onBuilt();
       return result;
     }
@@ -462,15 +440,11 @@ private static final long serialVersionUID = 0L;
 
     public Builder mergeFrom(PingRequest other) {
       if (other == PingRequest.getDefaultInstance()) return this;
-      if (!other.getNodeId().isEmpty()) {
-        nodeId_ = other.nodeId_;
-        onChanged();
-      }
       if (other.getTimestamp() != 0) {
         setTimestamp(other.getTimestamp());
       }
-      if (other.getPort() != 0) {
-        setPort(other.getPort());
+      if (other.hasNodeInfo()) {
+        mergeNodeInfo(other.getNodeInfo());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -501,85 +475,9 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private Object nodeId_ = "";
-    /**
-     * <code>string nodeId = 1;</code>
-     * @return The nodeId.
-     */
-    public String getNodeId() {
-      Object ref = nodeId_;
-      if (!(ref instanceof String)) {
-        com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        nodeId_ = s;
-        return s;
-      } else {
-        return (String) ref;
-      }
-    }
-    /**
-     * <code>string nodeId = 1;</code>
-     * @return The bytes for nodeId.
-     */
-    public com.google.protobuf.ByteString
-        getNodeIdBytes() {
-      Object ref = nodeId_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
-        nodeId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-    /**
-     * <code>string nodeId = 1;</code>
-     * @param value The nodeId to set.
-     * @return This builder for chaining.
-     */
-    public Builder setNodeId(
-        String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  
-      nodeId_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>string nodeId = 1;</code>
-     * @return This builder for chaining.
-     */
-    public Builder clearNodeId() {
-      
-      nodeId_ = getDefaultInstance().getNodeId();
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>string nodeId = 1;</code>
-     * @param value The bytes for nodeId to set.
-     * @return This builder for chaining.
-     */
-    public Builder setNodeIdBytes(
-        com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      
-      nodeId_ = value;
-      onChanged();
-      return this;
-    }
-
     private int timestamp_ ;
     /**
-     * <code>int32 timestamp = 2;</code>
+     * <code>int32 timestamp = 1;</code>
      * @return The timestamp.
      */
     @Override
@@ -587,7 +485,7 @@ private static final long serialVersionUID = 0L;
       return timestamp_;
     }
     /**
-     * <code>int32 timestamp = 2;</code>
+     * <code>int32 timestamp = 1;</code>
      * @param value The timestamp to set.
      * @return This builder for chaining.
      */
@@ -598,7 +496,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>int32 timestamp = 2;</code>
+     * <code>int32 timestamp = 1;</code>
      * @return This builder for chaining.
      */
     public Builder clearTimestamp() {
@@ -608,35 +506,123 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private int port_ ;
+    private NodeInfo nodeInfo_;
+    private com.google.protobuf.SingleFieldBuilderV3<
+        NodeInfo, NodeInfo.Builder, NodeInfoOrBuilder> nodeInfoBuilder_;
     /**
-     * <code>int32 port = 3;</code>
-     * @return The port.
+     * <code>.NodeInfo nodeInfo = 2;</code>
+     * @return Whether the nodeInfo field is set.
      */
-    @Override
-    public int getPort() {
-      return port_;
+    public boolean hasNodeInfo() {
+      return nodeInfoBuilder_ != null || nodeInfo_ != null;
     }
     /**
-     * <code>int32 port = 3;</code>
-     * @param value The port to set.
-     * @return This builder for chaining.
+     * <code>.NodeInfo nodeInfo = 2;</code>
+     * @return The nodeInfo.
      */
-    public Builder setPort(int value) {
-      
-      port_ = value;
-      onChanged();
+    public NodeInfo getNodeInfo() {
+      if (nodeInfoBuilder_ == null) {
+        return nodeInfo_ == null ? NodeInfo.getDefaultInstance() : nodeInfo_;
+      } else {
+        return nodeInfoBuilder_.getMessage();
+      }
+    }
+    /**
+     * <code>.NodeInfo nodeInfo = 2;</code>
+     */
+    public Builder setNodeInfo(NodeInfo value) {
+      if (nodeInfoBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        nodeInfo_ = value;
+        onChanged();
+      } else {
+        nodeInfoBuilder_.setMessage(value);
+      }
+
       return this;
     }
     /**
-     * <code>int32 port = 3;</code>
-     * @return This builder for chaining.
+     * <code>.NodeInfo nodeInfo = 2;</code>
      */
-    public Builder clearPort() {
-      
-      port_ = 0;
-      onChanged();
+    public Builder setNodeInfo(
+        NodeInfo.Builder builderForValue) {
+      if (nodeInfoBuilder_ == null) {
+        nodeInfo_ = builderForValue.build();
+        onChanged();
+      } else {
+        nodeInfoBuilder_.setMessage(builderForValue.build());
+      }
+
       return this;
+    }
+    /**
+     * <code>.NodeInfo nodeInfo = 2;</code>
+     */
+    public Builder mergeNodeInfo(NodeInfo value) {
+      if (nodeInfoBuilder_ == null) {
+        if (nodeInfo_ != null) {
+          nodeInfo_ =
+            NodeInfo.newBuilder(nodeInfo_).mergeFrom(value).buildPartial();
+        } else {
+          nodeInfo_ = value;
+        }
+        onChanged();
+      } else {
+        nodeInfoBuilder_.mergeFrom(value);
+      }
+
+      return this;
+    }
+    /**
+     * <code>.NodeInfo nodeInfo = 2;</code>
+     */
+    public Builder clearNodeInfo() {
+      if (nodeInfoBuilder_ == null) {
+        nodeInfo_ = null;
+        onChanged();
+      } else {
+        nodeInfo_ = null;
+        nodeInfoBuilder_ = null;
+      }
+
+      return this;
+    }
+    /**
+     * <code>.NodeInfo nodeInfo = 2;</code>
+     */
+    public NodeInfo.Builder getNodeInfoBuilder() {
+      
+      onChanged();
+      return getNodeInfoFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.NodeInfo nodeInfo = 2;</code>
+     */
+    public NodeInfoOrBuilder getNodeInfoOrBuilder() {
+      if (nodeInfoBuilder_ != null) {
+        return nodeInfoBuilder_.getMessageOrBuilder();
+      } else {
+        return nodeInfo_ == null ?
+            NodeInfo.getDefaultInstance() : nodeInfo_;
+      }
+    }
+    /**
+     * <code>.NodeInfo nodeInfo = 2;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        NodeInfo, NodeInfo.Builder, NodeInfoOrBuilder>
+        getNodeInfoFieldBuilder() {
+      if (nodeInfoBuilder_ == null) {
+        nodeInfoBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            NodeInfo, NodeInfo.Builder, NodeInfoOrBuilder>(
+                getNodeInfo(),
+                getParentForChildren(),
+                isClean());
+        nodeInfo_ = null;
+      }
+      return nodeInfoBuilder_;
     }
     @Override
     public final Builder setUnknownFields(

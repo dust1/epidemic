@@ -15,6 +15,11 @@ public final class KademliaServiceProto {
         (com.google.protobuf.ExtensionRegistryLite) registry);
   }
   static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_NodeInfo_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_NodeInfo_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
     internal_static_PingRequest_descriptor;
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -58,67 +63,76 @@ public final class KademliaServiceProto {
       descriptor;
   static {
     String[] descriptorData = {
-      "\n\021route_guide.proto\">\n\013PingRequest\022\016\n\006no" +
-      "deId\030\001 \001(\t\022\021\n\ttimestamp\030\002 \001(\005\022\014\n\004port\030\003 " +
-      "\001(\005\"!\n\014PingResponse\022\021\n\ttimestamp\030\001 \001(\005\")" +
-      "\n\014StoreRequest\022\013\n\003key\030\001 \001(\t\022\014\n\004data\030\002 \001(" +
-      "\014\"-\n\rStoreResponse\022\014\n\004code\030\001 \001(\005\022\016\n\006errm" +
-      "sg\030\002 \001(\t\"\032\n\013FindRequest\022\013\n\003key\030\001 \001(\t\"\\\n\020" +
-      "FindNodeResponse\022\014\n\004host\030\001 \001(\t\022\014\n\004port\030\002" +
-      " \001(\005\022\016\n\006nodeId\030\003 \001(\t\022\014\n\004code\030\004 \001(\005\022\016\n\006er" +
-      "rmsg\030\005 \001(\t\"y\n\021FindValueResponse\022\014\n\004code\030" +
-      "\001 \001(\005\022\014\n\004mode\030\002 \001(\005\022\014\n\004host\030\003 \001(\t\022\014\n\004por" +
-      "t\030\004 \001(\005\022\016\n\006nodeId\030\005 \001(\t\022\014\n\004data\030\006 \001(\014\022\016\n" +
-      "\006errmsg\030\007 \001(\t2\306\001\n\017KademliaService\022%\n\004Pin" +
-      "g\022\014.PingRequest\032\r.PingResponse\"\000\022(\n\005Stor" +
-      "e\022\r.StoreRequest\032\016.StoreResponse\"\000\022/\n\010Fi" +
-      "ndNode\022\014.FindRequest\032\021.FindNodeResponse\"" +
-      "\0000\001\0221\n\tfindValue\022\014.FindRequest\032\022.FindVal" +
-      "ueResponse\"\0000\001B3\n\026com.dust.grpc.kademlia" +
-      "B\024KademliaServiceProtoP\001\210\001\001b\006proto3"
+      "\n\021route_guide.proto\"(\n\010NodeInfo\022\016\n\006nodeI" +
+      "d\030\001 \001(\t\022\014\n\004port\030\002 \001(\005\"=\n\013PingRequest\022\021\n\t" +
+      "timestamp\030\001 \001(\005\022\033\n\010nodeInfo\030\002 \001(\0132\t.Node" +
+      "Info\"!\n\014PingResponse\022\021\n\ttimestamp\030\001 \001(\005\"" +
+      "I\n\014StoreRequest\022\016\n\006fileId\030\001 \001(\t\022\014\n\004data\030" +
+      "\002 \001(\014\022\033\n\010nodeInfo\030\003 \001(\0132\t.NodeInfo\"-\n\rSt" +
+      "oreResponse\022\014\n\004code\030\001 \001(\005\022\016\n\006errmsg\030\002 \001(" +
+      "\t\"<\n\013FindRequest\022\020\n\010targetId\030\001 \001(\t\022\033\n\010no" +
+      "deInfo\030\002 \001(\0132\t.NodeInfo\"\\\n\020FindNodeRespo" +
+      "nse\022\014\n\004host\030\001 \001(\t\022\014\n\004port\030\002 \001(\005\022\016\n\006nodeI" +
+      "d\030\003 \001(\t\022\014\n\004code\030\004 \001(\005\022\016\n\006errmsg\030\005 \001(\t\"y\n" +
+      "\021FindValueResponse\022\014\n\004code\030\001 \001(\005\022\014\n\004mode" +
+      "\030\002 \001(\005\022\014\n\004host\030\003 \001(\t\022\014\n\004port\030\004 \001(\005\022\016\n\006no" +
+      "deId\030\005 \001(\t\022\014\n\004data\030\006 \001(\014\022\016\n\006errmsg\030\007 \001(\t" +
+      "2\306\001\n\017KademliaService\022%\n\004Ping\022\014.PingReque" +
+      "st\032\r.PingResponse\"\000\022(\n\005Store\022\r.StoreRequ" +
+      "est\032\016.StoreResponse\"\000\022/\n\010FindNode\022\014.Find" +
+      "Request\032\021.FindNodeResponse\"\0000\001\0221\n\tfindVa" +
+      "lue\022\014.FindRequest\032\022.FindValueResponse\"\0000" +
+      "\001B3\n\026com.dust.grpc.kademliaB\024KademliaSer" +
+      "viceProtoP\001\210\001\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
         });
-    internal_static_PingRequest_descriptor =
+    internal_static_NodeInfo_descriptor =
       getDescriptor().getMessageTypes().get(0);
+    internal_static_NodeInfo_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_NodeInfo_descriptor,
+        new String[] { "NodeId", "Port", });
+    internal_static_PingRequest_descriptor =
+      getDescriptor().getMessageTypes().get(1);
     internal_static_PingRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_PingRequest_descriptor,
-        new String[] { "NodeId", "Timestamp", "Port", });
+        new String[] { "Timestamp", "NodeInfo", });
     internal_static_PingResponse_descriptor =
-      getDescriptor().getMessageTypes().get(1);
+      getDescriptor().getMessageTypes().get(2);
     internal_static_PingResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_PingResponse_descriptor,
         new String[] { "Timestamp", });
     internal_static_StoreRequest_descriptor =
-      getDescriptor().getMessageTypes().get(2);
+      getDescriptor().getMessageTypes().get(3);
     internal_static_StoreRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StoreRequest_descriptor,
-        new String[] { "Key", "Data", });
+        new String[] { "FileId", "Data", "NodeInfo", });
     internal_static_StoreResponse_descriptor =
-      getDescriptor().getMessageTypes().get(3);
+      getDescriptor().getMessageTypes().get(4);
     internal_static_StoreResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StoreResponse_descriptor,
         new String[] { "Code", "Errmsg", });
     internal_static_FindRequest_descriptor =
-      getDescriptor().getMessageTypes().get(4);
+      getDescriptor().getMessageTypes().get(5);
     internal_static_FindRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_FindRequest_descriptor,
-        new String[] { "Key", });
+        new String[] { "TargetId", "NodeInfo", });
     internal_static_FindNodeResponse_descriptor =
-      getDescriptor().getMessageTypes().get(5);
+      getDescriptor().getMessageTypes().get(6);
     internal_static_FindNodeResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_FindNodeResponse_descriptor,
         new String[] { "Host", "Port", "NodeId", "Code", "Errmsg", });
     internal_static_FindValueResponse_descriptor =
-      getDescriptor().getMessageTypes().get(6);
+      getDescriptor().getMessageTypes().get(7);
     internal_static_FindValueResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_FindValueResponse_descriptor,

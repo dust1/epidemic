@@ -3,6 +3,7 @@ package com.dust.router;
 import com.dust.core.Layout;
 import com.dust.core.NodeConfig;
 import com.dust.fundation.EpidemicUtils;
+import com.dust.grpc.kademlia.NodeInfo;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -83,15 +84,6 @@ public abstract class RouterLayout extends Layout {
     protected abstract long getVersion();
 
     /**
-     * 获取持久化到本地的一个网络节点的大小
-     * 如果不需要持久化则不用重载该方法
-     * @return 如果不用持久化，则返回-1
-     */
-    protected int getPersistenceNodeSize() {
-        return -1;
-    }
-
-    /**
      * 持久化方法，如果实现类需要将数据持久化的化需要继承并实现
      * @throws IOException
      *         写入本地磁盘失败
@@ -109,5 +101,14 @@ public abstract class RouterLayout extends Layout {
      * 某个节点ping到当前节点
      */
     public abstract void ping(String nodeId, String host, int port);
+
+    /**
+     * 尝试ping氢气
+     * @param info 请求的节点信息
+     * @param host 请求的网络地址
+     */
+    public void ping(NodeInfo info, String host) {
+        ping(info.getNodeId(), host, info.getPort());
+    }
 
 }

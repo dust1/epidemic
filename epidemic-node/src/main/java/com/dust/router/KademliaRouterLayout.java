@@ -106,9 +106,4 @@ public class KademliaRouterLayout extends RouterLayout {
         return 1L;
     }
 
-    @Override
-    protected int getPersistenceNodeSize() {
-        return -1;
-    }
-
 }

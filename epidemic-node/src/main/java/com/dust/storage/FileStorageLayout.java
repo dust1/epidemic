@@ -143,7 +143,7 @@ public class FileStorageLayout extends StorageLayout {
      */
     @Override
     public synchronized void store(StoreRequest storeRequest) throws IOException {
-        String fileId = storeRequest.getKey();
+        String fileId = storeRequest.getFileId();
         ByteString reqData = storeRequest.getData();
 
         writeMD.seek(writeMD.length());

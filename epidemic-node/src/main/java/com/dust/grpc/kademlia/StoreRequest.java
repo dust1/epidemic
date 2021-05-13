@@ -20,7 +20,7 @@ private static final long serialVersionUID = 0L;
     super(builder);
   }
   private StoreRequest() {
-    key_ = "";
+    fileId_ = "";
     data_ = com.google.protobuf.ByteString.EMPTY;
   }
 
@@ -57,12 +57,25 @@ private static final long serialVersionUID = 0L;
           case 10: {
             String s = input.readStringRequireUtf8();
 
-            key_ = s;
+            fileId_ = s;
             break;
           }
           case 18: {
 
             data_ = input.readBytes();
+            break;
+          }
+          case 26: {
+            NodeInfo.Builder subBuilder = null;
+            if (nodeInfo_ != null) {
+              subBuilder = nodeInfo_.toBuilder();
+            }
+            nodeInfo_ = input.readMessage(NodeInfo.parser(), extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom(nodeInfo_);
+              nodeInfo_ = subBuilder.buildPartial();
+            }
+
             break;
           }
           default: {
@@ -97,38 +110,38 @@ private static final long serialVersionUID = 0L;
             StoreRequest.class, Builder.class);
   }
 
-  public static final int KEY_FIELD_NUMBER = 1;
-  private volatile Object key_;
+  public static final int FILEID_FIELD_NUMBER = 1;
+  private volatile Object fileId_;
   /**
-   * <code>string key = 1;</code>
-   * @return The key.
+   * <code>string fileId = 1;</code>
+   * @return The fileId.
    */
   @Override
-  public String getKey() {
-    Object ref = key_;
+  public String getFileId() {
+    Object ref = fileId_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
       com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       String s = bs.toStringUtf8();
-      key_ = s;
+      fileId_ = s;
       return s;
     }
   }
   /**
-   * <code>string key = 1;</code>
-   * @return The bytes for key.
+   * <code>string fileId = 1;</code>
+   * @return The bytes for fileId.
    */
   @Override
   public com.google.protobuf.ByteString
-      getKeyBytes() {
-    Object ref = key_;
+      getFileIdBytes() {
+    Object ref = fileId_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (String) ref);
-      key_ = b;
+      fileId_ = b;
       return b;
     } else {
       return (com.google.protobuf.ByteString) ref;
@@ -146,6 +159,32 @@ private static final long serialVersionUID = 0L;
     return data_;
   }
 
+  public static final int NODEINFO_FIELD_NUMBER = 3;
+  private NodeInfo nodeInfo_;
+  /**
+   * <code>.NodeInfo nodeInfo = 3;</code>
+   * @return Whether the nodeInfo field is set.
+   */
+  @Override
+  public boolean hasNodeInfo() {
+    return nodeInfo_ != null;
+  }
+  /**
+   * <code>.NodeInfo nodeInfo = 3;</code>
+   * @return The nodeInfo.
+   */
+  @Override
+  public NodeInfo getNodeInfo() {
+    return nodeInfo_ == null ? NodeInfo.getDefaultInstance() : nodeInfo_;
+  }
+  /**
+   * <code>.NodeInfo nodeInfo = 3;</code>
+   */
+  @Override
+  public NodeInfoOrBuilder getNodeInfoOrBuilder() {
+    return getNodeInfo();
+  }
+
   private byte memoizedIsInitialized = -1;
   @Override
   public final boolean isInitialized() {
@@ -160,11 +199,14 @@ private static final long serialVersionUID = 0L;
   @Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (!getKeyBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, key_);
+    if (!getFileIdBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, fileId_);
     }
     if (!data_.isEmpty()) {
       output.writeBytes(2, data_);
+    }
+    if (nodeInfo_ != null) {
+      output.writeMessage(3, getNodeInfo());
     }
     unknownFields.writeTo(output);
   }
@@ -175,12 +217,16 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (!getKeyBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, key_);
+    if (!getFileIdBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, fileId_);
     }
     if (!data_.isEmpty()) {
       size += com.google.protobuf.CodedOutputStream
         .computeBytesSize(2, data_);
+    }
+    if (nodeInfo_ != null) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(3, getNodeInfo());
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -197,10 +243,15 @@ private static final long serialVersionUID = 0L;
     }
     StoreRequest other = (StoreRequest) obj;
 
-    if (!getKey()
-        .equals(other.getKey())) return false;
+    if (!getFileId()
+        .equals(other.getFileId())) return false;
     if (!getData()
         .equals(other.getData())) return false;
+    if (hasNodeInfo() != other.hasNodeInfo()) return false;
+    if (hasNodeInfo()) {
+      if (!getNodeInfo()
+          .equals(other.getNodeInfo())) return false;
+    }
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -212,10 +263,14 @@ private static final long serialVersionUID = 0L;
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
-    hash = (37 * hash) + KEY_FIELD_NUMBER;
-    hash = (53 * hash) + getKey().hashCode();
+    hash = (37 * hash) + FILEID_FIELD_NUMBER;
+    hash = (53 * hash) + getFileId().hashCode();
     hash = (37 * hash) + DATA_FIELD_NUMBER;
     hash = (53 * hash) + getData().hashCode();
+    if (hasNodeInfo()) {
+      hash = (37 * hash) + NODEINFO_FIELD_NUMBER;
+      hash = (53 * hash) + getNodeInfo().hashCode();
+    }
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -353,10 +408,16 @@ private static final long serialVersionUID = 0L;
     @Override
     public Builder clear() {
       super.clear();
-      key_ = "";
+      fileId_ = "";
 
       data_ = com.google.protobuf.ByteString.EMPTY;
 
+      if (nodeInfoBuilder_ == null) {
+        nodeInfo_ = null;
+      } else {
+        nodeInfo_ = null;
+        nodeInfoBuilder_ = null;
+      }
       return this;
     }
 
@@ -383,8 +444,13 @@ private static final long serialVersionUID = 0L;
     @Override
     public StoreRequest buildPartial() {
       StoreRequest result = new StoreRequest(this);
-      result.key_ = key_;
+      result.fileId_ = fileId_;
       result.data_ = data_;
+      if (nodeInfoBuilder_ == null) {
+        result.nodeInfo_ = nodeInfo_;
+      } else {
+        result.nodeInfo_ = nodeInfoBuilder_.build();
+      }
       onBuilt();
       return result;
     }
@@ -433,12 +499,15 @@ private static final long serialVersionUID = 0L;
 
     public Builder mergeFrom(StoreRequest other) {
       if (other == StoreRequest.getDefaultInstance()) return this;
-      if (!other.getKey().isEmpty()) {
-        key_ = other.key_;
+      if (!other.getFileId().isEmpty()) {
+        fileId_ = other.fileId_;
         onChanged();
       }
       if (other.getData() != com.google.protobuf.ByteString.EMPTY) {
         setData(other.getData());
+      }
+      if (other.hasNodeInfo()) {
+        mergeNodeInfo(other.getNodeInfo());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -469,78 +538,78 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private Object key_ = "";
+    private Object fileId_ = "";
     /**
-     * <code>string key = 1;</code>
-     * @return The key.
+     * <code>string fileId = 1;</code>
+     * @return The fileId.
      */
-    public String getKey() {
-      Object ref = key_;
+    public String getFileId() {
+      Object ref = fileId_;
       if (!(ref instanceof String)) {
         com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
-        key_ = s;
+        fileId_ = s;
         return s;
       } else {
         return (String) ref;
       }
     }
     /**
-     * <code>string key = 1;</code>
-     * @return The bytes for key.
+     * <code>string fileId = 1;</code>
+     * @return The bytes for fileId.
      */
     public com.google.protobuf.ByteString
-        getKeyBytes() {
-      Object ref = key_;
+        getFileIdBytes() {
+      Object ref = fileId_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (String) ref);
-        key_ = b;
+        fileId_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
     /**
-     * <code>string key = 1;</code>
-     * @param value The key to set.
+     * <code>string fileId = 1;</code>
+     * @param value The fileId to set.
      * @return This builder for chaining.
      */
-    public Builder setKey(
+    public Builder setFileId(
         String value) {
       if (value == null) {
     throw new NullPointerException();
   }
   
-      key_ = value;
+      fileId_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>string key = 1;</code>
+     * <code>string fileId = 1;</code>
      * @return This builder for chaining.
      */
-    public Builder clearKey() {
+    public Builder clearFileId() {
       
-      key_ = getDefaultInstance().getKey();
+      fileId_ = getDefaultInstance().getFileId();
       onChanged();
       return this;
     }
     /**
-     * <code>string key = 1;</code>
-     * @param value The bytes for key to set.
+     * <code>string fileId = 1;</code>
+     * @param value The bytes for fileId to set.
      * @return This builder for chaining.
      */
-    public Builder setKeyBytes(
+    public Builder setFileIdBytes(
         com.google.protobuf.ByteString value) {
       if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
       
-      key_ = value;
+      fileId_ = value;
       onChanged();
       return this;
     }
@@ -577,6 +646,125 @@ private static final long serialVersionUID = 0L;
       data_ = getDefaultInstance().getData();
       onChanged();
       return this;
+    }
+
+    private NodeInfo nodeInfo_;
+    private com.google.protobuf.SingleFieldBuilderV3<
+        NodeInfo, NodeInfo.Builder, NodeInfoOrBuilder> nodeInfoBuilder_;
+    /**
+     * <code>.NodeInfo nodeInfo = 3;</code>
+     * @return Whether the nodeInfo field is set.
+     */
+    public boolean hasNodeInfo() {
+      return nodeInfoBuilder_ != null || nodeInfo_ != null;
+    }
+    /**
+     * <code>.NodeInfo nodeInfo = 3;</code>
+     * @return The nodeInfo.
+     */
+    public NodeInfo getNodeInfo() {
+      if (nodeInfoBuilder_ == null) {
+        return nodeInfo_ == null ? NodeInfo.getDefaultInstance() : nodeInfo_;
+      } else {
+        return nodeInfoBuilder_.getMessage();
+      }
+    }
+    /**
+     * <code>.NodeInfo nodeInfo = 3;</code>
+     */
+    public Builder setNodeInfo(NodeInfo value) {
+      if (nodeInfoBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        nodeInfo_ = value;
+        onChanged();
+      } else {
+        nodeInfoBuilder_.setMessage(value);
+      }
+
+      return this;
+    }
+    /**
+     * <code>.NodeInfo nodeInfo = 3;</code>
+     */
+    public Builder setNodeInfo(
+        NodeInfo.Builder builderForValue) {
+      if (nodeInfoBuilder_ == null) {
+        nodeInfo_ = builderForValue.build();
+        onChanged();
+      } else {
+        nodeInfoBuilder_.setMessage(builderForValue.build());
+      }
+
+      return this;
+    }
+    /**
+     * <code>.NodeInfo nodeInfo = 3;</code>
+     */
+    public Builder mergeNodeInfo(NodeInfo value) {
+      if (nodeInfoBuilder_ == null) {
+        if (nodeInfo_ != null) {
+          nodeInfo_ =
+            NodeInfo.newBuilder(nodeInfo_).mergeFrom(value).buildPartial();
+        } else {
+          nodeInfo_ = value;
+        }
+        onChanged();
+      } else {
+        nodeInfoBuilder_.mergeFrom(value);
+      }
+
+      return this;
+    }
+    /**
+     * <code>.NodeInfo nodeInfo = 3;</code>
+     */
+    public Builder clearNodeInfo() {
+      if (nodeInfoBuilder_ == null) {
+        nodeInfo_ = null;
+        onChanged();
+      } else {
+        nodeInfo_ = null;
+        nodeInfoBuilder_ = null;
+      }
+
+      return this;
+    }
+    /**
+     * <code>.NodeInfo nodeInfo = 3;</code>
+     */
+    public NodeInfo.Builder getNodeInfoBuilder() {
+      
+      onChanged();
+      return getNodeInfoFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.NodeInfo nodeInfo = 3;</code>
+     */
+    public NodeInfoOrBuilder getNodeInfoOrBuilder() {
+      if (nodeInfoBuilder_ != null) {
+        return nodeInfoBuilder_.getMessageOrBuilder();
+      } else {
+        return nodeInfo_ == null ?
+            NodeInfo.getDefaultInstance() : nodeInfo_;
+      }
+    }
+    /**
+     * <code>.NodeInfo nodeInfo = 3;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        NodeInfo, NodeInfo.Builder, NodeInfoOrBuilder>
+        getNodeInfoFieldBuilder() {
+      if (nodeInfoBuilder_ == null) {
+        nodeInfoBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            NodeInfo, NodeInfo.Builder, NodeInfoOrBuilder>(
+                getNodeInfo(),
+                getParentForChildren(),
+                isClean());
+        nodeInfo_ = null;
+      }
+      return nodeInfoBuilder_;
     }
     @Override
     public final Builder setUnknownFields(

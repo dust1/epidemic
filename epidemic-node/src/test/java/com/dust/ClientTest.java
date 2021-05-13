@@ -14,6 +14,7 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
+import java.util.Random;
 
 import static org.junit.Assert.*;
 
@@ -61,6 +62,29 @@ public class ClientTest {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private String randomNodeId() {
+        Random random = new Random();
+        int i = random.nextInt(299292);
+        String key = System.currentTimeMillis() + "i=" + i;
+        return EpidemicUtils.getSHA1(key.getBytes(StandardCharsets.UTF_8));
+    }
+
+    @Test
+    public void findNodeTest() {
+        String targetId = randomNodeId();
+        String sourceId = randomNodeId();
+        int sourcePort = 8080;
+
+        int size = 0;
+        var iter = client.findNode(targetId, sourceId, sourcePort);
+        while (iter.hasNext()) {
+            var resNode = iter.next();
+            size += 1;
+            System.out.println(resNode);
+        }
+        assertEquals(size, 20);
     }
 
 }

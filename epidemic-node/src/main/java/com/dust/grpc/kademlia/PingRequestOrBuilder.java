@@ -8,26 +8,23 @@ public interface PingRequestOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>string nodeId = 1;</code>
-   * @return The nodeId.
-   */
-  String getNodeId();
-  /**
-   * <code>string nodeId = 1;</code>
-   * @return The bytes for nodeId.
-   */
-  com.google.protobuf.ByteString
-      getNodeIdBytes();
-
-  /**
-   * <code>int32 timestamp = 2;</code>
+   * <code>int32 timestamp = 1;</code>
    * @return The timestamp.
    */
   int getTimestamp();
 
   /**
-   * <code>int32 port = 3;</code>
-   * @return The port.
+   * <code>.NodeInfo nodeInfo = 2;</code>
+   * @return Whether the nodeInfo field is set.
    */
-  int getPort();
+  boolean hasNodeInfo();
+  /**
+   * <code>.NodeInfo nodeInfo = 2;</code>
+   * @return The nodeInfo.
+   */
+  NodeInfo getNodeInfo();
+  /**
+   * <code>.NodeInfo nodeInfo = 2;</code>
+   */
+  NodeInfoOrBuilder getNodeInfoOrBuilder();
 }

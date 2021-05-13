@@ -37,10 +37,10 @@ public class EpidemicService extends KademliaServiceGrpc.KademliaServiceImplBase
 
     @Override
     public void ping(com.dust.grpc.kademlia.PingRequest request, StreamObserver<com.dust.grpc.kademlia.PingResponse> responseObserver) {
-        String nodeId = request.getNodeId();
+        String nodeId = request.getNodeInfo().getNodeId();
         SocketAddress clientAddress = ClientAddressInterceptor.CLIENT_ADDRESS.get();
         String clientIp = clientAddress.toString();
-        int port = request.getPort();
+        int port = request.getNodeInfo().getPort();
         routerLayout.ping(nodeId, clientIp, port);
         PingResponse res = PingResponse.newBuilder()
                 .setTimestamp(request.getTimestamp())
@@ -51,6 +51,9 @@ public class EpidemicService extends KademliaServiceGrpc.KademliaServiceImplBase
 
     @Override
     public void store(com.dust.grpc.kademlia.StoreRequest request, StreamObserver<com.dust.grpc.kademlia.StoreResponse> responseObserver) {
+        SocketAddress clientAddress = ClientAddressInterceptor.CLIENT_ADDRESS.get();
+        routerLayout.ping(request.getNodeInfo(), clientAddress.toString());
+
         StoreResponse response;
         try {
             storageLayout.store(request);
@@ -70,15 +73,21 @@ public class EpidemicService extends KademliaServiceGrpc.KademliaServiceImplBase
 
     @Override
     public void findNode(com.dust.grpc.kademlia.FindRequest request, StreamObserver<com.dust.grpc.kademlia.FindNodeResponse> responseObserver) {
-        List<NodeTriad> list = routerLayout.findNode(request.getKey());
+        SocketAddress clientAddress = ClientAddressInterceptor.CLIENT_ADDRESS.get();
+        routerLayout.ping(request.getNodeInfo(), clientAddress.toString());
+
+        List<NodeTriad> list = routerLayout.findNode(request.getTargetId());
         list.forEach(node -> responseObserver.onNext(node.toFindNodeResponse()));
         responseObserver.onCompleted();
     }
 
     @Override
     public void findValue(com.dust.grpc.kademlia.FindRequest request, StreamObserver<com.dust.grpc.kademlia.FindValueResponse> responseObserver) {
+        SocketAddress clientAddress = ClientAddressInterceptor.CLIENT_ADDRESS.get();
+        routerLayout.ping(request.getNodeInfo(), clientAddress.toString());
+
         try {
-            Optional<ByteBuffer> fileOptional = storageLayout.find(request.getKey());
+            Optional<ByteBuffer> fileOptional = storageLayout.find(request.getTargetId());
             if (fileOptional.isPresent()) {
                 //有文件，返回文件信息
                 responseObserver.onNext(
@@ -89,7 +98,7 @@ public class EpidemicService extends KademliaServiceGrpc.KademliaServiceImplBase
                                 .build()
                 );
             } else {
-                List<NodeTriad> list = routerLayout.findNode(request.getKey());
+                List<NodeTriad> list = routerLayout.findNode(request.getTargetId());
                 list.forEach(node -> responseObserver.onNext(node.toFindValueResponse()));
             }
         } catch (IOException e) {
