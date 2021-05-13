@@ -62,6 +62,14 @@ public class EpidemicClient {
         return blockingStub.findNode(req);
     }
 
+    public Iterator<FindValueResponse> findValue(String targetId, String sourceId, int sourcePort) {
+        var nodeInfo = createNodeInfo(sourceId, sourcePort);
+        var req = FindRequest.newBuilder().setNodeInfo(nodeInfo)
+                .setTargetId(targetId)
+                .build();
+        return blockingStub.findValue(req);
+    }
+
     private NodeInfo createNodeInfo(String nodeId, int port) {
         return NodeInfo.newBuilder().setNodeId(nodeId)
                 .setPort(port)

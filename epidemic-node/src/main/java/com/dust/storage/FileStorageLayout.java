@@ -135,6 +135,7 @@ public class FileStorageLayout extends StorageLayout {
             raf.seek(node.getOffset());
             channel.read(result);
         }
+        result.flip();
         return result;
     }
 

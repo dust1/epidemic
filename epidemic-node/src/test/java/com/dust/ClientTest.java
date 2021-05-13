@@ -87,4 +87,34 @@ public class ClientTest {
         assertEquals(size, 20);
     }
 
+    @Test
+    public void findValueTest() {
+        String targetId = randomNodeId();
+        String sourceId = randomNodeId();
+        int sourcePort = 8080;
+
+        var iter = client.findValue(targetId, sourceId, sourcePort);
+        int size = 0;
+        while (iter.hasNext()) {
+            var resNode = iter.next();
+            assertEquals(resNode.getCode(), 1);
+            assertEquals(resNode.getMode(), 2);
+            size += 1;
+        }
+        assertEquals(size, 20);
+
+        var fileId = "a2ec12c8b8d84bb9bc770ff83285c140b986d2ca";
+        iter = client.findValue(fileId, sourceId, sourcePort);
+        size = 0;
+        while (iter.hasNext()) {
+            var resNode = iter.next();
+            assertEquals(resNode.getCode(), 1);
+            assertEquals(resNode.getMode(), 1);
+            assertNotNull(resNode.getData());
+            assertEquals(resNode.getData().size(),392552);
+            size += 1;
+        }
+        assertEquals(size, 1);
+    }
+
 }

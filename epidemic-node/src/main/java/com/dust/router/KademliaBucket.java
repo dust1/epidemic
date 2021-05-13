@@ -139,7 +139,7 @@ public class KademliaBucket {
         boolean[] used = new boolean[160];
         while (!indexQueue.isEmpty() && result.size() < k) {
             Integer index = indexQueue.poll();
-            if (index < 0 || index >= used.length || used[index]) {
+            if (index < 0 || index >= used.length || used[index] || Objects.isNull(buckets[index])) {
                 continue;
             }
             var bucket = buckets[index];
