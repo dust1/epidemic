@@ -1,6 +1,5 @@
 package com.dust;
 
-import com.dust.core.NodeConfig;
 import com.dust.fundation.StartedFunction;
 import com.dust.grpc.ClientAddressInterceptor;
 import com.dust.grpc.EpidemicService;
@@ -12,11 +11,8 @@ import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.ServerInterceptors;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 /**

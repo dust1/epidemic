@@ -1,9 +1,8 @@
 package com.dust.storage;
 
-import com.dust.core.NodeConfig;
+import com.dust.NodeConfig;
 import com.dust.fundation.EpidemicUtils;
 import com.dust.grpc.kademlia.StoreRequest;
-import com.dust.grpc.kademlia.StoreResponse;
 import com.dust.storage.btree.BTreeManager;
 import com.dust.storage.btree.DataNode;
 import com.google.protobuf.ByteString;

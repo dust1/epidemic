@@ -1,17 +1,14 @@
 package com.dust.router;
 
-import com.dust.core.NodeConfig;
+import com.dust.NodeConfig;
 import com.dust.fundation.EpidemicUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 public class KademliaRouterLayout extends RouterLayout {
 
@@ -29,6 +26,11 @@ public class KademliaRouterLayout extends RouterLayout {
      * 当前节点的节点id
      */
     private String myId;
+
+    /**
+     * 对
+     */
+    private RandomAccessFile snapshot;
 
     public KademliaRouterLayout(NodeConfig config) throws IOException {
         super(config);

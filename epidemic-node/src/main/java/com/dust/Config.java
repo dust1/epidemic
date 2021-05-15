@@ -1,4 +1,4 @@
-package com.dust.core;
+package com.dust;
 
 import lombok.Getter;
 

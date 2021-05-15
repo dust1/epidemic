@@ -1,11 +1,8 @@
 package com.dust.storage;
 
-import com.dust.core.Layout;
-import com.dust.core.NodeConfig;
+import com.dust.NodeConfig;
 import com.dust.fundation.EpidemicUtils;
 import com.dust.grpc.kademlia.StoreRequest;
-import com.dust.grpc.kademlia.StoreResponse;
-import com.dust.storage.btree.DataNode;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -13,7 +10,7 @@ import java.security.InvalidParameterException;
 import java.util.Objects;
 import java.util.Optional;
 
-public abstract class StorageLayout extends Layout {
+public abstract class StorageLayout {
 
     /**
      * 存储模块的版本文件名称
