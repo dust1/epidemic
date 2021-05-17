@@ -1,11 +1,18 @@
 package com.dust;
 
+import com.dust.logs.LogFormat;
+import com.dust.logs.Logger;
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.*;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
  * 节点启动类
  */
+@Slf4j
 public class EpidemicApplication {
 
     //配置文件名称
@@ -13,17 +20,15 @@ public class EpidemicApplication {
 
     public static void main(String[] args) {
         if (args.length < 1) {
-            //TODO 没有配置文件参数
+            Logger.systemLog.error(LogFormat.SYSTEM_ERROR_FORMAT, "配置文件参数为空", Arrays.toString(args));
             System.exit(1);
             return;
         }
 
         String configPath = args[0];
-//        String configPath = "/Users/kous/Desktop/setting.conf";
-
         File confFile = new File(configPath);
         if (!confFile.exists() || !CONFIG_NAME.equals(confFile.getName())) {
-            //TODO 配置文件不存在
+            Logger.systemLog.error(LogFormat.SYSTEM_ERROR_FORMAT, "配置文件不存在 ", Arrays.toString(args));
             System.exit(1);
         }
         try {

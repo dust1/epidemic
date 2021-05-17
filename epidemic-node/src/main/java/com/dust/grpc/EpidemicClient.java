@@ -44,11 +44,14 @@ public class EpidemicClient {
             final FileChannel channel = input.getChannel();
             channel.read(buffer);
             buffer.flip();
-//            var req = StoreRequest.newBuilder().setKey(fileId)
-//                    .setData(ByteString.copyFrom(buffer))
-//                    .build();
-//            var res = blockingStub.store(req);
-//            System.out.println(res.toStrin/g());
+            var nodeInfo = NodeInfo.newBuilder().setNodeId("sss")
+                    .setPort(7000)
+                    .build();
+            var req = StoreRequest.newBuilder().setNodeInfo(nodeInfo)
+                    .setData(ByteString.copyFrom(buffer))
+                    .build();
+            var res = blockingStub.store(req);
+            System.out.println(res.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }

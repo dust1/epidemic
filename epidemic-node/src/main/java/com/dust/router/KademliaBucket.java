@@ -2,6 +2,8 @@ package com.dust.router;
 
 import com.dust.fundation.EpidemicUtils;
 import com.dust.fundation.LRUCache;
+import com.dust.logs.LogFormat;
+import com.dust.logs.Logger;
 
 import java.util.*;
 
@@ -57,6 +59,7 @@ public class KademliaBucket {
         if (bucket.size() >= k) {
             //拆分桶。两种情况：1.存在后续桶。将新节点放入cache中等待垃圾回收进行重新排布；2.不存在后续桶。创建新桶
             if ((prevIndex + 1) < bucketSize) {
+                Logger.layoutLog.info(LogFormat.LAYOUT_ADD_CACHE_FORMAT, node.getHost(), node.getPort(), node.getKey());
                 //一存在下一个桶，放入cache中
                 for (NodeTriadRouterNode haveNode : nodeCache) {
                     if (haveNode.getKey().equals(node.getKey())) {
@@ -67,6 +70,7 @@ public class KademliaBucket {
                 node.updateTime();
                 nodeCache.add(node);
             } else {
+                Logger.layoutLog.info(LogFormat.LAYOUT_ADD_FORMAT, node.getHost(), node.getPort(), node.getKey());
                 var newBucket = new ArrayList<NodeTriadRouterNode>(k);
                 List<NodeTriadRouterNode> oldBucket = new ArrayList<>(k);
                 for (var n : bucket) {
@@ -84,6 +88,7 @@ public class KademliaBucket {
                 }
             }
         } else {
+            Logger.layoutLog.info(LogFormat.LAYOUT_ADD_FORMAT, node.getHost(), node.getPort(), node.getKey());
             //不拆分桶，直接插入
             bucket.add(node);
         }

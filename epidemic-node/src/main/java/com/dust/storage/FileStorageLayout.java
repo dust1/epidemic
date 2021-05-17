@@ -3,6 +3,8 @@ package com.dust.storage;
 import com.dust.NodeConfig;
 import com.dust.fundation.EpidemicUtils;
 import com.dust.grpc.kademlia.StoreRequest;
+import com.dust.logs.LogFormat;
+import com.dust.logs.Logger;
 import com.dust.storage.btree.BTreeManager;
 import com.dust.storage.btree.DataNode;
 import com.google.protobuf.ByteString;
@@ -160,7 +162,8 @@ public class FileStorageLayout extends StorageLayout {
         DataNode dataNode = catalog.insert(fileId);
         dataNode.load((byte) 0, writeName, offset, size, mdOffset);
         dataNode.toFile(writeMD);
-
+        System.out.println("store");
+        Logger.storageLog.info(LogFormat.STORAGE_SAVE_FORMAT, fileId, size, writeName, offset);
         if (writeData.length() > chunkSize) {
             freezeAndCreate();
         }

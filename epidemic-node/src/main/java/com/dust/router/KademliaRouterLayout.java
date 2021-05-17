@@ -85,7 +85,6 @@ public class KademliaRouterLayout extends RouterLayout {
     @Override
     public void ping(String nodeId, String host, int port) {
         bucket.ping(nodeId, host, port);
-        System.out.println(bucket.toString());
     }
 
     @Override
