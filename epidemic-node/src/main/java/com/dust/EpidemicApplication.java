@@ -1,5 +1,7 @@
 package com.dust;
 
+import com.dust.guard.ProtectorThread;
+import com.dust.guard.Task;
 import com.dust.logs.LogFormat;
 import com.dust.logs.Logger;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +10,7 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * 节点启动类
@@ -32,9 +35,17 @@ public class EpidemicApplication {
             System.exit(1);
         }
         try {
+            var taskQueue = new ConcurrentLinkedQueue<Task>();
+
+            ProtectorThread protectorThread = ProtectorThread.create(taskQueue);
+            Thread protector = new Thread(protectorThread);
+            protector.setDaemon(true);
+
             Properties properties = createProperties(confFile);
-            EpidemicServer server = EpidemicServer.create(new NodeConfig(properties));
+            EpidemicServer server = EpidemicServer.create(new NodeConfig(properties), taskQueue, protector);
             server.start();
+            protector.start();
+
             server.blockUntilShutdown();
         } catch (Exception e) {
             e.printStackTrace();

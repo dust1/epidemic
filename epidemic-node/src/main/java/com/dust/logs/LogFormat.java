@@ -7,28 +7,36 @@ package com.dust.logs;
 public final class LogFormat {
 
     public static final String SYSTEM_ERROR_FORMAT =
-            "errorMsg: {}, " +        //错误信息描述
-            "errorDetail: {}";      //错误信息详情
+            "errorMsg:{}, " +        //错误信息描述
+            "errorDetail:{}";      //错误信息详情
+
+    //系统消息
+    public static final String SYSTEM_INFO_FORMAT =
+            "systemInfo:{}";
 
     //路由节点新增节点到桶中
     public static final String LAYOUT_ADD_FORMAT =
-            "[Layout][Bucket_Add][0] - " +     //日志标题信息，其中[0]表示这部分日志尚未作为快照文件的一部分持久化到本地。[1]表示已经保存在本地不需要恢复
-            "host: {}," +
-            "port: {}," +
-            "nodeId: {}";
+            "[Layout][Bucket_Add] - " +     //日志标题信息，其中[0]表示这部分日志尚未作为快照文件的一部分持久化到本地。[1]表示已经保存在本地不需要恢复
+            "host:{}," +
+            "port:{}," +
+            "nodeId:{}";
 
     //路由节点新增节点到缓存中
     public static final String LAYOUT_ADD_CACHE_FORMAT =
-            "[Layout][Cache_Add][0] - " +     //日志标题信息，其中[0]表示这部分日志尚未作为快照文件的一部分持久化到本地。[1]表示已经保存在本地不需要恢复
-                    "host: {}," +
-                    "port: {}," +
-                    "nodeId: {}";
+            "[Layout][Cache_Add] - " +     //日志标题信息，其中[0]表示这部分日志尚未作为快照文件的一部分持久化到本地。[1]表示已经保存在本地不需要恢复
+                    "host:{}," +
+                    "port:{}," +
+                    "nodeId:{}";
 
     //存储节点新增存储文件
     public static final String STORAGE_SAVE_FORMAT =
             "[Storage][Save] - " +
-                "fileId: {}," +
-                "fileSize: {}," +
-                "blockName: {}," +
-                "blockOffset: {}";
+                "fileId:{}," +
+                "fileSize:{}," +
+                "blockName:{}," +
+                "blockOffset:{}";
+
+    //检查点日志，用于判断日志那些字段已经持久化到磁盘，那些字段需要重启时复现
+    public static final String CHECK_POINT_FORMAT = "[CheckPoint]";
+
 }
