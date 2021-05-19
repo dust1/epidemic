@@ -4,7 +4,7 @@ import com.dust.grpc.kademlia.FindValueResponse;
 import com.dust.grpc.kademlia.KademliaServiceGrpc;
 import com.dust.grpc.kademlia.PingResponse;
 import com.dust.grpc.kademlia.StoreResponse;
-import com.dust.router.NodeTriad;
+import com.dust.router.kademlia.NodeTriad;
 import com.dust.router.RouterLayout;
 import com.dust.storage.StorageLayout;
 import com.google.protobuf.ByteString;

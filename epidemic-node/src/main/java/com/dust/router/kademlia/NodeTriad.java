@@ -1,4 +1,4 @@
-package com.dust.router;
+package com.dust.router.kademlia;
 
 import com.dust.grpc.kademlia.FindNodeResponse;
 import com.dust.grpc.kademlia.FindValueResponse;

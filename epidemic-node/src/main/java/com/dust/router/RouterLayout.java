@@ -3,6 +3,7 @@ package com.dust.router;
 import com.dust.NodeConfig;
 import com.dust.fundation.EpidemicUtils;
 import com.dust.grpc.kademlia.NodeInfo;
+import com.dust.router.kademlia.NodeTriad;
 
 import java.io.IOException;
 import java.util.List;
@@ -61,12 +62,6 @@ public abstract class RouterLayout {
      *      距离这个节点最近的节点三元组信息集合
      */
     public abstract List<NodeTriad> findNode(String key);
-
-    /**
-     * 往路由表中新增一个网络节点
-     * @param newNode 新增的节点信息三元组
-     */
-    public abstract void addNode(NodeTriad newNode);
 
     /**
      * 检查当前的实现版本与给定的版本是否兼容

@@ -1,9 +1,10 @@
-package com.dust.router;
+package com.dust.router.kademlia;
 
+import com.dust.NodeConfig;
 import com.dust.fundation.EpidemicUtils;
-import com.dust.fundation.LRUCache;
 import com.dust.logs.LogFormat;
 import com.dust.logs.Logger;
+import com.dust.router.kademlia.timer.KademliaRouterTimer;
 
 import java.util.*;
 
@@ -14,13 +15,25 @@ public class KademliaBucket {
 
     private int k;
 
-    private List<NodeTriadRouterNode>[] buckets;
-
     private String myNode;
 
+    private int bucketSize;
+
+    /**
+     * 通过使用时间进行排序的桶快照
+     */
     private PriorityQueue<NodeTriadRouterNode> nodeCache;
 
-    private int bucketSize;
+    /**
+     * 存放路由信息的桶
+     */
+    private List<NodeTriadRouterNode>[] buckets;
+
+    /**
+     * 桶相关的定时任务
+     * 包括：1、定时将内存数据持久化到磁盘；2、定时检测桶中的路由节点通信是否顺畅，如果不是则将其删除
+     */
+    private KademliaRouterTimer timer;
 
     public KademliaBucket(int maxSize, String myNode) {
         this.k = maxSize;
@@ -45,6 +58,14 @@ public class KademliaBucket {
     }
 
     /**
+     * 开启bucket的定时任务
+     */
+    public void initTimer(NodeConfig config) {
+        this.timer = new KademliaRouterTimer(config);
+        this.timer.start(this);
+    }
+
+    /**
      * 往桶中添加一个路由表
      * @param node 要添加的路由信息
      */
@@ -55,6 +76,11 @@ public class KademliaBucket {
         int prevIndex = EpidemicUtils.getDis(node.getKey(), myNode);
         prevIndex = prevIndex >= bucketSize ? bucketSize - 1 : prevIndex;
         var bucket = buckets[prevIndex];
+        for (var n : bucket) {
+            if (n.getKey().equals(node.getKey())) {
+                return;
+            }
+        }
 
         if (bucket.size() >= k) {
             //拆分桶。两种情况：1.存在后续桶。将新节点放入cache中等待垃圾回收进行重新排布；2.不存在后续桶。创建新桶
@@ -72,7 +98,7 @@ public class KademliaBucket {
             } else {
                 Logger.layoutLog.info(LogFormat.LAYOUT_ADD_FORMAT, node.getHost(), node.getPort(), node.getKey());
                 var newBucket = new ArrayList<NodeTriadRouterNode>(k);
-                List<NodeTriadRouterNode> oldBucket = new ArrayList<>(k);
+                var oldBucket = new ArrayList<NodeTriadRouterNode>(k);
                 for (var n : bucket) {
                     int index = EpidemicUtils.getDis(n.getKey(), myNode);
                     if (index == prevIndex) {
@@ -92,7 +118,10 @@ public class KademliaBucket {
             //不拆分桶，直接插入
             bucket.add(node);
         }
+
     }
+
+
 
     /**
      * 有一个节点进行ping槽走，检查本地路由表中是否有该节点，如果有则更新他的updatetime，如果没有则追加

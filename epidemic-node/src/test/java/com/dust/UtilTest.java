@@ -3,11 +3,14 @@ package com.dust;
 import static org.junit.Assert.assertTrue;
 
 import com.dust.fundation.EpidemicUtils;
+import com.dust.router.kademlia.timer.PingTask;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Unit test for simple App.
@@ -63,8 +66,14 @@ public class UtilTest {
     }
 
     @Test
-    public void readTest() {
-
+    public void timerTest() {
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                System.out.println("timer");
+            }
+        }, 100000,10000);
     }
 
 }

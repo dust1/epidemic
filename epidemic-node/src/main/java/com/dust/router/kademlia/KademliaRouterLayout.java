@@ -1,7 +1,8 @@
-package com.dust.router;
+package com.dust.router.kademlia;
 
 import com.dust.NodeConfig;
 import com.dust.fundation.EpidemicUtils;
+import com.dust.router.RouterLayout;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +19,11 @@ public class KademliaRouterLayout extends RouterLayout {
     private static final byte[] HEAD = {0xC, 0xA, 0xF, 0xE};
 
     /**
+     * 当前路由版本号
+     */
+    private static final long VERSION = 1L;
+
+    /**
      * 桶管理器
      */
     private KademliaBucket bucket;
@@ -26,11 +32,6 @@ public class KademliaRouterLayout extends RouterLayout {
      * 当前节点的节点id
      */
     private String myId;
-
-    /**
-     * 对
-     */
-    private RandomAccessFile snapshot;
 
     public KademliaRouterLayout(NodeConfig config) throws IOException {
         super(config);
@@ -48,19 +49,19 @@ public class KademliaRouterLayout extends RouterLayout {
         if (!f.exists()) {
             //不存在快照文件
             bucket = new KademliaBucket(config.getBucketKey(), myId);
+            bucket.initTimer(config);
             return;
         }
 
-        if (Objects.isNull(snapshot)) {
-            snapshot = new RandomAccessFile(f, "rw");
-        }
+        var snapshot = new RandomAccessFile(f, "rw");
         snapshot.seek(0);
         //尝试获取文件的读写锁
         final FileChannel fileChannel = snapshot.getChannel();
 
         if (!EpidemicUtils.checkHead(HEAD, snapshot)) {
-            snapshot.seek(0);
-            fileChannel.close();
+            //如果头文件读取失败则表示数据异常，不读取数据
+            //等到后面进行持久化的时候将原文件删除
+            snapshot.close();
             return;
         }
 
@@ -74,7 +75,10 @@ public class KademliaRouterLayout extends RouterLayout {
             }
             bucket.add(node);
         }
-        fileChannel.close();
+        snapshot.close();
+
+        //初始化桶的定时任务
+        bucket.initTimer(config);
     }
 
     @Override
@@ -93,18 +97,13 @@ public class KademliaRouterLayout extends RouterLayout {
     }
 
     @Override
-    public void addNode(NodeTriad newNode) {
-
-    }
-
-    @Override
     protected boolean isCompatibleVersion(long version) {
-        return true;
+        return VERSION == version;
     }
 
     @Override
     protected long getVersion() {
-        return 1L;
+        return VERSION;
     }
 
 }

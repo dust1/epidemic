@@ -15,7 +15,9 @@ public class NodeConfig extends Config {
             Parameter.BUCKET_KEY,
             Parameter.NODE_SALT,
             Parameter.CHUNK_SIZE,
-            Parameter.ORDER_NUM
+            Parameter.ORDER_NUM,
+            Parameter.LAYOUT_SAVE_MAX_SIZE,
+            Parameter.LAYOUT_SAVE_MAX_TIME
     };
 
     public NodeConfig(Properties properties) {
@@ -58,4 +60,11 @@ public class NodeConfig extends Config {
         return (Integer) parameter.get(Parameter.ORDER_NUM);
     }
 
+    public int getLayoutSaveMaxSize() {
+        return (Integer) parameter.get(Parameter.LAYOUT_SAVE_MAX_SIZE);
+    }
+
+    public int getLayoutSaveMaxTime() {
+        return (Integer) parameter.get(Parameter.LAYOUT_SAVE_MAX_TIME);
+    }
 }

@@ -1,7 +1,7 @@
 package com.dust;
 
 import com.dust.fundation.EpidemicUtils;
-import com.dust.router.NodeTriadRouterNode;
+import com.dust.router.kademlia.NodeTriadRouterNode;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -17,6 +17,8 @@ abstract public class Config {
         BUCKET_KEY("bucket_key", 20, Integer.class, false),
         NODE_SALT("node_salt", "", String.class, false),
         CHUNK_SIZE("chunk_size", "64MB", String.class, false),
+        LAYOUT_SAVE_MAX_SIZE("layout_save_max_size", 10, Integer.class, false),
+        LAYOUT_SAVE_MAX_TIME("layout_save_max_time", 10, Integer.class, false),
         ORDER_NUM("order_num", 101, Integer.class, false);
 
         /**

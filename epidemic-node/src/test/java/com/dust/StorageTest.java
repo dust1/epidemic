@@ -1,6 +1,6 @@
 package com.dust;
 
-import com.dust.router.NodeTriadRouterNode;
+import com.dust.router.kademlia.NodeTriadRouterNode;
 import org.junit.Test;
 
 import java.io.IOException;

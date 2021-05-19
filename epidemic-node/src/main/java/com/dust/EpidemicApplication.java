@@ -35,16 +35,16 @@ public class EpidemicApplication {
             System.exit(1);
         }
         try {
-            var taskQueue = new ConcurrentLinkedQueue<Task>();
+//            var taskQueue = new ConcurrentLinkedQueue<Task>();
 
-            ProtectorThread protectorThread = ProtectorThread.create(taskQueue);
-            Thread protector = new Thread(protectorThread);
-            protector.setDaemon(true);
+//            ProtectorThread protectorThread = ProtectorThread.create(taskQueue);
+//            Thread protector = new Thread(protectorThread);
+//            protector.setDaemon(true);
 
             Properties properties = createProperties(confFile);
-            EpidemicServer server = EpidemicServer.create(new NodeConfig(properties), taskQueue, protector);
+            EpidemicServer server = EpidemicServer.create(new NodeConfig(properties));
             server.start();
-            protector.start();
+//            protector.start();
 
             server.blockUntilShutdown();
         } catch (Exception e) {

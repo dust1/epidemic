@@ -3,8 +3,7 @@ package com.dust;
 import com.dust.fundation.StartedFunction;
 import com.dust.grpc.ClientAddressInterceptor;
 import com.dust.grpc.EpidemicService;
-import com.dust.guard.Task;
-import com.dust.router.KademliaRouterLayout;
+import com.dust.router.kademlia.KademliaRouterLayout;
 import com.dust.router.RouterLayout;
 import com.dust.storage.FileStorageLayout;
 import com.dust.storage.StorageLayout;
@@ -14,7 +13,6 @@ import io.grpc.ServerInterceptors;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -28,17 +26,12 @@ public class EpidemicServer {
     private final StorageLayout storageLayout;
     private final RouterLayout routerLayout;
 
-    private Queue<Task> taskQueue;
-    private Thread protector;
-
-    public static EpidemicServer create(NodeConfig config, Queue<Task> taskQueue, Thread thread) throws IOException {
-        return new EpidemicServer(config, taskQueue, thread);
+    public static EpidemicServer create(NodeConfig config) throws IOException {
+        return new EpidemicServer(config);
     }
 
-    private EpidemicServer(NodeConfig nodeConfig, Queue<Task> taskQueue, Thread thread) throws IOException {
+    private EpidemicServer(NodeConfig nodeConfig) throws IOException {
         this.config = nodeConfig;
-        this.taskQueue = taskQueue;
-        this.protector = thread;
 
         this.storageLayout = new FileStorageLayout(config);
         this.routerLayout = new KademliaRouterLayout(config);

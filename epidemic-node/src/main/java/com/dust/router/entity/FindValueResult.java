@@ -1,6 +1,6 @@
-package com.dust.router;
+package com.dust.router.entity;
 
-import com.dust.grpc.kademlia.FindValueResponse;
+import com.dust.router.kademlia.NodeTriad;
 import com.dust.storage.btree.DataNode;
 
 import java.util.List;
