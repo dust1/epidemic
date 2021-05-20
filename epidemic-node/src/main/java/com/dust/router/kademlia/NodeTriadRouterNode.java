@@ -83,6 +83,8 @@ public class NodeTriadRouterNode extends NodeTriad {
         resutl.put(getHost().getBytes(StandardCharsets.UTF_8));
         //4
         resutl.putInt(getPort());
+
+        resutl.flip();
         return resutl;
     }
 

@@ -15,7 +15,7 @@ public class KademliaBucket {
 
     private int k;
 
-    private String myNode;
+    public String myNode;
 
     private int bucketSize;
 
@@ -35,10 +35,13 @@ public class KademliaBucket {
      */
     private KademliaRouterTimer timer;
 
-    public KademliaBucket(int maxSize, String myNode) {
-        this.k = maxSize;
+    public final NodeConfig config;
+
+    public KademliaBucket(NodeConfig config, String myNode) {
+        this.k = config.getBucketKey();
         this.myNode = myNode;
         this.bucketSize = 1;
+        this.config = config;
 
         init();
     }
@@ -58,10 +61,17 @@ public class KademliaBucket {
     }
 
     /**
-     * 开启bucket的定时任务
+     * 初始化bucket的定时任务
      */
     public void initTimer(NodeConfig config) {
         this.timer = new KademliaRouterTimer(config);
+//        this.timer.start(this);
+    }
+
+    /**
+     * 开启定时任务
+     */
+    public void startTimer() {
         this.timer.start(this);
     }
 
@@ -119,6 +129,7 @@ public class KademliaBucket {
             bucket.add(node);
         }
 
+        timer.add();
     }
 
 
@@ -185,6 +196,18 @@ public class KademliaBucket {
             indexQueue.add(index + 1);
             indexQueue.add(index - 1);
          }
+        return result;
+    }
+
+    /**
+     * 将桶中的数据完整克隆出来
+     */
+    public synchronized List<NodeTriadRouterNode> cloneBucket() {
+        var result = new ArrayList<NodeTriadRouterNode>();
+        for (int i = 0; i < bucketSize; i++) {
+            var bucket = buckets[i];
+            result.addAll(bucket);
+        }
         return result;
     }
 

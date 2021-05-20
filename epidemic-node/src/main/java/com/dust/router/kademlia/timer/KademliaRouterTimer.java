@@ -6,6 +6,7 @@ import com.dust.logs.LogFormat;
 import com.dust.logs.Logger;
 import com.dust.router.kademlia.KademliaBucket;
 
+import java.util.Objects;
 import java.util.Queue;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -82,7 +83,8 @@ public class KademliaRouterTimer {
 
                 int nowTime = (int) (System.currentTimeMillis() / 1000);
                 if ((nowTime - prevTime) >= maxTime && count > 0) {
-                    queue.add(new SaveDiskTask());
+                    count = 0;
+                    queue.add(new SaveDiskTask(bucket));
                 }
             }
         });
@@ -94,9 +96,13 @@ public class KademliaRouterTimer {
      * 一个添加任务信息
      */
     public void add() {
+        if (Objects.isNull(bucket)) {
+            return;
+        }
+
         if (++count >= maxSize) {
             count = 0;
-            queue.add(new SaveDiskTask());
+            queue.add(new SaveDiskTask(bucket));
         }
 
         prevTime = (int) (System.currentTimeMillis() / 1000);

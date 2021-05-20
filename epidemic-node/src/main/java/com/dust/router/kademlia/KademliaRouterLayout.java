@@ -16,7 +16,7 @@ public class KademliaRouterLayout extends RouterLayout {
     /**
      * 路由持久化数据头
      */
-    private static final byte[] HEAD = {0xC, 0xA, 0xF, 0xE};
+    public static final byte[] HEAD = {0xC, 0xA, 0xF, 0xE};
 
     /**
      * 当前路由版本号
@@ -48,8 +48,10 @@ public class KademliaRouterLayout extends RouterLayout {
         File f = new File(routerPath, SNAPSHOT_FILENAME);
         if (!f.exists()) {
             //不存在快照文件
-            bucket = new KademliaBucket(config.getBucketKey(), myId);
+            bucket = new KademliaBucket(config, myId);
+            //初始化桶的定时任务
             bucket.initTimer(config);
+            bucket.startTimer();
             return;
         }
 
@@ -66,8 +68,9 @@ public class KademliaRouterLayout extends RouterLayout {
         }
 
         this.myId = EpidemicUtils.readToSHA1(snapshot);
-        this.bucket = new KademliaBucket(config.getBucketKey(), myId);
-
+        this.bucket = new KademliaBucket(config, myId);
+        //初始化桶的定时任务
+        bucket.initTimer(config);
         while (snapshot.getFilePointer() < snapshot.length()) {
             var node = NodeTriadRouterNode.fromFile(snapshot);
             if (Objects.isNull(node)) {
@@ -77,8 +80,8 @@ public class KademliaRouterLayout extends RouterLayout {
         }
         snapshot.close();
 
-        //初始化桶的定时任务
-        bucket.initTimer(config);
+        System.out.println(bucket);
+        bucket.startTimer();
     }
 
     @Override

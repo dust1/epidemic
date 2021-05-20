@@ -14,6 +14,6 @@ public class PingTask implements Task {
 
     @Override
     public void process() {
-        System.out.println("ping");
+//        System.out.println("ping");
     }
 }
