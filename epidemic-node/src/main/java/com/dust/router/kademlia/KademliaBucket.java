@@ -179,6 +179,8 @@ public class KademliaBucket {
     public List<NodeTriad> findNode(String nodeId) {
         List<NodeTriad> result = new ArrayList<>(k);
         int startIndex = EpidemicUtils.getDis(nodeId, myNode);
+        startIndex = startIndex >= bucketSize ? bucketSize - 1 : startIndex;
+
         Queue<Integer> indexQueue = new LinkedList<>();
         indexQueue.add(startIndex);
         boolean[] used = new boolean[160];
@@ -197,6 +199,23 @@ public class KademliaBucket {
             indexQueue.add(index - 1);
          }
         return result;
+    }
+
+    /**
+     * 判断桶中是否有当给定节点id对应的路由节点
+     * @param nodeId 给定的节点id
+     * @return 如果存在则返回true，否则返回false
+     */
+    public boolean contains(String nodeId) {
+        int startIndex = EpidemicUtils.getDis(nodeId, myNode);
+        startIndex = startIndex >= bucketSize ? bucketSize - 1 : startIndex;
+
+        var bucket = buckets[startIndex];
+        if (Objects.isNull(bucket) || bucket.isEmpty()) {
+            return false;
+        }
+
+        return bucket.stream().anyMatch(node -> node.getKey().equals(nodeId));
     }
 
     /**

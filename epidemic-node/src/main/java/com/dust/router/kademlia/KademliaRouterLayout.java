@@ -2,12 +2,18 @@ package com.dust.router.kademlia;
 
 import com.dust.NodeConfig;
 import com.dust.fundation.EpidemicUtils;
+import com.dust.logs.LogFormat;
+import com.dust.logs.LogParser;
+import com.dust.logs.Logger;
+import com.dust.logs.entity.LayoutLog;
 import com.dust.router.RouterLayout;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -51,6 +57,7 @@ public class KademliaRouterLayout extends RouterLayout {
             bucket = new KademliaBucket(config, myId);
             //初始化桶的定时任务
             bucket.initTimer(config);
+            readLog();
             bucket.startTimer();
             return;
         }
@@ -79,9 +86,65 @@ public class KademliaRouterLayout extends RouterLayout {
             bucket.add(node);
         }
         snapshot.close();
-
-        System.out.println(bucket);
+        readLog();
         bucket.startTimer();
+    }
+
+    /**
+     * 读取日志
+     */
+    private void readLog() {
+        File file = new File("log/layout.log");
+        if (!file.exists()) {
+            return;
+        }
+
+        var findEd = new HashSet<String>();
+        var list = new ArrayList<LayoutLog>();
+        try (var raf = new RandomAccessFile(file, "r")) {
+            long start = raf.getFilePointer();
+            long nextEnd = start + raf.length() - 1;
+            String result;
+            raf.seek(nextEnd);
+            int c = -1;
+            while (nextEnd >= start) {
+                c = raf.read();
+                if (c == '\r' || c == '\n') {
+                    result = raf.readLine();
+                    LayoutLog layoutLog = LogParser.parser.parseLayout(result);
+                    if (Objects.nonNull(layoutLog)) {
+                        if (bucket.contains(layoutLog.getNodeId())
+                                || findEd.contains(layoutLog.getNodeId())) {
+                            break;
+                        }
+
+                        findEd.add(layoutLog.getNodeId());
+                        list.add(layoutLog);
+                    }
+                    nextEnd -= 1;
+                }
+                nextEnd -= 1;
+                if (nextEnd >= 0) {
+                    raf.seek(nextEnd);
+                    if (nextEnd == 0) {
+                        LayoutLog layoutLog = LogParser.parser.parseLayout(raf.readLine());
+                        if (Objects.nonNull(layoutLog)) {
+                            if (bucket.contains(layoutLog.getNodeId())
+                                    || findEd.contains(layoutLog.getNodeId())) {
+                                break;
+                            }
+
+                            findEd.add(layoutLog.getNodeId());
+                            list.add(layoutLog);
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            Logger.systemLog.error(LogFormat.SYSTEM_ERROR_FORMAT, "读取路由节点操作日志文件失败", e.getMessage());
+        }
+
+        list.forEach(node -> bucket.add(node.toNode()));
     }
 
     @Override

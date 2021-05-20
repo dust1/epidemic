@@ -84,7 +84,7 @@ public class FileStorageLayout extends StorageLayout {
         String fileName = minFile.getName();
         initFileIO(fileName);
 
-        printMetadata();
+//        printMetadata();
     }
 
     /**

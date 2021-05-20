@@ -1,16 +1,22 @@
 package com.dust.logs.entity;
 
 import com.dust.logs.LogFormat;
+import com.dust.router.kademlia.NodeTriadRouterNode;
+import lombok.Getter;
 import lombok.ToString;
+
+import java.util.Objects;
 
 /**
  * 路由节点日志
  */
+@Getter
 @ToString
 public class LayoutLog {
 
     enum Type {
-        ADD("Bucket_Add");
+        ADD("Bucket_Add"),
+        CACHE_ADD("Cache_Add");
 
         private String key;
 
@@ -38,6 +44,9 @@ public class LayoutLog {
     private String nodeId;
 
     public static LayoutLog create(String log) {
+        if (Objects.isNull(log) || log.isBlank()) {
+            return null;
+        }
         if (log.contains(LogFormat.CHECK_POINT_FORMAT)) {
             return null;
         }
@@ -68,6 +77,10 @@ public class LayoutLog {
         this.host = host;
         this.port = port;
         this.nodeId = nodeId;
+    }
+
+    public NodeTriadRouterNode toNode() {
+        return new NodeTriadRouterNode(nodeId, host, port);
     }
 
 }
