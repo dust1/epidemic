@@ -1,5 +1,6 @@
 package com.dust;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
 
 import com.dust.fundation.EpidemicUtils;
@@ -8,9 +9,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.stream.Stream;
 
 /**
  * Unit test for simple App.
@@ -74,6 +78,24 @@ public class UtilTest {
                 System.out.println("timer");
             }
         }, 100000,10000);
+    }
+
+    @Test
+    public void streamTest() {
+        int[] nums = new int[1000];
+        for (int i = 0; i < 1000; i++) {
+            nums[i] = i + 1;
+        }
+        var list = new ArrayList<Integer>();
+        var list2 = new ArrayList<Integer>();
+        Arrays.stream(nums)
+                .parallel()
+                .map(i -> i + 10)
+                .peek(list::add)
+                .forEach(list2::add);
+        Integer[] l1 = list.toArray(new Integer[list.size()]);
+        Integer[] l2 = list2.toArray(new Integer[list.size()]);
+        assertArrayEquals(l1, l2);
     }
 
 }

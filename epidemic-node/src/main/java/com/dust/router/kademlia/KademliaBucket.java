@@ -230,6 +230,13 @@ public class KademliaBucket {
         return result;
     }
 
+    /**
+     * 返回缓存的克隆节点
+     */
+    public synchronized List<NodeTriadRouterNode> cloneCache() {
+        return new ArrayList<>(nodeCache);
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -239,6 +246,39 @@ public class KademliaBucket {
             sb.append("bucket").append(i).append("=[").append(bucket.toString()).append("], \r\n");
         }
         return sb.toString();
+    }
+
+    public int getPort() {
+        return config.getNodePort();
+    }
+
+    /**
+     * 移除节点
+     * @param node 要移除的路由节点
+     */
+    public void remove(NodeTriadRouterNode node) {
+        int dis = EpidemicUtils.getDis(node.getKey(), myNode);
+        dis = dis >= bucketSize ? bucketSize - 1 : dis;
+        var bucket = buckets[dis];
+        for (var n : bucket) {
+            if (n.equals(node)) {
+                bucket.remove(n);
+                return;
+            }
+        }
+    }
+
+    /**
+     * 移除缓存节点
+     * @param node
+     */
+    public void removeCache(NodeTriadRouterNode node) {
+        for (var n : nodeCache) {
+            if (n.equals(node)) {
+                nodeCache.remove(n);
+                return;
+            }
+        }
     }
 
 }

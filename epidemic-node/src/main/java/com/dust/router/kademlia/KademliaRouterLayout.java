@@ -102,6 +102,9 @@ public class KademliaRouterLayout extends RouterLayout {
         var findEd = new HashSet<String>();
         var list = new ArrayList<LayoutLog>();
         try (var raf = new RandomAccessFile(file, "r")) {
+            if (raf.length() == 0) {
+                return;
+            }
             long start = raf.getFilePointer();
             long nextEnd = start + raf.length() - 1;
             String result;

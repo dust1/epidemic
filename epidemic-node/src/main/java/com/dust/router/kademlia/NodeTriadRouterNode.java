@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 /**
  * 存储在Bucket中的网络节点路由表
@@ -92,6 +93,20 @@ public class NodeTriadRouterNode extends NodeTriad {
     public String toString() {
         return String.format("[nodeId=%s, host=%s, port=%d, updateTime=%d]",
                 getKey(), getHost(), getPort(), updateTime);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (Objects.isNull(obj)) {
+            return false;
+        }
+        if (!(obj instanceof NodeTriadRouterNode)) {
+            return false;
+        }
+        var source = (NodeTriadRouterNode) obj;
+        return source.getKey().equals(getKey())
+                && source.getHost().equals(getHost())
+                && source.getPort() == getPort();
     }
 
 }

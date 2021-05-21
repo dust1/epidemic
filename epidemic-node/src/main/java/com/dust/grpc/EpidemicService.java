@@ -38,8 +38,7 @@ public class EpidemicService extends KademliaServiceGrpc.KademliaServiceImplBase
     @Override
     public void ping(com.dust.grpc.kademlia.PingRequest request, StreamObserver<com.dust.grpc.kademlia.PingResponse> responseObserver) {
         String nodeId = request.getNodeInfo().getNodeId();
-        SocketAddress clientAddress = ClientAddressInterceptor.CLIENT_ADDRESS.get();
-        String clientIp = clientAddress.toString();
+        String clientIp = ClientAddressInterceptor.CLIENT_ADDRESS.get();
         int port = request.getNodeInfo().getPort();
         routerLayout.ping(nodeId, clientIp, port);
         PingResponse res = PingResponse.newBuilder()
@@ -51,8 +50,8 @@ public class EpidemicService extends KademliaServiceGrpc.KademliaServiceImplBase
 
     @Override
     public void store(com.dust.grpc.kademlia.StoreRequest request, StreamObserver<com.dust.grpc.kademlia.StoreResponse> responseObserver) {
-        SocketAddress clientAddress = ClientAddressInterceptor.CLIENT_ADDRESS.get();
-        routerLayout.ping(request.getNodeInfo(), clientAddress.toString());
+        var clientHost = ClientAddressInterceptor.CLIENT_ADDRESS.get();
+        routerLayout.ping(request.getNodeInfo(), clientHost);
 
         StoreResponse response;
         try {
@@ -73,8 +72,8 @@ public class EpidemicService extends KademliaServiceGrpc.KademliaServiceImplBase
 
     @Override
     public void findNode(com.dust.grpc.kademlia.FindRequest request, StreamObserver<com.dust.grpc.kademlia.FindNodeResponse> responseObserver) {
-        SocketAddress clientAddress = ClientAddressInterceptor.CLIENT_ADDRESS.get();
-        routerLayout.ping(request.getNodeInfo(), clientAddress.toString());
+        var clientHost = ClientAddressInterceptor.CLIENT_ADDRESS.get();
+        routerLayout.ping(request.getNodeInfo(), clientHost);
 
         List<NodeTriad> list = routerLayout.findNode(request.getTargetId());
         list.forEach(node -> responseObserver.onNext(node.toFindNodeResponse()));
@@ -83,8 +82,8 @@ public class EpidemicService extends KademliaServiceGrpc.KademliaServiceImplBase
 
     @Override
     public void findValue(com.dust.grpc.kademlia.FindRequest request, StreamObserver<com.dust.grpc.kademlia.FindValueResponse> responseObserver) {
-        SocketAddress clientAddress = ClientAddressInterceptor.CLIENT_ADDRESS.get();
-        routerLayout.ping(request.getNodeInfo(), clientAddress.toString());
+        var clientHost = ClientAddressInterceptor.CLIENT_ADDRESS.get();
+        routerLayout.ping(request.getNodeInfo(), clientHost);
 
         try {
             Optional<ByteBuffer> fileOptional = storageLayout.find(request.getTargetId());

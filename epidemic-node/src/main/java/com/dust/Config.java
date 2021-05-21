@@ -19,6 +19,7 @@ abstract public class Config {
         CHUNK_SIZE("chunk_size", "64MB", String.class, false),
         LAYOUT_SAVE_MAX_SIZE("layout_save_max_size", 10, Integer.class, false),
         LAYOUT_SAVE_MAX_TIME("layout_save_max_time", 10, Integer.class, false),
+        LAYOUT_START_PING_COUNT("start_ping_count", 18, Integer.class, false),
         ORDER_NUM("order_num", 101, Integer.class, false);
 
         /**

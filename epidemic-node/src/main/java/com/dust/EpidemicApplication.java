@@ -10,12 +10,10 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * 节点启动类
  */
-@Slf4j
 public class EpidemicApplication {
 
     //配置文件名称

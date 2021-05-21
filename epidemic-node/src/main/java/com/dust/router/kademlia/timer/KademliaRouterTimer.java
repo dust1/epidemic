@@ -7,9 +7,6 @@ import com.dust.logs.Logger;
 import com.dust.router.kademlia.KademliaBucket;
 
 import java.util.Objects;
-import java.util.Queue;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.*;
 
 /**
@@ -33,63 +30,94 @@ public class KademliaRouterTimer {
 
     private volatile int maxTime;
 
+    private volatile int pingCount;
+
+    private final int startPingCount;
+
     /**
      * 桶对象
      */
     private KademliaBucket bucket;
 
-    /**
-     * 定时任务
-     */
-    private Thread work;
+    private BlockingQueue<Task> saveQueue;
 
-    /**
-     * 两个线程之间通信的队列
-     */
-    private Queue<Task> queue;
+    private BlockingQueue<Task> pingQueue;
 
-    private ScheduledThreadPoolExecutor pool = new ScheduledThreadPoolExecutor(1);
+    private ScheduledThreadPoolExecutor pool;
 
     public KademliaRouterTimer(NodeConfig config) {
         this.maxSize = config.getLayoutSaveMaxSize();
         this.maxTime = config.getLayoutSaveMaxTime();
-
+        this.startPingCount = config.getStartPingCount();
         this.count = 0;
         this.prevTime = -1;
+    }
+
+    private void init(KademliaBucket bucket) {
+        this.bucket = bucket;
+        this.saveQueue = new LinkedBlockingQueue<>();
+        this.pingQueue = new LinkedBlockingQueue<>();
+        this.pool = new ScheduledThreadPoolExecutor(1);
     }
 
     /**
      * 开启定时任务
      */
     public void start(KademliaBucket bucket) {
-        this.bucket = bucket;
-        this.queue = new ConcurrentLinkedQueue<>();
+        init(bucket);
+
+        var saveWork = new Thread(new WorkingTask(saveQueue, "持久化"));
+        var pingWork = new Thread(new WorkingTask(pingQueue, "ping"));
+
+        saveWork.setDaemon(true);
+        pingWork.setDaemon(true);
+        saveWork.start();
+        pingWork.start();
 
         pool.scheduleAtFixedRate(() -> {
-            queue.add(new PingTask(bucket));
+            int nowTime = (int) (System.currentTimeMillis() / 1000);
+            if ((nowTime - prevTime) >= maxTime && count > 0) {
+                count = 0;
+                saveQueue.add(new SaveDiskTask(bucket));
+            }
+
+            if (++pingCount >= startPingCount) {
+                pingCount = 0;
+                pingQueue.add(new PingTask(bucket));
+            }
         }, 10, 10, TimeUnit.SECONDS);
+    }
 
-        this.work = new Thread(() -> {
-            Logger.systemLog.info(LogFormat.SYSTEM_INFO_FORMAT, "守护线程启动");
+    /**
+     * 工作线程
+     */
+    static class WorkingTask implements Runnable {
+
+        private BlockingQueue<Task> queue;
+
+        private String threadName;
+
+        public WorkingTask(BlockingQueue<Task> queue,
+                           String threadName) {
+            this.queue = queue;
+            this.threadName = threadName;
+        }
+
+        @Override
+        public void run() {
+            Logger.systemLog.info(LogFormat.SYSTEM_INFO_FORMAT, threadName + "线程启动");
             while (true) {
-                while (!queue.isEmpty()) {
-                    var task = queue.poll();
-                    try {
-                        task.process();
-                    } catch (Exception e) {
-                        Logger.systemLog.error(LogFormat.SYSTEM_ERROR_FORMAT, "定时任务执行失败", e.getMessage());
-                    }
-                }
-
-                int nowTime = (int) (System.currentTimeMillis() / 1000);
-                if ((nowTime - prevTime) >= maxTime && count > 0) {
-                    count = 0;
-                    queue.add(new SaveDiskTask(bucket));
+                try {
+                    //将其阻塞，减少CPU开销
+                    var task = queue.take();
+                    task.process();
+                } catch (InterruptedException e) {
+                    Logger.systemLog.info(LogFormat.SYSTEM_INFO_FORMAT, threadName + "线程中断");
+                } catch (Exception e) {
+                    Logger.systemLog.error(LogFormat.SYSTEM_ERROR_FORMAT, threadName + "线程任务执行失败", e.getMessage());
                 }
             }
-        });
-        this.work.setDaemon(true);
-        this.work.start();
+        }
     }
 
     /**
@@ -102,10 +130,8 @@ public class KademliaRouterTimer {
 
         if (++count >= maxSize) {
             count = 0;
-            queue.add(new SaveDiskTask(bucket));
+            saveQueue.add(new SaveDiskTask(bucket));
         }
-
-        prevTime = (int) (System.currentTimeMillis() / 1000);
     }
 
 }

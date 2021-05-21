@@ -17,7 +17,8 @@ public class NodeConfig extends Config {
             Parameter.CHUNK_SIZE,
             Parameter.ORDER_NUM,
             Parameter.LAYOUT_SAVE_MAX_SIZE,
-            Parameter.LAYOUT_SAVE_MAX_TIME
+            Parameter.LAYOUT_SAVE_MAX_TIME,
+            Parameter.LAYOUT_START_PING_COUNT
     };
 
     public NodeConfig(Properties properties) {
@@ -66,5 +67,9 @@ public class NodeConfig extends Config {
 
     public int getLayoutSaveMaxTime() {
         return (Integer) parameter.get(Parameter.LAYOUT_SAVE_MAX_TIME);
+    }
+
+    public int getStartPingCount() {
+        return (Integer) parameter.get(Parameter.LAYOUT_START_PING_COUNT);
     }
 }
