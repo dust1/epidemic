@@ -90,6 +90,17 @@ public class KademliaRouterLayout extends RouterLayout {
         bucket.startTimer();
     }
 
+    @Override
+    public boolean findFriend() {
+        if (bucket.getBucketSize() != 0) {
+            //桶中有数据，不再寻找朋友
+            return true;
+        }
+
+        //TODO 寻找节点充实自己
+        return false;
+    }
+
     /**
      * 读取日志
      */

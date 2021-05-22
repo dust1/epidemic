@@ -252,6 +252,10 @@ public class KademliaBucket {
         return config.getNodePort();
     }
 
+    public int getBucketSize() {
+        return bucketSize;
+    }
+
     /**
      * 移除节点
      * @param node 要移除的路由节点

@@ -64,6 +64,12 @@ public abstract class RouterLayout {
     public abstract List<NodeTriad> findNode(String key);
 
     /**
+     * 当当前节点在初始化完成后不存在任何其他路由节点的情况下，调用该方法，该方法将会通过配置中的联系节点请求节点信息。
+     * @return 如果与联系人的通信失败则返回false，表示该节点属于单机节点。
+     */
+    public abstract boolean findFriend();
+
+    /**
      * 检查当前的实现版本与给定的版本是否兼容
      * @param version 检查的版本
      * @return 如果兼容则返回true，否则返回false

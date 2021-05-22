@@ -35,12 +35,16 @@ public class EpidemicService extends KademliaServiceGrpc.KademliaServiceImplBase
         this.routerLayout = routerLayout;
     }
 
+    /**
+     * ping。当收到一个节点的ping请求，并且发现自身节点某个文件与这个节点的距离比自身的距离还要近的时候，将这个文件块推送到对应的节点中
+     */
     @Override
     public void ping(com.dust.grpc.kademlia.PingRequest request, StreamObserver<com.dust.grpc.kademlia.PingResponse> responseObserver) {
         String nodeId = request.getNodeInfo().getNodeId();
         String clientIp = ClientAddressInterceptor.CLIENT_ADDRESS.get();
         int port = request.getNodeInfo().getPort();
         routerLayout.ping(nodeId, clientIp, port);
+        storageLayout.ping(nodeId, clientIp, port);
         PingResponse res = PingResponse.newBuilder()
                 .setTimestamp(request.getTimestamp())
                 .build();

@@ -169,6 +169,11 @@ public class FileStorageLayout extends StorageLayout {
         }
     }
 
+    @Override
+    public void ping(String nodeId, String host, int port) {
+        //TODO 检查本地文件是否有距离更近的情况
+    }
+
     /**
      * 冻结当前文件块，并创建一个新的文件块
      */

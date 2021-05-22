@@ -18,7 +18,9 @@ public class NodeConfig extends Config {
             Parameter.ORDER_NUM,
             Parameter.LAYOUT_SAVE_MAX_SIZE,
             Parameter.LAYOUT_SAVE_MAX_TIME,
-            Parameter.LAYOUT_START_PING_COUNT
+            Parameter.LAYOUT_START_PING_COUNT,
+            Parameter.CONTACT_HOST,
+            Parameter.CONTACT_PORT
     };
 
     public NodeConfig(Properties properties) {
@@ -71,5 +73,13 @@ public class NodeConfig extends Config {
 
     public int getStartPingCount() {
         return (Integer) parameter.get(Parameter.LAYOUT_START_PING_COUNT);
+    }
+
+    public String getContactHost() {
+        return (String) parameter.get(Parameter.CONTACT_HOST);
+    }
+
+    public int getContactPort() {
+        return (Integer) parameter.get(Parameter.CONTACT_PORT);
     }
 }

@@ -106,6 +106,17 @@ public abstract class StorageLayout {
     public abstract boolean delete(String fileId) throws IOException;
 
     /**
+     * 存储节点根据nodeId检查自身文件是否有距离该id更近的情况
+     * 如果存在则将文件发送给这个节点。
+     * @param nodeId 节点id
+     * @param host 节点host
+     * @param port 节点端口
+     */
+    public void ping(String nodeId, String host, int port) {
+        //do not anything
+    }
+
+    /**
      * 检查当前的实现版本与给定的版本是否兼容
      * @param version 检查的版本
      * @return 如果兼容则返回true，否则返回false

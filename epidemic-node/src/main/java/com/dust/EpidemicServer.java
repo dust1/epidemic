@@ -3,6 +3,8 @@ package com.dust;
 import com.dust.fundation.StartedFunction;
 import com.dust.grpc.ClientAddressInterceptor;
 import com.dust.grpc.EpidemicService;
+import com.dust.logs.LogFormat;
+import com.dust.logs.Logger;
 import com.dust.router.kademlia.KademliaRouterLayout;
 import com.dust.router.RouterLayout;
 import com.dust.storage.FileStorageLayout;
@@ -55,19 +57,20 @@ public class EpidemicServer {
         //TODO 启动前需要加载路由表以及索引文件索引
         storageLayout.load();
         routerLayout.load();
-
+        if (!routerLayout.findFriend()) {
+            Logger.systemLog.warn(LogFormat.SYSTEM_INFO_FORMAT, "当前节点无法连接上联系节点！！！");
+        }
         server.start();
         rollback.apply();
-        System.out.println("server started..");
+        Logger.systemLog.info(LogFormat.SYSTEM_INFO_FORMAT, "节点启动完成...");
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            // Use stderr here since the logger may have been reset by its JVM shutdown hook.
-            System.err.println("*** shutting down gRPC server since JVM is shutting down");
+            Logger.systemLog.info(LogFormat.SYSTEM_INFO_FORMAT, "*** shutting down gRPC server since JVM is shutting down");
             try {
                 EpidemicServer.this.stop();
             } catch (InterruptedException e) {
                 e.printStackTrace(System.err);
             }
-            System.err.println("*** server shut down");
+            Logger.systemLog.info(LogFormat.SYSTEM_INFO_FORMAT, "*** server shut down");
         }));
     }
 
@@ -91,24 +94,5 @@ public class EpidemicServer {
             server.awaitTermination();
         }
     }
-
-//    public static void main(String[] args) {
-//        String configPath = "/Users/kous/Desktop/setting.conf";
-//        File confFile = new File(configPath);
-//        Properties properties = new Properties();
-//        try (var input = new FileReader(confFile)) {
-//            properties.load(input);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        NodeConfig config = new NodeConfig(properties);
-//        try {
-//            EpidemicServer server = new EpidemicServer(config);
-//            server.start();
-//            server.blockUntilShutdown();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
 
 }
