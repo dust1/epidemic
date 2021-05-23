@@ -110,9 +110,10 @@ public abstract class StorageLayout {
      * 如果存在则将文件发送给这个节点。
      * @param nodeId 节点id
      * @param host 节点host
+     * @param myId 当前节点自身的id
      * @param port 节点端口
      */
-    public void ping(String nodeId, String host, int port) {
+    public void ping(String nodeId, String myId, String host, int port) {
         //do not anything
     }
 

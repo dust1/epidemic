@@ -44,7 +44,7 @@ public class EpidemicService extends KademliaServiceGrpc.KademliaServiceImplBase
         String clientIp = ClientAddressInterceptor.CLIENT_ADDRESS.get();
         int port = request.getNodeInfo().getPort();
         routerLayout.ping(nodeId, clientIp, port);
-        storageLayout.ping(nodeId, clientIp, port);
+        storageLayout.ping(nodeId, routerLayout.getMyId(), clientIp, port);
         PingResponse res = PingResponse.newBuilder()
                 .setTimestamp(request.getTimestamp())
                 .build();

@@ -2,12 +2,17 @@ package com.dust.storage;
 
 import com.dust.NodeConfig;
 import com.dust.fundation.EpidemicUtils;
+import com.dust.grpc.kademlia.KademliaServiceGrpc;
+import com.dust.grpc.kademlia.NodeInfo;
 import com.dust.grpc.kademlia.StoreRequest;
+import com.dust.grpc.kademlia.StoreResponse;
 import com.dust.logs.LogFormat;
 import com.dust.logs.Logger;
 import com.dust.storage.btree.BTreeManager;
 import com.dust.storage.btree.DataNode;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.ByteString;
+import io.grpc.ManagedChannelBuilder;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,10 +20,9 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class FileStorageLayout extends StorageLayout {
 
@@ -170,8 +174,58 @@ public class FileStorageLayout extends StorageLayout {
     }
 
     @Override
-    public void ping(String nodeId, String host, int port) {
+    public void ping(String nodeId, String myId, String host, int port) {
         //TODO 检查本地文件是否有距离更近的情况
+
+        Queue<DataNode> sendList = new LinkedList<>();
+        var iter = catalog.iterator();
+        while (iter.hasNext()) {
+            var node = iter.next();
+            int myDis = EpidemicUtils.getDis(node.getFileId(), myId);
+            int nodeDis = EpidemicUtils.getDis(node.getFileId(), nodeId);
+            if (nodeDis < myDis) {
+                sendList.add(node);
+            }
+        }
+        if (sendList.isEmpty()) {
+            return;
+        }
+
+        var futures = new ArrayList<ListenableFuture<StoreResponse>>();
+        while (!sendList.isEmpty()) {
+            var node = sendList.poll();
+            var buffer = node.toBuffer(config.getStoragePath());
+
+            var info = NodeInfo.newBuilder()
+                    .setNodeId(myId)
+                    .setPort(config.getNodePort())
+                    .build();
+            var channel = ManagedChannelBuilder
+                    .forAddress(host, port)
+                    .usePlaintext()
+                    .build();
+            var data = ByteString.copyFrom(buffer);
+            var client = KademliaServiceGrpc.newFutureStub(channel);
+            var req = StoreRequest.newBuilder()
+                    .setNodeInfo(info)
+                    .setData(data)
+                    .build();
+            futures.add(client.store(req));
+        }
+
+        var resList = futures.parallelStream()
+                .map(f -> {
+                    try {
+                        return f.get(20, TimeUnit.SECONDS);
+                    } catch (Exception e) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        if (resList.size() != sendList.size()) {
+            Logger.systemLog.error(LogFormat.SYSTEM_ERROR_FORMAT, "有" + (sendList.size() - resList.size()) + "个文件发送到" + nodeId + "," + host + "," + port + "失败", "-");
+        }
     }
 
     /**

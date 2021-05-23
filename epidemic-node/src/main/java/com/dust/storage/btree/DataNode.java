@@ -1,6 +1,8 @@
 package com.dust.storage.btree;
 
 import com.dust.fundation.EpidemicUtils;
+import com.dust.logs.LogFormat;
+import com.dust.logs.Logger;
 import com.dust.storage.FileStorageLayout;
 import com.dust.storage.StorageLayout;
 import com.dust.storage.buffer.ReusableBuffer;
@@ -8,8 +10,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -94,6 +98,26 @@ public class DataNode {
         this.size = size;
         this.mdOffset = mdOffset;
         this.status = 1;
+    }
+
+    /**
+     * 读取DataNode的数据内容
+     * @param savePath DataNode保存路径
+     * @return 如果读取失败则返回null
+     */
+    public ByteBuffer toBuffer(String savePath) {
+        try (var raf = new RandomAccessFile(new File(savePath, dataName + FileStorageLayout.DATA_SUFFIX), "r");
+            var channel = raf.getChannel()) {
+
+            raf.seek(offset);
+            var buffer = ByteBuffer.allocateDirect((int) size);
+            channel.read(buffer);
+            buffer.flip();
+            return buffer;
+        } catch (IOException e) {
+            Logger.systemLog.error(LogFormat.SYSTEM_ERROR_FORMAT, "读取数据文件" + dataName + "异常", e.getMessage());
+            return null;
+        }
     }
 
     public static DataNode byFileId(String fileId) {

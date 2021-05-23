@@ -2,20 +2,21 @@ package com.dust.router.kademlia;
 
 import com.dust.NodeConfig;
 import com.dust.fundation.EpidemicUtils;
+import com.dust.grpc.kademlia.FindRequest;
+import com.dust.grpc.kademlia.KademliaServiceGrpc;
+import com.dust.grpc.kademlia.NodeInfo;
 import com.dust.logs.LogFormat;
 import com.dust.logs.LogParser;
 import com.dust.logs.Logger;
 import com.dust.logs.entity.LayoutLog;
 import com.dust.router.RouterLayout;
+import io.grpc.ManagedChannelBuilder;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class KademliaRouterLayout extends RouterLayout {
 
@@ -92,13 +93,46 @@ public class KademliaRouterLayout extends RouterLayout {
 
     @Override
     public boolean findFriend() {
-        if (bucket.getBucketSize() != 0) {
+        if (bucket.getBucketSize() != 0 || config.getContactPort() == -1) {
             //桶中有数据，不再寻找朋友
             return true;
         }
+        var info = NodeInfo.newBuilder()
+                .setPort(config.getNodePort())
+                .setNodeId(myId)
+                .build();
+        var queue = new LinkedList<NodeTriadRouterNode>();
 
-        //TODO 寻找节点充实自己
-        return false;
+        queue.add(new NodeTriadRouterNode("-", config.getContactHost(), config.getContactPort()));
+        while (!queue.isEmpty() && bucket.getBucketSize() < 2) {
+            var node = queue.poll();
+            if (Objects.isNull(node)) {
+                continue;
+            }
+
+            var channel = ManagedChannelBuilder
+                    .forAddress(node.getHost(), node.getPort())
+                    .usePlaintext()
+                    .build();
+            var client = KademliaServiceGrpc.newBlockingStub(channel);
+            var req = FindRequest.newBuilder()
+                    .setTargetId(myId)
+                    .setNodeInfo(info)
+                    .build();
+            var res = client.findNode(req);
+            while (res.hasNext()) {
+                var re = res.next();
+                if (re.getCode() != 1 || myId.equals(re.getNodeId())
+                    || bucket.contains(re.getNodeId())) {
+                    continue;
+                }
+                var newNode = new NodeTriadRouterNode(re.getNodeId(),
+                        re.getHost(), re.getPort());
+                bucket.add(newNode);
+                queue.add(newNode);
+            }
+        }
+        return bucket.getBucketSize() > 0;
     }
 
     /**
