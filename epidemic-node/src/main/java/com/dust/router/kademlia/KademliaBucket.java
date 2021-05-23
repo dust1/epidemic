@@ -104,6 +104,9 @@ public class KademliaBucket {
                     }
                 }
                 node.updateTime();
+                if (nodeCache.size() >= config.getBucketKey()) {
+                    removeEndCache();
+                }
                 nodeCache.add(node);
             } else {
                 Logger.layoutLog.info(LogFormat.LAYOUT_ADD_FORMAT, node.getHost(), node.getPort(), node.getKey());
@@ -132,7 +135,22 @@ public class KademliaBucket {
         timer.add();
     }
 
-
+    /**
+     * 当缓存满了并且要有新的节点加入的时候，将最后一个最久未使用的节点删除
+     */
+    private void removeEndCache() {
+        if (nodeCache.size() < config.getBucketKey()) {
+            return;
+        }
+        var temp = new ArrayList<NodeTriadRouterNode>(nodeCache.size());
+        while (!nodeCache.isEmpty()) {
+            var node = nodeCache.poll();
+            temp.add(node);
+        }
+        for (int i = 0; i < temp.size() - 1; i++) {
+            nodeCache.add(temp.get(i));
+        }
+    }
 
     /**
      * 有一个节点进行ping槽走，检查本地路由表中是否有该节点，如果有则更新他的updatetime，如果没有则追加
