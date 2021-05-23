@@ -57,10 +57,12 @@ public class EpidemicServer {
         //TODO 启动前需要加载路由表以及索引文件索引
         storageLayout.load();
         routerLayout.load();
+        server.start();
+
+        //必须要等服务启动完成才能执行，否则其他节点的文件推送将失败
         if (!routerLayout.findFriend()) {
             Logger.systemLog.warn(LogFormat.SYSTEM_INFO_FORMAT, "当前节点无法连接上联系节点！！！");
         }
-        server.start();
         rollback.apply();
         Logger.systemLog.info(LogFormat.SYSTEM_INFO_FORMAT, "节点启动完成...");
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
