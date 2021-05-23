@@ -252,6 +252,14 @@ public class KademliaBucket {
         return config.getNodePort();
     }
 
+    public boolean isEmpty() {
+        if (bucketSize > 1) {
+            return false;
+        }
+        var bucket = buckets[0];
+        return Objects.isNull(bucket) || bucket.isEmpty();
+    }
+
     public int getBucketSize() {
         return bucketSize;
     }

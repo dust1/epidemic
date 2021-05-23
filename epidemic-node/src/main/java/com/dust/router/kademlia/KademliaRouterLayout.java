@@ -93,7 +93,7 @@ public class KademliaRouterLayout extends RouterLayout {
 
     @Override
     public boolean findFriend() {
-        if (bucket.getBucketSize() != 0 || config.getContactPort() == -1) {
+        if (!bucket.isEmpty() || config.getContactPort() == -1) {
             //桶中有数据，不再寻找朋友
             return true;
         }
@@ -104,7 +104,7 @@ public class KademliaRouterLayout extends RouterLayout {
         var queue = new LinkedList<NodeTriadRouterNode>();
 
         queue.add(new NodeTriadRouterNode("-", config.getContactHost(), config.getContactPort()));
-        while (!queue.isEmpty() && bucket.getBucketSize() < 2) {
+        while (!queue.isEmpty() && !bucket.isEmpty()) {
             var node = queue.poll();
             if (Objects.isNull(node)) {
                 continue;
@@ -132,7 +132,7 @@ public class KademliaRouterLayout extends RouterLayout {
                 queue.add(newNode);
             }
         }
-        return bucket.getBucketSize() > 0;
+        return bucket.isEmpty();
     }
 
     /**
