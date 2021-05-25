@@ -28,7 +28,7 @@ public class KademliaRouterLayout extends RouterLayout {
     /**
      * 当前路由版本号
      */
-    private static final long VERSION = 1L;
+    public static final long VERSION = 1L;
 
     /**
      * 桶管理器

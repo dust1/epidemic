@@ -24,12 +24,10 @@ abstract public class Config {
         NODE_SALT("node_salt", "", String.class, false),
         //存储数据块大小
         CHUNK_SIZE("chunk_size", "64MB", String.class, false),
-        //触发路由持久化的新增节点数量
-        LAYOUT_SAVE_MAX_SIZE("layout_save_max_size", 10, Integer.class, false),
-        //触发路由持久化的最后一个新增节点经过时间
-        LAYOUT_SAVE_MAX_TIME("layout_save_max_time", 10, Integer.class, false),
-        //触发ping操作的经过时间数量，TIME = LAYOUT_SAVE_MAX_TIME * LAYOUT_START_PING_COUNT
-        LAYOUT_START_PING_COUNT("start_ping_count", 18, Integer.class, false),
+        //发起一次Re-Publishing的时间间隔,默认1小时，最低也是1小时
+        RE_PUBLISHING_TIME("re_publishing_time", "1h", String.class, true),
+        //发起Re-Publishing时的线程池大小
+        RE_PUBLISHING_THREAD_POOL_SIZE("re_publishing_thread_pool_size", 10, Integer.class, true),
         //文件目录树每层的数量
         ORDER_NUM("order_num", 101, Integer.class, false),
         //联络节点host。最重要的参数，必须依靠该节点才能加入集群中

@@ -8,6 +8,7 @@ import com.dust.grpc.kademlia.StoreRequest;
 import com.dust.grpc.kademlia.StoreResponse;
 import com.dust.logs.LogFormat;
 import com.dust.logs.Logger;
+import com.dust.scheduler.RePublishing;
 import com.dust.storage.btree.BTreeManager;
 import com.dust.storage.btree.DataNode;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -30,13 +31,11 @@ public class FileStorageLayout extends StorageLayout {
      * 存储相关的两个文件后缀名
      */
     public static final String MD_SUFFIX = ".md";
-    public static final String DATA_SUFFIX = ".data";
+    public static final String DATA_SUFFIX = ".da";
 
-    //可写入的元数据文件操作对象
-    private RandomAccessFile writeMD;
-    //与元数据文件操作对象相对应的数据写入对象
-    private RandomAccessFile writeData;
-    //文件操作对象的对象名称
+    /**
+     * 文件操作对象的对象名称
+     */
     private String writeName;
 
     /**
@@ -44,86 +43,73 @@ public class FileStorageLayout extends StorageLayout {
      */
     private final BTreeManager catalog;
 
-    public FileStorageLayout(NodeConfig config) throws IOException {
-        super(config);
-        catalog = BTreeManager.create(config.getOrderNum());
+    private final String nodeId;
+
+    private final RePublishing rePublishing;
+
+    public static StorageLayout create(NodeConfig config, String nodeId, RePublishing rePublishing) throws IOException {
+        String tmp = config.getStoragePath();
+        if (!tmp.endsWith("/")) {
+            tmp += "/";
+        }
+        byte[] head = {0xd, 0xa, 0xd, 0xa};
+        return new FileStorageLayout(tmp, config, 1L, ".storage_version", head, nodeId, rePublishing);
+    }
+
+    private FileStorageLayout(String path, NodeConfig config, long version,
+                             String versionFileName, byte[] head, String nodeId,
+                              RePublishing rePublishing) throws IOException {
+        super(path, config, version, versionFileName, head);
+        this.nodeId = nodeId;
+        this.catalog = BTreeManager.create(config.getOrderNum());
+        this.rePublishing = rePublishing;
     }
 
     @Override
-    public void load() throws IOException {
-        File dir = new File(storagePath);
-        if (!dir.exists()) {
-            if (!dir.mkdirs()) {
-                throw new IOException("创建文件夹失败：" + dir.getPath());
-            }
-            return;
-        }
-
+    public void before() throws IOException {
+        File dir = new File(path);
         //读取所有元数据文件
         File[] mdFiles = dir.listFiles((f, name) -> name.endsWith(MD_SUFFIX));
         if (Objects.isNull(mdFiles) || mdFiles.length == 0) {
-            String fileName = EpidemicUtils.randomNodeId(config.getNodeSalt());
-            initFileIO(fileName);
+            //不存在元数据则随机生成一个待写入文件id
+            this.writeName = EpidemicUtils.randomNodeId(config.getNodeSalt());
             return;
         }
 
+        File minFile = mdFiles[0];
         for (File mdFile : mdFiles) {
+            if (mdFile.length() < minFile.length()) {
+                minFile = mdFile;
+            }
+
             String fileName = mdFile.getName();
+            String fileId = fileName.substring(0, fileName.lastIndexOf(MD_SUFFIX));
+
             RandomAccessFile raf = new RandomAccessFile(mdFile, "r");
             raf.seek(0);
             final FileChannel channel = raf.getChannel();
             try (raf; channel) {
                 while (raf.getFilePointer() < raf.length()) {
-                    DataNode dataNode = DataNode.byFile(raf, fileName);
+                    DataNode dataNode = DataNode.byFile(raf, fileId, head);
                     if (Objects.nonNull(dataNode))
                         catalog.insert(dataNode);
                 }
             }
         }
 
-        //选取最小的MD文件作为当前活动文件
-        File minFile = Arrays.stream(mdFiles)
-                .min(Comparator.comparingLong(File::length))
-                .get();
         String fileName = minFile.getName();
-        initFileIO(fileName);
-
-//        printMetadata();
-    }
-
-    /**
-     * 打印元数据
-     */
-    private void printMetadata() {
-        var iter = catalog.iterator();
-        while (iter.hasNext()) {
-            var node = iter.next();
-            System.out.println(node.toString());
-        }
-    }
-
-    /**
-     * 文件SHA1ID初始化本地存储文件读取对象
-     * @param fileName SHA1id
-     * @throws FileNotFoundException
-     *  找不到文件
-     */
-    private void initFileIO(String fileName) throws FileNotFoundException {
-        if (fileName.endsWith(".md") || fileName.endsWith(".data")) {
-            fileName = fileName.substring(0, fileName.lastIndexOf("."));
-        }
-        writeName = fileName;
-        writeMD = new RandomAccessFile(new File(storagePath, fileName + MD_SUFFIX), "rw");
-        writeData = new RandomAccessFile(new File(storagePath, fileName + DATA_SUFFIX), "rw");
+        this.writeName = fileName.substring(0, fileName.lastIndexOf(MD_SUFFIX));
     }
 
     @Override
-    public Optional<ByteBuffer> find(String fileId) throws IOException {
+    public ByteBuffer findFile(String fileId) throws IOException {
         var node = catalog.find(fileId);
         if (Objects.isNull(node)) {
-            return Optional.empty();
+            var buffer = ByteBuffer.allocate(0);
+            buffer.flip();
+            return buffer;
         }
-        return Optional.of(read(node));
+        return readByDataNode(node);
     }
 
     /**
@@ -131,9 +117,9 @@ public class FileStorageLayout extends StorageLayout {
      * @param node 要读取的文件元数据
      * @return 如果存在则返回，否则返回null
      */
-    private ByteBuffer read(DataNode node) throws IOException {
+    private ByteBuffer readByDataNode(DataNode node) throws IOException {
         String fileName = node.getDataName() + DATA_SUFFIX;
-        var raf = new RandomAccessFile(new File(storagePath, fileName), "r");
+        var raf = new RandomAccessFile(new File(path, fileName), "r");
         final var channel = raf.getChannel();
         ByteBuffer result = ByteBuffer.allocate((int) node.getSize());
         try (raf; channel) {
@@ -144,45 +130,39 @@ public class FileStorageLayout extends StorageLayout {
         return result;
     }
 
-    /**
-     * 单线程存入
-     */
     @Override
-    public synchronized void store(StoreRequest storeRequest) throws IOException {
-        String fileId = storeRequest.getFileId();
-        ByteString reqData = storeRequest.getData();
+    public void store(ByteBuffer buffer, String fileId) throws IOException {
+        var mdFile = new RandomAccessFile(new File(path, writeName + MD_SUFFIX), "rw");
+        var dataFile = new RandomAccessFile(new File(path, writeName + DATA_SUFFIX), "rw");
+        try (mdFile; dataFile;
+             final var channel = dataFile.getChannel()) {
+            mdFile.seek(mdFile.length());
+            dataFile.seek(dataFile.length());
+            long size = buffer.limit();
+            long mdOffset = mdFile.length();
+            long offset = dataFile.length();
 
-        writeMD.seek(writeMD.length());
-        writeData.seek(writeData.length());
+            channel.write(buffer);
 
-        long size = reqData.size();
-        long mdOffset = writeMD.length();
-        long offset = writeData.length();
-
-        ByteBuffer data = reqData.asReadOnlyByteBuffer();
-        final FileChannel channel = writeData.getChannel();
-        channel.write(data);
-
-        DataNode dataNode = catalog.insert(fileId);
-        dataNode.load((byte) 0, writeName, offset, size, mdOffset);
-        dataNode.toFile(writeMD);
-        System.out.println("store");
-        Logger.storageLog.info(LogFormat.STORAGE_SAVE_FORMAT, fileId, size, writeName, offset);
-        if (writeData.length() > chunkSize) {
-            freezeAndCreate();
+            DataNode dataNode = catalog.insert(fileId);
+            dataNode.load((byte) 0, writeName, offset, size, mdOffset);
+            dataNode.toFile(mdFile, head);
+            Logger.storageLog.info(LogFormat.STORAGE_SAVE_FORMAT, fileId, size, writeName, offset);
+            if (dataFile.length() > chunkSize) {
+                this.writeName = EpidemicUtils.randomNodeId(config.getNodeSalt());
+            }
         }
     }
 
     @Override
-    public void ping(String nodeId, String myId, String host, int port) {
-        //TODO 检查本地文件是否有距离更近的情况
-
+    public void haveNewNode(String newNodeId, String host, int port) {
+        //TODO
         Queue<DataNode> sendList = new LinkedList<>();
         var iter = catalog.iterator();
         while (iter.hasNext()) {
             var node = iter.next();
-            int myDis = EpidemicUtils.getDis(node.getFileId(), myId);
-            int nodeDis = EpidemicUtils.getDis(node.getFileId(), nodeId);
+            int myDis = EpidemicUtils.getDis(node.getFileId(), nodeId);
+            int nodeDis = EpidemicUtils.getDis(node.getFileId(), newNodeId);
             if (nodeDis < myDis) {
                 sendList.add(node);
             }
@@ -197,7 +177,7 @@ public class FileStorageLayout extends StorageLayout {
             var buffer = node.toBuffer(config.getStoragePath());
 
             var info = NodeInfo.newBuilder()
-                    .setNodeId(myId)
+                    .setNodeId(nodeId)
                     .setPort(config.getNodePort())
                     .build();
             var channel = ManagedChannelBuilder
@@ -228,32 +208,15 @@ public class FileStorageLayout extends StorageLayout {
         }
     }
 
-    /**
-     * 冻结当前文件块，并创建一个新的文件块
-     */
-    public void freezeAndCreate() throws IOException {
-        writeMD.close();
-        writeData.close();
-
-        String newName = EpidemicUtils.randomNodeId(config.getNodeSalt());
-        writeMD = new RandomAccessFile(new File(storagePath, newName + MD_SUFFIX), "rw");
-        writeData = new RandomAccessFile(new File(storagePath, newName + DATA_SUFFIX), "rw");
-        writeName = newName;
-    }
-
     @Override
     public synchronized boolean delete(String fileId) throws IOException {
         return false;
     }
 
     @Override
-    protected boolean isCompatibleVersion(long version) {
+    public boolean isCompatibleVersion(long version) {
         return true;
     }
 
-    @Override
-    protected long getVersion() {
-        return 1l;
-    }
 
 }

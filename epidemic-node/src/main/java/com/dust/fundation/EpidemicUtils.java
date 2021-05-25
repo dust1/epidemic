@@ -1,5 +1,8 @@
 package com.dust.fundation;
 
+import com.dust.logs.LogFormat;
+import com.dust.logs.Logger;
+
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -139,49 +142,8 @@ public class EpidemicUtils {
         return sb.toString();
     }
 
-    /**
-     * 在指定目录检查给定版本文件名的版本信息并确定当前版本是否兼容。
-     * @param  versionPath 版本文件保存的路径
-     * @param versionName 版本文件名称
-     * @param isCompatibleVersion 如果本地保存版本，则该函数用于判断本地的版本与程序版本是否兼容
-     * @param systemVersion 系统的版本号，在校验后会将次版本号写入其中
-     * @throws IOException
-     *      如果读取文件失败
-     */
-    public static void checkAndWriteVersion(String versionPath, String versionName,
-                                            Function<Long, Boolean> isCompatibleVersion,
-                                            long systemVersion) throws IOException {
-        File dir = new File(versionPath);
-        if (!dir.exists()) {
-            boolean mkdirCheck = dir.mkdirs();
-            if (!mkdirCheck) {
-                throw new IOException("创建文件夹失败：" + dir.getPath());
-            }
-        }
-        if (!dir.isDirectory()) {
-            throw new IOException("版本文件路径不是一个文件夹目录:" + versionPath);
-        }
-
-        File versionFile = new File(versionPath, versionName);
-        if (versionFile.exists()) {
-            RandomAccessFile raf = new RandomAccessFile(versionFile, "r");
-            try (raf) {
-                long version = raf.readLong();
-                if (!isCompatibleVersion.apply(version)) {
-                    throw new IOException("本地的版本文件与当前系统并不兼容！" + versionName);
-                }
-            }
-        }
-
-        final File tmpFile = new File(versionPath, versionName + "_tmp");
-        try (var out = new RandomAccessFile(tmpFile, "rw")) {
-            out.writeLong(systemVersion);
-        }
-        boolean renameResult = tmpFile.renameTo(versionFile);
-        if (!renameResult) {
-            System.out.println("版本文件重命名失败");
-        }
+    public static long now() {
+        return System.currentTimeMillis();
     }
-
 
 }

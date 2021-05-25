@@ -35,7 +35,7 @@ public class EpidemicServer {
     private EpidemicServer(NodeConfig nodeConfig) throws IOException {
         this.config = nodeConfig;
 
-        this.storageLayout = new FileStorageLayout(config);
+        this.storageLayout = FileStorageLayout.create(config);
         this.routerLayout = new KademliaRouterLayout(config);
         this.server = ServerBuilder.forPort(nodeConfig.getNodePort())
                 .addService(ServerInterceptors.intercept(
@@ -55,7 +55,6 @@ public class EpidemicServer {
      */
     public void start(StartedFunction rollback) throws IOException {
         //TODO 启动前需要加载路由表以及索引文件索引
-        storageLayout.load();
         routerLayout.load();
         server.start();
 

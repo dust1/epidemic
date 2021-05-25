@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -44,7 +45,7 @@ public class EpidemicService extends KademliaServiceGrpc.KademliaServiceImplBase
         String clientIp = ClientAddressInterceptor.CLIENT_ADDRESS.get();
         int port = request.getNodeInfo().getPort();
         routerLayout.ping(nodeId, clientIp, port);
-        storageLayout.ping(nodeId, routerLayout.getMyId(), clientIp, port);
+        storageLayout.haveNewNode(nodeId, clientIp, port);
         PingResponse res = PingResponse.newBuilder()
                 .setTimestamp(request.getTimestamp())
                 .build();
@@ -59,7 +60,10 @@ public class EpidemicService extends KademliaServiceGrpc.KademliaServiceImplBase
 
         StoreResponse response;
         try {
-            storageLayout.store(request);
+            var data = request.getData();
+            var fileId = request.getFileId();
+            var buffer = data.asReadOnlyByteBuffer();
+            storageLayout.store(buffer, fileId);
             response = StoreResponse.newBuilder()
                         .setCode(1)
                         .build();
@@ -90,14 +94,14 @@ public class EpidemicService extends KademliaServiceGrpc.KademliaServiceImplBase
         routerLayout.ping(request.getNodeInfo(), clientHost);
 
         try {
-            Optional<ByteBuffer> fileOptional = storageLayout.find(request.getTargetId());
-            if (fileOptional.isPresent()) {
+            ByteBuffer fileOptional = storageLayout.findFile(request.getTargetId());
+            if (Objects.nonNull(fileOptional)) {
                 //有文件，返回文件信息
                 responseObserver.onNext(
                         FindValueResponse.newBuilder()
                                 .setCode(1)
                                 .setMode(1)
-                                .setData(ByteString.copyFrom(fileOptional.get()))
+                                .setData(ByteString.copyFrom(fileOptional))
                                 .build()
                 );
             } else {

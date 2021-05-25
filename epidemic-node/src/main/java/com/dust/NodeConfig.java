@@ -1,5 +1,9 @@
 package com.dust;
 
+import com.dust.logs.LogFormat;
+import com.dust.logs.Logger;
+
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -16,10 +20,9 @@ public class NodeConfig extends Config {
             Parameter.NODE_SALT,
             Parameter.CHUNK_SIZE,
             Parameter.ORDER_NUM,
-            Parameter.LAYOUT_SAVE_MAX_SIZE,
-            Parameter.LAYOUT_SAVE_MAX_TIME,
-            Parameter.LAYOUT_START_PING_COUNT,
             Parameter.CONTACT_HOST,
+            Parameter.RE_PUBLISHING_TIME,
+            Parameter.RE_PUBLISHING_THREAD_POOL_SIZE,
             Parameter.CONTACT_PORT
     };
 
@@ -55,24 +58,61 @@ public class NodeConfig extends Config {
         return (String) parameter.get(Parameter.NODE_SALT);
     }
 
-    public String getChunkSize() {
-        return (String) parameter.get(Parameter.CHUNK_SIZE);
+    public long getChunkSize() {
+        var size = (String) parameter.get(Parameter.CHUNK_SIZE);
+        if (Objects.isNull(size) || size.isBlank()) {
+            //未配置参数
+            return 0;
+        }
+        if (size.length() <= 2) {
+            //参数配置错误
+            return -1;
+        }
+        size = size.toUpperCase();
+        String tmp = size.substring(0, size.length() - 2);;
+        if (size.endsWith("KB")) {
+            return Integer.parseInt(tmp) * 1024L;
+        } else if (size.endsWith("MB")) {
+            return Integer.parseInt(tmp) * 1024L * 1024L;
+        } else if (size.endsWith("GB")) {
+            return Integer.parseInt(tmp) * 1024L * 1024L * 1024L;
+        }
+        return -1;
     }
 
     public int getOrderNum() {
         return (Integer) parameter.get(Parameter.ORDER_NUM);
     }
 
-    public int getLayoutSaveMaxSize() {
-        return (Integer) parameter.get(Parameter.LAYOUT_SAVE_MAX_SIZE);
-    }
+    public long getRePublishingTime() {
+        String time = (String) parameter.get(Parameter.RE_PUBLISHING_TIME);
+        long defaultTime = 60 * 60;     //默认1小时
+        if (time.length() < 2) {
+            Logger.systemLog.warn(LogFormat.SYSTEM_INFO_FORMAT, "RE_PUBLISHING_TIME参数错误：" + time + "，采用默认参数：1h");
+            return defaultTime;
+        }
+        String numStr = time.substring(0, time.length() - 1);
 
-    public int getLayoutSaveMaxTime() {
-        return (Integer) parameter.get(Parameter.LAYOUT_SAVE_MAX_TIME);
-    }
-
-    public int getStartPingCount() {
-        return (Integer) parameter.get(Parameter.LAYOUT_START_PING_COUNT);
+        if (time.endsWith("d")) {
+            try {
+                long day = Integer.parseInt(numStr);
+                return day * 24 * 60 * 60;
+            } catch (NumberFormatException e) {
+                Logger.systemLog.warn(LogFormat.SYSTEM_INFO_FORMAT, "RE_PUBLISHING_TIME参数错误：" + time + "，采用默认参数：1h");
+                return defaultTime;
+            }
+        } else if (time.endsWith("h")) {
+            try {
+                long hour = Integer.parseInt(numStr);
+                return hour * 60 * 60;
+            } catch (NumberFormatException e) {
+                Logger.systemLog.warn(LogFormat.SYSTEM_INFO_FORMAT, "RE_PUBLISHING_TIME参数错误：" + time + "，采用默认参数：1h");
+                return defaultTime;
+            }
+        } else {
+            Logger.systemLog.warn(LogFormat.SYSTEM_INFO_FORMAT, "RE_PUBLISHING_TIME参数错误：" + time + "，采用默认参数：1h");
+            return defaultTime;
+        }
     }
 
     public String getContactHost() {
@@ -82,4 +122,9 @@ public class NodeConfig extends Config {
     public int getContactPort() {
         return (Integer) parameter.get(Parameter.CONTACT_PORT);
     }
+
+    public int getRePublishingThreadPoolSize() {
+        return (Integer) parameter.get(Parameter.RE_PUBLISHING_THREAD_POOL_SIZE);
+    }
+
 }

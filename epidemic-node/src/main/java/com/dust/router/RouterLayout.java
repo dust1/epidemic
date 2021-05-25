@@ -102,7 +102,7 @@ public abstract class RouterLayout {
     public abstract void ping(String nodeId, String host, int port);
 
     /**
-     * 尝试ping氢气
+     * 尝试ping请求
      * @param info 请求的节点信息
      * @param host 请求的网络地址
      */

@@ -33,11 +33,6 @@ import java.util.*;
 public class DataNode {
 
     /**
-     * 持久化数据的文件开头
-     */
-    private static final byte[] HEAD = {0xd, 0xa, 0xd, 0xe};
-
-    /**
      * 文件虚拟对象的状态
      */
     private int status;
@@ -127,12 +122,12 @@ public class DataNode {
     /**
      * 根据持久化文件创建DataNode对象
      * @param raf 文件句柄
-     * @param dataName 元数据所在的文件名，带后缀
+     * @param dataId 元数据所在的文件名,不带后缀
      * @return 创建的文件呢元数据对象
      */
-    public static DataNode byFile(RandomAccessFile raf, String dataName) throws IOException {
+    public static DataNode byFile(RandomAccessFile raf, String dataId, byte[] head) throws IOException {
         long mdOffset = raf.getFilePointer();
-        if (!EpidemicUtils.checkHead(HEAD, raf)) {
+        if (!EpidemicUtils.checkHead(head, raf)) {
             return null;
         }
 
@@ -144,10 +139,7 @@ public class DataNode {
         long offset = raf.readLong();
         long fileSize = raf.readLong();
 
-        if (dataName.endsWith(FileStorageLayout.MD_SUFFIX)) {
-            dataName = dataName.substring(0, dataName.lastIndexOf("."));
-        }
-        return new DataNode(key, deleted, type, dataName,
+        return new DataNode(key, deleted, type, dataId,
                 offset, fileSize, mdOffset);
     }
 
@@ -170,10 +162,10 @@ public class DataNode {
      * 将这个DataNode持久化到磁盘中
      * @param raf 要写入的元数据文件的句柄。该句柄的写入为单线程
      */
-    public void toFile(RandomAccessFile raf) throws IOException {
+    public void toFile(RandomAccessFile raf, byte[] head) throws IOException {
         //持久化过程中不能对外提供服务
         status = 0;
-        raf.write(HEAD);
+        raf.write(head);
         raf.write(fileId.getBytes(StandardCharsets.UTF_8));
         raf.writeByte(deleted);
         raf.writeByte(type);
