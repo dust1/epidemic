@@ -9,6 +9,7 @@ import com.dust.grpc.kademlia.StoreResponse;
 import com.dust.logs.LogFormat;
 import com.dust.logs.Logger;
 import com.dust.scheduler.RePublishing;
+import com.dust.scheduler.RePublishingTask;
 import com.dust.storage.btree.BTreeManager;
 import com.dust.storage.btree.DataNode;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -47,12 +48,14 @@ public class FileStorageLayout extends StorageLayout {
 
     private final RePublishing rePublishing;
 
-    public static StorageLayout create(NodeConfig config, String nodeId, RePublishing rePublishing) throws IOException {
+    public static StorageLayout create(NodeConfig config, String nodeId) throws IOException {
         String tmp = config.getStoragePath();
         if (!tmp.endsWith("/")) {
             tmp += "/";
         }
         byte[] head = {0xd, 0xa, 0xd, 0xa};
+
+        var rePublishing = new RePublishing(config);
         return new FileStorageLayout(tmp, config, 1L, ".storage_version", head, nodeId, rePublishing);
     }
 
@@ -132,6 +135,12 @@ public class FileStorageLayout extends StorageLayout {
 
     @Override
     public void store(ByteBuffer buffer, String fileId) throws IOException {
+        var data = catalog.find(fileId);
+        if (Objects.isNull(data)) {
+            //TODO 该文件存在，更新它的republish时间
+            return;
+        }
+
         var mdFile = new RandomAccessFile(new File(path, writeName + MD_SUFFIX), "rw");
         var dataFile = new RandomAccessFile(new File(path, writeName + DATA_SUFFIX), "rw");
         try (mdFile; dataFile;
@@ -154,58 +163,41 @@ public class FileStorageLayout extends StorageLayout {
         }
     }
 
+    /**
+     * 当节点收到一个新的节点请求后将这个请求传递给storageLayout用于检查是否有文件距离该节点更近。
+     * 如果有则创建Re-Publishing任务放入待传输队列中
+     *
+     * 假设一个key-value对向集群中k个节点发起store rpc。
+     * 当节点收到某个key-value对的store rpc时，它可以认为该rpc也发给了其他k-1个其他节点，
+     * 因此在下一个小时就不会重新发布该key-value对。
+     * 由于间隔时间长，保证了每个节点重新发布的时间都不会是同步的，
+     * 可以尽量保证对于k个节点，每个时间点都只会有1个节点重新发布
+     * @param newNodeId 传入节点的id
+     * @param host 节点host
+     * @param port 节点端口号
+     */
     @Override
     public void haveNewNode(String newNodeId, String host, int port) {
-        //TODO
-        Queue<DataNode> sendList = new LinkedList<>();
-        var iter = catalog.iterator();
-        while (iter.hasNext()) {
-            var node = iter.next();
-            int myDis = EpidemicUtils.getDis(node.getFileId(), nodeId);
-            int nodeDis = EpidemicUtils.getDis(node.getFileId(), newNodeId);
-            if (nodeDis < myDis) {
-                sendList.add(node);
-            }
-        }
-        if (sendList.isEmpty()) {
+        if (newNodeId.equals(nodeId)) {
             return;
         }
 
-        var futures = new ArrayList<ListenableFuture<StoreResponse>>();
-        while (!sendList.isEmpty()) {
-            var node = sendList.poll();
-            var buffer = node.toBuffer(config.getStoragePath());
+        var iter = catalog.iterator();
+        var pushNodes = new ArrayList<DataNode>();
 
-            var info = NodeInfo.newBuilder()
-                    .setNodeId(nodeId)
-                    .setPort(config.getNodePort())
-                    .build();
-            var channel = ManagedChannelBuilder
-                    .forAddress(host, port)
-                    .usePlaintext()
-                    .build();
-            var data = ByteString.copyFrom(buffer);
-            var client = KademliaServiceGrpc.newFutureStub(channel);
-            var req = StoreRequest.newBuilder()
-                    .setNodeInfo(info)
-                    .setData(data)
-                    .build();
-            futures.add(client.store(req));
+        //筛选距离新节点更近的文件
+        while (iter.hasNext()) {
+            var node = iter.next();
+            int mDis = EpidemicUtils.getDis(node.getFileId(), nodeId);
+            int newDis = EpidemicUtils.getDis(node.getFileId(), newNodeId);
+            if (mDis >= newDis) {
+                pushNodes.add(node);
+            }
         }
 
-        var resList = futures.parallelStream()
-                .map(f -> {
-                    try {
-                        return f.get(20, TimeUnit.SECONDS);
-                    } catch (Exception e) {
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-        if (resList.size() != sendList.size()) {
-            Logger.systemLog.error(LogFormat.SYSTEM_ERROR_FORMAT, "有" + (sendList.size() - resList.size()) + "个文件发送到" + nodeId + "," + host + "," + port + "失败", "-");
-        }
+        //将新节点加入等待队列中
+        pushNodes.forEach(node -> rePublishing.push(RePublishingTask.create(node.getDataName(),
+                node.getOffset(), node.getSize(), host, port)));
     }
 
     @Override
@@ -215,8 +207,7 @@ public class FileStorageLayout extends StorageLayout {
 
     @Override
     public boolean isCompatibleVersion(long version) {
-        return true;
+        return this.version == version;
     }
-
 
 }

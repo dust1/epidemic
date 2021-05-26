@@ -7,6 +7,7 @@ import com.dust.logs.LogFormat;
 import com.dust.logs.Logger;
 import com.dust.router.kademlia.KademliaRouterLayout;
 import com.dust.router.RouterLayout;
+import com.dust.scheduler.RePublishing;
 import com.dust.storage.FileStorageLayout;
 import com.dust.storage.StorageLayout;
 import io.grpc.Server;
@@ -35,8 +36,8 @@ public class EpidemicServer {
     private EpidemicServer(NodeConfig nodeConfig) throws IOException {
         this.config = nodeConfig;
 
-        this.storageLayout = FileStorageLayout.create(config);
         this.routerLayout = new KademliaRouterLayout(config);
+        this.storageLayout = FileStorageLayout.create(config, routerLayout.getMyId());
         this.server = ServerBuilder.forPort(nodeConfig.getNodePort())
                 .addService(ServerInterceptors.intercept(
                         new EpidemicService(storageLayout, routerLayout),
