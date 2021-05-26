@@ -4,7 +4,6 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
 
 import com.dust.fundation.EpidemicUtils;
-import com.dust.router.kademlia.timer.PingTask;
 import org.junit.Before;
 import org.junit.Test;
 

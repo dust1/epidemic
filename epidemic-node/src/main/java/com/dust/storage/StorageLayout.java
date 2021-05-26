@@ -34,7 +34,7 @@ public abstract class StorageLayout extends BaseLayout {
      * @throws IOException
      *      读取失败
      */
-    public abstract ByteBuffer findFile(String fileId) throws IOException;
+    public abstract ByteBuffer find(String fileId) throws IOException;
 
     /**
      * 保存数据

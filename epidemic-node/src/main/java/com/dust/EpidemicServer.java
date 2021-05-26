@@ -36,7 +36,7 @@ public class EpidemicServer {
     private EpidemicServer(NodeConfig nodeConfig) throws IOException {
         this.config = nodeConfig;
 
-        this.routerLayout = new KademliaRouterLayout(config);
+        this.routerLayout = KademliaRouterLayout.create(config);
         this.storageLayout = FileStorageLayout.create(config, routerLayout.getMyId());
         this.server = ServerBuilder.forPort(nodeConfig.getNodePort())
                 .addService(ServerInterceptors.intercept(
@@ -56,13 +56,10 @@ public class EpidemicServer {
      */
     public void start(StartedFunction rollback) throws IOException {
         //TODO 启动前需要加载路由表以及索引文件索引
-        routerLayout.load();
+        routerLayout.before();
+        storageLayout.before();
         server.start();
 
-        //必须要等服务启动完成才能执行，否则其他节点的文件推送将失败
-        if (!routerLayout.findFriend()) {
-            Logger.systemLog.warn(LogFormat.SYSTEM_INFO_FORMAT, "当前节点无法连接上联系节点！！！");
-        }
         rollback.apply();
         Logger.systemLog.info(LogFormat.SYSTEM_INFO_FORMAT, "节点启动完成...");
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

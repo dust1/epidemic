@@ -44,7 +44,7 @@ public class EpidemicService extends KademliaServiceGrpc.KademliaServiceImplBase
         String nodeId = request.getNodeInfo().getNodeId();
         String clientIp = ClientAddressInterceptor.CLIENT_ADDRESS.get();
         int port = request.getNodeInfo().getPort();
-        routerLayout.ping(nodeId, clientIp, port);
+        routerLayout.haveNewNode(nodeId, clientIp, port);
         storageLayout.haveNewNode(nodeId, clientIp, port);
         PingResponse res = PingResponse.newBuilder()
                 .setTimestamp(request.getTimestamp())
@@ -56,7 +56,8 @@ public class EpidemicService extends KademliaServiceGrpc.KademliaServiceImplBase
     @Override
     public void store(com.dust.grpc.kademlia.StoreRequest request, StreamObserver<com.dust.grpc.kademlia.StoreResponse> responseObserver) {
         var clientHost = ClientAddressInterceptor.CLIENT_ADDRESS.get();
-        routerLayout.ping(request.getNodeInfo(), clientHost);
+        var info = request.getNodeInfo();
+        routerLayout.haveNewNode(info.getNodeId(), clientHost, info.getPort());
 
         StoreResponse response;
         try {
@@ -81,7 +82,8 @@ public class EpidemicService extends KademliaServiceGrpc.KademliaServiceImplBase
     @Override
     public void findNode(com.dust.grpc.kademlia.FindRequest request, StreamObserver<com.dust.grpc.kademlia.FindNodeResponse> responseObserver) {
         var clientHost = ClientAddressInterceptor.CLIENT_ADDRESS.get();
-        routerLayout.ping(request.getNodeInfo(), clientHost);
+        var info = request.getNodeInfo();
+        routerLayout.haveNewNode(info.getNodeId(), clientHost, info.getPort());
 
         List<NodeTriad> list = routerLayout.findNode(request.getTargetId());
         list.forEach(node -> responseObserver.onNext(node.toFindNodeResponse()));
@@ -91,10 +93,11 @@ public class EpidemicService extends KademliaServiceGrpc.KademliaServiceImplBase
     @Override
     public void findValue(com.dust.grpc.kademlia.FindRequest request, StreamObserver<com.dust.grpc.kademlia.FindValueResponse> responseObserver) {
         var clientHost = ClientAddressInterceptor.CLIENT_ADDRESS.get();
-        routerLayout.ping(request.getNodeInfo(), clientHost);
+        var info = request.getNodeInfo();
+        routerLayout.haveNewNode(info.getNodeId(), clientHost, info.getPort());
 
         try {
-            ByteBuffer fileOptional = storageLayout.findFile(request.getTargetId());
+            ByteBuffer fileOptional = storageLayout.find(request.getTargetId());
             if (Objects.nonNull(fileOptional)) {
                 //有文件，返回文件信息
                 responseObserver.onNext(

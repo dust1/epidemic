@@ -4,7 +4,6 @@ import com.dust.NodeConfig;
 import com.dust.fundation.EpidemicUtils;
 import com.dust.logs.LogFormat;
 import com.dust.logs.Logger;
-import com.dust.router.kademlia.timer.KademliaRouterTimer;
 
 import java.util.*;
 
@@ -33,7 +32,7 @@ public class KademliaBucket {
      * 桶相关的定时任务
      * 包括：1、定时将内存数据持久化到磁盘；2、定时检测桶中的路由节点通信是否顺畅，如果不是则将其删除
      */
-    private KademliaRouterTimer timer;
+//    private KademliaRouterTimer timer;
 
     public final NodeConfig config;
 
@@ -60,20 +59,20 @@ public class KademliaBucket {
         this.buckets[0] = new ArrayList<>(k);
     }
 
-    /**
-     * 初始化bucket的定时任务
-     */
-    public void initTimer(NodeConfig config) {
-        this.timer = new KademliaRouterTimer(config);
-//        this.timer.start(this);
-    }
+//    /**
+//     * 初始化bucket的定时任务
+//     */
+//    public void initTimer(NodeConfig config) {
+//        this.timer = new KademliaRouterTimer(config);
+////        this.timer.start(this);
+//    }
 
-    /**
-     * 开启定时任务
-     */
-    public void startTimer() {
-        this.timer.start(this);
-    }
+//    /**
+//     * 开启定时任务
+//     */
+//    public void startTimer() {
+//        this.timer.start(this);
+//    }
 
     /**
      * 往桶中添加一个路由表
@@ -132,7 +131,7 @@ public class KademliaBucket {
             bucket.add(node);
         }
 
-        timer.add();
+//        timer.add();
     }
 
     /**

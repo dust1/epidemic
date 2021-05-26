@@ -21,9 +21,9 @@ import java.util.*;
 public class KademliaRouterLayout extends RouterLayout {
 
     /**
-     * 路由持久化数据头
+     * 网络路由模块的快照文件名称
      */
-    public static final byte[] HEAD = {0xC, 0xA, 0xF, 0xE};
+    public static final String SNAPSHOT_FILENAME = "node.cache";
 
     /**
      * 当前路由版本号
@@ -40,9 +40,31 @@ public class KademliaRouterLayout extends RouterLayout {
      */
     private String myId;
 
-    public KademliaRouterLayout(NodeConfig config) throws IOException {
-        super(config);
+    public static RouterLayout create(NodeConfig config) throws IOException {
+        String tmp = config.getStoragePath();
+        if (!tmp.endsWith("/")) {
+            tmp += "/";
+        }
+        byte[] head = {0xC, 0xA, 0xF, 0xE};
+        return new KademliaRouterLayout(tmp, config, 1L,
+                ".router_version", head);
+    }
+
+    public KademliaRouterLayout(String path, NodeConfig config,
+                                long version, String versinFileName,
+                                byte[] head) throws IOException {
+        super(path, config, version, versinFileName, head);
         this.myId = EpidemicUtils.randomNodeId(config.getNodeSalt());
+    }
+
+    @Override
+    public boolean isCompatibleVersion(long version) {
+        return this.version == version;
+    }
+
+    @Override
+    public void haveNewNode(String nodeId, String host, int port) {
+        bucket.ping(nodeId, host, port);
     }
 
     /**
@@ -51,15 +73,14 @@ public class KademliaRouterLayout extends RouterLayout {
      *  加载文件失败
      */
     @Override
-    public void load() throws IOException {
-        File f = new File(routerPath, SNAPSHOT_FILENAME);
+    public void before() throws IOException {
+        File f = new File(path, SNAPSHOT_FILENAME);
         if (!f.exists()) {
             //不存在快照文件
             bucket = new KademliaBucket(config, myId);
-            //初始化桶的定时任务
-            bucket.initTimer(config);
+            //尝试读取日志
             readLog();
-            bucket.startTimer();
+            findMe();
             return;
         }
 
@@ -68,7 +89,7 @@ public class KademliaRouterLayout extends RouterLayout {
         //尝试获取文件的读写锁
         final FileChannel fileChannel = snapshot.getChannel();
 
-        if (!EpidemicUtils.checkHead(HEAD, snapshot)) {
+        if (!EpidemicUtils.checkHead(head, snapshot)) {
             //如果头文件读取失败则表示数据异常，不读取数据
             //等到后面进行持久化的时候将原文件删除
             snapshot.close();
@@ -77,8 +98,6 @@ public class KademliaRouterLayout extends RouterLayout {
 
         this.myId = EpidemicUtils.readToSHA1(snapshot);
         this.bucket = new KademliaBucket(config, myId);
-        //初始化桶的定时任务
-        bucket.initTimer(config);
         while (snapshot.getFilePointer() < snapshot.length()) {
             var node = NodeTriadRouterNode.fromFile(snapshot);
             if (Objects.isNull(node)) {
@@ -88,15 +107,18 @@ public class KademliaRouterLayout extends RouterLayout {
         }
         snapshot.close();
         readLog();
-        bucket.startTimer();
+        findMe();
     }
 
-    @Override
-    public boolean findFriend() {
-        if (!bucket.isEmpty() || config.getContactPort() == -1) {
+    /**
+     * 如果当前节点是第一次建立则通过联系人节点从集群中获取其他节点信息
+     */
+    public void findMe() {
+        if (!bucket.isEmpty()) {
             //桶中有数据，不再寻找朋友
-            return true;
+            return;
         }
+
         var info = NodeInfo.newBuilder()
                 .setPort(config.getNodePort())
                 .setNodeId(myId)
@@ -132,7 +154,6 @@ public class KademliaRouterLayout extends RouterLayout {
                 queue.add(newNode);
             }
         }
-        return bucket.isEmpty();
     }
 
     /**
@@ -201,23 +222,8 @@ public class KademliaRouterLayout extends RouterLayout {
     }
 
     @Override
-    public void ping(String nodeId, String host, int port) {
-        bucket.ping(nodeId, host, port);
-    }
-
-    @Override
     public List<NodeTriad> findNode(String key) {
         return bucket.findNode(key);
-    }
-
-    @Override
-    protected boolean isCompatibleVersion(long version) {
-        return VERSION == version;
-    }
-
-    @Override
-    protected long getVersion() {
-        return VERSION;
     }
 
 }

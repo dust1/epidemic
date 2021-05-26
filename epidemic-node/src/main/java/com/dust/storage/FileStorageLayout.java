@@ -105,7 +105,7 @@ public class FileStorageLayout extends StorageLayout {
     }
 
     @Override
-    public ByteBuffer findFile(String fileId) throws IOException {
+    public ByteBuffer find(String fileId) throws IOException {
         var node = catalog.find(fileId);
         if (Objects.isNull(node)) {
             var buffer = ByteBuffer.allocate(0);
