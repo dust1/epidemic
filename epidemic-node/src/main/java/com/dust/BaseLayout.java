@@ -7,7 +7,7 @@ import com.dust.logs.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.function.Function;
+import java.util.Arrays;
 
 /**
  * Layout基础组件
@@ -52,6 +52,27 @@ public abstract class BaseLayout {
 //        before();
     }
 
+    /**
+     * 检查当前Layout是否兼容传入的版本号
+     * @param version 要校验的版本号
+     * @return 如果兼容则返回true
+     */
+    public abstract boolean isCompatibleVersion(long version);
+
+    /**
+     * 当节点有一个新的节点接入的时候通知Layout执行相应逻辑
+     * @param nodeId 节点id
+     * @param host 节点host
+     * @param port 节点端口号
+     */
+    public abstract void haveNewNode(String nodeId, String host, int port);
+
+    /**
+     * 当Layout启动的时候调用该方法进行前置初始化
+     * @throws IOException 读取文件异常
+     */
+    protected abstract void before() throws IOException;
+
     /*
      * 在指定目录检查给定版本文件名的版本信息并确定当前版本是否兼容。
      * @throws IOException
@@ -93,26 +114,5 @@ public abstract class BaseLayout {
             System.out.println("版本文件重命名失败");
         }
     }
-
-    /**
-     * 检查当前Layout是否兼容传入的版本号
-     * @param version 要校验的版本号
-     * @return 如果兼容则返回true
-     */
-    public abstract boolean isCompatibleVersion(long version);
-
-    /**
-     * 当节点有一个新的节点接入的时候通知Layout执行相应逻辑
-     * @param nodeId 节点id
-     * @param host 节点host
-     * @param port 节点端口号
-     */
-    public abstract void haveNewNode(String nodeId, String host, int port);
-
-    /**
-     * 当Layout启动的时候调用该方法进行前置初始化
-     * @throws IOException 读取文件异常
-     */
-    protected abstract void before() throws IOException;
 
 }

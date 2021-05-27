@@ -6,11 +6,13 @@ import com.dust.storage.StorageLayout;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import java.util.Random;
 
@@ -39,14 +41,38 @@ public class StorageTest {
     @Test
     public void storeTest() throws IOException {
         String filePath = "/Users/kous/Downloads/yellow.zip";
+        String fileId = "6014554976340352799ece63d50b5bc73a6dc05e";
+        String savePath = "/Users/kous/myProjects/javaproject/epidemic/temp/storage";
+
+        writeStore(filePath, fileId);
+        String fileName = "6eb668da5c012fc3d7d5d4a957cfdd7752d52655.md";
+        try (var raf = new RandomAccessFile(new File(savePath, fileName), "r")) {
+            long offset = 4 + fileId.getBytes(StandardCharsets.UTF_8).length;
+            raf.seek(offset);
+            var del = raf.readByte();
+            assertEquals(del, 0);
+        }
+
+        storageLayout.delete(fileId);
+        try (var raf = new RandomAccessFile(new File(savePath, fileName), "r")) {
+            long offset = 4 + fileId.getBytes(StandardCharsets.UTF_8).length;
+            raf.seek(offset);
+            var del = raf.readByte();
+            assertEquals(del, 1);
+        }
+    }
+
+    @Test
+    public void readTest() throws IOException {
+        String filePath = "/Users/kous/Downloads/yellow.zip";
         String savePath = "/Users/kous/Desktop/yellow.zip";
         String fileId = "yellow01";
         String fileId2 = "yellow02";
-
+        var data = storageLayout.find(fileId);
+        assertEquals(data.position(), 0);
         writeStore(filePath, fileId);
-        readFile(savePath, fileId);
-        writeStore(filePath, fileId);
-        writeStore(filePath, fileId2);
+        data = storageLayout.find(fileId);
+        assertEquals(data.position(), new File(filePath).length());
     }
 
     private void readFile(String savePath, String fileId) throws IOException {

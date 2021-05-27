@@ -107,10 +107,10 @@ public class FileStorageLayout extends StorageLayout {
     @Override
     public ByteBuffer find(String fileId) throws IOException {
         var node = catalog.find(fileId);
-        if (Objects.isNull(node)) {
-            var buffer = ByteBuffer.allocate(0);
-            buffer.flip();
-            return buffer;
+        var empty = ByteBuffer.allocate(0);
+        empty.flip();
+        if (Objects.isNull(node) || node.getDeleted() == 1) {
+            return empty;
         }
         return readByDataNode(node);
     }
@@ -137,7 +137,12 @@ public class FileStorageLayout extends StorageLayout {
     public void store(ByteBuffer buffer, String fileId) throws IOException {
         var data = catalog.find(fileId);
         if (Objects.nonNull(data)) {
-            //TODO 该文件存在，更新它的republish时间
+            if (data.getDeleted() != 0) {
+                var file = new File(path, data.getDataName() + DATA_SUFFIX);
+                try (var raf = new RandomAccessFile(file, "rw")) {
+                    data.recycle(raf, head);
+                }
+            }
             return;
         }
 
@@ -202,7 +207,15 @@ public class FileStorageLayout extends StorageLayout {
 
     @Override
     public synchronized boolean delete(String fileId) throws IOException {
-        return false;
+        var dataNode = catalog.find(fileId);
+        if (Objects.isNull(dataNode)) {
+            return false;
+        }
+        var file = new File(path, dataNode.getDataName() + MD_SUFFIX);
+        try (var raf = new RandomAccessFile(file, "rw")) {
+            dataNode.delete(raf, head);
+        }
+        return true;
     }
 
     @Override

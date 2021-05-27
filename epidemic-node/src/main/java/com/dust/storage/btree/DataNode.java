@@ -95,26 +95,6 @@ public class DataNode {
         this.status = 1;
     }
 
-    /**
-     * 读取DataNode的数据内容
-     * @param savePath DataNode保存路径
-     * @return 如果读取失败则返回null
-     */
-    public ByteBuffer toBuffer(String savePath) {
-        try (var raf = new RandomAccessFile(new File(savePath, dataName + FileStorageLayout.DATA_SUFFIX), "r");
-            var channel = raf.getChannel()) {
-
-            raf.seek(offset);
-            var buffer = ByteBuffer.allocateDirect((int) size);
-            channel.read(buffer);
-            buffer.flip();
-            return buffer;
-        } catch (IOException e) {
-            Logger.systemLog.error(LogFormat.SYSTEM_ERROR_FORMAT, "读取数据文件" + dataName + "异常", e.getMessage());
-            return null;
-        }
-    }
-
     public static DataNode byFileId(String fileId) {
         return new DataNode(fileId);
     }
@@ -177,9 +157,25 @@ public class DataNode {
     /**
      * 删除自身
      */
-    public void delete() {
+    public void delete(RandomAccessFile raf, byte[] head) throws IOException {
         this.deleted = 1;
+        editDelete(raf, head, (byte) 1);
         this.status = 2;
+    }
+
+    /**
+     * 回收文件
+     */
+    public void recycle(RandomAccessFile raf, byte[] head) throws IOException {
+        this.deleted = 0;
+        editDelete(raf, head, (byte) 0);
+        this.status = 1;
+    }
+
+    private void editDelete(RandomAccessFile raf, byte[] head, byte del) throws IOException {
+        long delOffset = offset + head.length + fileId.getBytes(StandardCharsets.UTF_8).length;
+        raf.seek(delOffset);
+        raf.write(del);
     }
 
     /**

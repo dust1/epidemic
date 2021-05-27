@@ -7,6 +7,9 @@ import com.dust.fundation.EpidemicUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
 import java.sql.Array;
 import java.util.ArrayList;
@@ -29,6 +32,33 @@ public class UtilTest {
         node1 = EpidemicUtils.getSHA1(data);
         data = String.valueOf(System.currentTimeMillis() + 123).getBytes(StandardCharsets.UTF_8);
         node2 = EpidemicUtils.getSHA1(data);
+    }
+
+    @Test
+    public void IOTest() throws IOException {
+        String path = "/Users/kous/Desktop/test";
+        byte[] data = {1, 2, 3, 4, 5};
+        try (var raf = new RandomAccessFile(new File(path), "rw")) {
+            raf.write(data);
+        }
+
+        try (var raf = new RandomAccessFile(new File(path), "r")) {
+            byte[] read = new byte[5];
+            raf.read(read);
+            assertArrayEquals(data, read);
+        }
+
+        try (var raf = new RandomAccessFile(new File(path), "rw")) {
+            raf.seek(1);
+            raf.write((byte) 1);
+        }
+
+        try (var raf = new RandomAccessFile(new File(path), "r")) {
+            byte[] read = new byte[5];
+            raf.read(read);
+            data[1] = 1;
+            assertArrayEquals(read, data);
+        }
     }
 
     @Test
