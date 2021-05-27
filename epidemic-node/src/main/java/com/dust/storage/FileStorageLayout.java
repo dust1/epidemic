@@ -136,7 +136,7 @@ public class FileStorageLayout extends StorageLayout {
     @Override
     public void store(ByteBuffer buffer, String fileId) throws IOException {
         var data = catalog.find(fileId);
-        if (Objects.isNull(data)) {
+        if (Objects.nonNull(data)) {
             //TODO 该文件存在，更新它的republish时间
             return;
         }

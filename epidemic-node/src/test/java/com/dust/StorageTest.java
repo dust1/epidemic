@@ -1,12 +1,18 @@
 package com.dust;
 
 import com.dust.router.kademlia.NodeTriadRouterNode;
+import com.dust.storage.FileStorageLayout;
+import com.dust.storage.StorageLayout;
+import org.junit.Before;
 import org.junit.Test;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.Properties;
+import java.util.Random;
 
 import static org.junit.Assert.*;
 
@@ -15,46 +21,51 @@ import static org.junit.Assert.*;
  */
 public class StorageTest {
 
-    private String path = "/Users/kous/myProjects/javaproject/epidemic/temp/node.cache";
+    private String configPath = "/Users/kous/Desktop/setting.conf";
 
-    /**
-     * 持有读写锁的对象存在的情况下，测试另一个读对象能够使用
-     */
-    @Test
-    public void writingAndReadTest() throws IOException {
-        RandomAccessFile writing = new RandomAccessFile(path, "rw");
-        writing.seek(0);
-        final FileChannel channel = writing.getChannel();
+    private StorageLayout storageLayout;
 
-        RandomAccessFile read = new RandomAccessFile(path, "r");
-        read.seek(0);
-        var node = NodeTriadRouterNode.fromFile(read);
-        assertNotNull(node);
-        System.out.println("Node info key=" + node.getKey() + ", host=" + node.getHost());
-        assertEquals(writing.getFilePointer(), 0);
-    }
-
-    @Test
-    public void readTest() throws IOException {
-        RandomAccessFile writing = new RandomAccessFile(path, "r");
-        writing.seek(0);
-        final FileChannel channel = writing.getChannel();
-        ByteBuffer data = ByteBuffer.allocate(40);
-        int len = channel.read(data);
-        assertEquals(len, 40);
-    }
-
-    @Test
-    public void writeTest() throws IOException {
-        RandomAccessFile writing = new RandomAccessFile(path, "rw");
-        writing.seek(writing.length());
-        final FileChannel channel = writing.getChannel();
-        ByteBuffer data = ByteBuffer.allocate(40);
-        for (int i = 0; i < data.position(); i++) {
-            data.put((byte) i);
+    @Before
+    public void before() throws Exception {
+        Properties properties = new Properties();
+        try (var input = new FileReader(configPath)) {
+            properties.load(input);
         }
-        int len = channel.write(data);
-        assertEquals(len, 40);
+        var config = new NodeConfig(properties);
+        storageLayout = FileStorageLayout.create(config, "localNode");
+        storageLayout.before();
+    }
+
+    @Test
+    public void storeTest() throws IOException {
+        String filePath = "/Users/kous/Downloads/yellow.zip";
+        String savePath = "/Users/kous/Desktop/yellow.zip";
+        String fileId = "yellow01";
+        String fileId2 = "yellow02";
+
+        writeStore(filePath, fileId);
+        readFile(savePath, fileId);
+        writeStore(filePath, fileId);
+        writeStore(filePath, fileId2);
+    }
+
+    private void readFile(String savePath, String fileId) throws IOException {
+        ByteBuffer buffer = storageLayout.find(fileId);
+        try (var write = new RandomAccessFile(savePath, "rw");
+             var channel = write.getChannel()) {
+            channel.write(buffer);
+        }
+    }
+
+    private void writeStore(String filePath, String fileId) throws IOException {
+        ByteBuffer data;
+        try (var read = new RandomAccessFile(filePath, "r");
+             var channel = read.getChannel()) {
+            data = ByteBuffer.allocate((int) read.length());
+            channel.read(data);
+        }
+        data.flip();
+        storageLayout.store(data, fileId);
     }
 
 }
