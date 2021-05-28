@@ -23,7 +23,8 @@ public class NodeConfig extends Config {
             Parameter.CONTACT_HOST,
             Parameter.RE_PUBLISHING_TIME,
             Parameter.RE_PUBLISHING_THREAD_POOL_SIZE,
-            Parameter.CONTACT_PORT
+            Parameter.CONTACT_PORT,
+            Parameter.ROUTER_SAVE_COUNT
     };
 
     public NodeConfig(Properties properties) {
@@ -125,6 +126,10 @@ public class NodeConfig extends Config {
 
     public int getRePublishingThreadPoolSize() {
         return (Integer) parameter.get(Parameter.RE_PUBLISHING_THREAD_POOL_SIZE);
+    }
+
+    public int getRouterSaveCount() {
+        return (Integer) parameter.get(Parameter.ROUTER_SAVE_COUNT);
     }
 
 }

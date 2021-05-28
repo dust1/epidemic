@@ -24,7 +24,7 @@ public class EpidemicUtils {
     private static MessageDigest messageDigest;
 
     //SHA1字符串长度
-    private static final int SHA1_LENGTH = 40;
+    public static final int SHA1_LENGTH = 40;
 
     static {
         try {

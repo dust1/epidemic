@@ -28,6 +28,8 @@ abstract public class Config {
         RE_PUBLISHING_TIME("re_publishing_time", "1h", String.class, true),
         //发起Re-Publishing时的线程池大小
         RE_PUBLISHING_THREAD_POOL_SIZE("re_publishing_thread_pool_size", 10, Integer.class, true),
+        //触发save操作的节点数量
+        ROUTER_SAVE_COUNT("router_save_count", 20, Integer.class, false),
         //文件目录树每层的数量
         ORDER_NUM("order_num", 101, Integer.class, false),
         //联络节点host。最重要的参数，必须依靠该节点才能加入集群中

@@ -12,36 +12,44 @@ import java.util.*;
  */
 public class KademliaBucket {
 
-    private int k;
+    /**
+     * 每个bucket存放节点数量
+     */
+    private final int bucketKey;
 
-    public String myNode;
+    /**
+     * 当新增节点达到saveSize数量后持久化到磁盘中
+     */
+    private final int saveSize;
 
-    private int bucketSize;
+    private final String myNode;
 
     /**
      * 通过使用时间进行排序的桶快照
      */
-    private PriorityQueue<NodeTriadRouterNode> nodeCache;
+    private Bucket nodeCache;
 
     /**
      * 存放路由信息的桶
      */
-    private List<NodeTriadRouterNode>[] buckets;
+    private Bucket[] buckets;
 
     /**
-     * 桶相关的定时任务
-     * 包括：1、定时将内存数据持久化到磁盘；2、定时检测桶中的路由节点通信是否顺畅，如果不是则将其删除
+     * 节点数
      */
-//    private KademliaRouterTimer timer;
+    private int size;
 
-    public final NodeConfig config;
+    /**
+     * 短时间内的新增节点数
+     * 当这个数字超过saveSize后触发持久化操作
+     */
+    private int addCount;
 
     public KademliaBucket(NodeConfig config, String myNode) {
-        this.k = config.getBucketKey();
+        this.bucketKey = config.getBucketKey();
         this.myNode = myNode;
-        this.bucketSize = 1;
-        this.config = config;
-
+        this.size = 0;
+        this.saveSize = config.getRouterSaveCount();
         init();
     }
 
@@ -54,25 +62,14 @@ public class KademliaBucket {
     }
 
     private void init() {
-        this.buckets = new List[160];
-        this.nodeCache = new PriorityQueue<>(k, (n1, n2) -> Integer.compare(n2.getUpdateTime(), n1.getUpdateTime()));
-        this.buckets[0] = new ArrayList<>(k);
+        this.buckets = new Bucket[160];
+        this.nodeCache = new Bucket(bucketKey);
+        this.size = 0;
+
+        for (int i = 0; i < buckets.length; i++) {
+            buckets[i] = new Bucket(bucketKey);
+        }
     }
-
-//    /**
-//     * 初始化bucket的定时任务
-//     */
-//    public void initTimer(NodeConfig config) {
-//        this.timer = new KademliaRouterTimer(config);
-////        this.timer.start(this);
-//    }
-
-//    /**
-//     * 开启定时任务
-//     */
-//    public void startTimer() {
-//        this.timer.start(this);
-//    }
 
     /**
      * 往桶中添加一个路由表
@@ -82,105 +79,43 @@ public class KademliaBucket {
         if (node.getKey().equals(myNode)) {
             return;
         }
-        int prevIndex = EpidemicUtils.getDis(node.getKey(), myNode);
-        prevIndex = prevIndex >= bucketSize ? bucketSize - 1 : prevIndex;
-        var bucket = buckets[prevIndex];
-        for (var n : bucket) {
-            if (n.getKey().equals(node.getKey())) {
-                return;
-            }
-        }
-
-        if (bucket.size() >= k) {
-            //拆分桶。两种情况：1.存在后续桶。将新节点放入cache中等待垃圾回收进行重新排布；2.不存在后续桶。创建新桶
-            if ((prevIndex + 1) < bucketSize) {
-                Logger.layoutLog.info(LogFormat.LAYOUT_ADD_CACHE_FORMAT, node.getHost(), node.getPort(), node.getKey());
-                //一存在下一个桶，放入cache中
-                for (NodeTriadRouterNode haveNode : nodeCache) {
-                    if (haveNode.getKey().equals(node.getKey())) {
-                        nodeCache.remove(haveNode);
-                        break;
-                    }
-                }
-                node.updateTime();
-                if (nodeCache.size() >= config.getBucketKey()) {
-                    removeEndCache();
-                }
-                nodeCache.add(node);
-            } else {
-                Logger.layoutLog.info(LogFormat.LAYOUT_ADD_FORMAT, node.getHost(), node.getPort(), node.getKey());
-                var newBucket = new ArrayList<NodeTriadRouterNode>(k);
-                var oldBucket = new ArrayList<NodeTriadRouterNode>(k);
-                for (var n : bucket) {
-                    int index = EpidemicUtils.getDis(n.getKey(), myNode);
-                    if (index == prevIndex) {
-                        oldBucket.add(n);
-                    } else if (index > prevIndex) {
-                        newBucket.add(n);
-                    }
-                }
-                buckets[prevIndex] = oldBucket;
-                if ((prevIndex + 1) < buckets.length) {
-                    buckets[prevIndex + 1] = newBucket;
-                    bucketSize += 1;
-                }
-            }
-        } else {
-            Logger.layoutLog.info(LogFormat.LAYOUT_ADD_FORMAT, node.getHost(), node.getPort(), node.getKey());
-            //不拆分桶，直接插入
-            bucket.add(node);
-        }
-
-//        timer.add();
-    }
-
-    /**
-     * 当缓存满了并且要有新的节点加入的时候，将最后一个最久未使用的节点删除
-     */
-    private void removeEndCache() {
-        if (nodeCache.size() < config.getBucketKey()) {
+        int disIndex = EpidemicUtils.getDis(node.getKey(), myNode);
+        var bucket = buckets[disIndex];
+        if (bucket.contains(node.getKey())) {
             return;
         }
-        var temp = new ArrayList<NodeTriadRouterNode>(nodeCache.size());
-        while (!nodeCache.isEmpty()) {
-            var node = nodeCache.poll();
-            temp.add(node);
-        }
-        for (int i = 0; i < temp.size() - 1; i++) {
-            nodeCache.add(temp.get(i));
+        Logger.layoutLog.info(LogFormat.LAYOUT_ADD_CACHE_FORMAT, node.getHost(), node.getPort(), node.getKey());
+        if (bucket.size() >= bucketKey) {
+            //bucket数量超过k，将其暂时加入cache中
+            nodeCache.add(node);
+        } else {
+            bucket.add(node);
+            size += 1;
+            addCount += 1;
         }
     }
 
     /**
-     * 有一个节点进行ping槽走，检查本地路由表中是否有该节点，如果有则更新他的updatetime，如果没有则追加
+     * 有一个节点进行ping操作，检查本地路由表中是否有该节点，如果有则更新他的updateTime，如果没有则追加
      * @param nodeId 发起ping的节点id
      * @param host 发起ping的节点ip
      * @param port 发起ping的节点端口
      */
-    public void ping(String nodeId, String host, int port) {
+    public void checkNewNode(String nodeId, String host, int port) {
         if (nodeId.equals(myNode)) {
             return;
         }
-        int index = EpidemicUtils.getDis(nodeId, myNode);
-        index = index >= bucketSize ? bucketSize - 1 : index;
-        var bucket = buckets[index];
+        int disIndex = EpidemicUtils.getDis(nodeId, myNode);
+        var bucket = buckets[disIndex];
 
-        //如果路由表中存在
-        for (var node : bucket) {
-            if (node.getKey().equals(nodeId)) {
-                node.updateTime();
-                return;
-            }
+        if (bucket.contains(nodeId)) {
+            bucket.refreshNode(nodeId);
+            return;
         }
 
-        //如果缓存队列中存在
-        for (var node : nodeCache) {
-            if (node.getKey().equals(nodeId)) {
-                nodeCache.remove(node);
-                node.updateTime();
-                nodeCache.add(node);
-                return;
-            }
+        if (nodeCache.contains(nodeId)) {
+            nodeCache.refreshNode(nodeId);
+            return;
         }
 
         //都不存在表示这是一个新的节点,创建
@@ -194,27 +129,23 @@ public class KademliaBucket {
      * @return 与这个nodeId接近的节点三元组集合
      */
     public List<NodeTriad> findNode(String nodeId) {
-        List<NodeTriad> result = new ArrayList<>(k);
-        int startIndex = EpidemicUtils.getDis(nodeId, myNode);
-        startIndex = startIndex >= bucketSize ? bucketSize - 1 : startIndex;
+        List<NodeTriad> result = new ArrayList<>(bucketKey);
+        int disIndex = EpidemicUtils.getDis(nodeId, myNode);
 
         Queue<Integer> indexQueue = new LinkedList<>();
-        indexQueue.add(startIndex);
+        indexQueue.add(disIndex);
         boolean[] used = new boolean[160];
-        while (!indexQueue.isEmpty() && result.size() < k) {
+        while (!indexQueue.isEmpty() && result.size() < bucketKey) {
             Integer index = indexQueue.poll();
-            if (index < 0 || index >= used.length || used[index] || Objects.isNull(buckets[index])) {
+            if (index < 0 || index >= used.length || used[index]) {
                 continue;
             }
             var bucket = buckets[index];
-            for (int i = 0; i < bucket.size() && result.size() < k; i++) {
-                var node = bucket.get(i);
-                result.add(node);
-            }
+            result.addAll(bucket.cloneNode());
             used[index] = true;
             indexQueue.add(index + 1);
             indexQueue.add(index - 1);
-         }
+        }
         return result;
     }
 
@@ -224,90 +155,48 @@ public class KademliaBucket {
      * @return 如果存在则返回true，否则返回false
      */
     public boolean contains(String nodeId) {
-        int startIndex = EpidemicUtils.getDis(nodeId, myNode);
-        startIndex = startIndex >= bucketSize ? bucketSize - 1 : startIndex;
-
-        var bucket = buckets[startIndex];
-        if (Objects.isNull(bucket) || bucket.isEmpty()) {
-            return false;
-        }
-
-        return bucket.stream().anyMatch(node -> node.getKey().equals(nodeId));
-    }
-
-    /**
-     * 将桶中的数据完整克隆出来
-     */
-    public synchronized List<NodeTriadRouterNode> cloneBucket() {
-        var result = new ArrayList<NodeTriadRouterNode>();
-        for (int i = 0; i < bucketSize; i++) {
-            var bucket = buckets[i];
-            result.addAll(bucket);
-        }
-        return result;
-    }
-
-    /**
-     * 返回缓存的克隆节点
-     */
-    public synchronized List<NodeTriadRouterNode> cloneCache() {
-        return new ArrayList<>(nodeCache);
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[myId=").append(myNode).append(", ");
-        for (int i = 0; i < bucketSize; i++) {
-            var bucket = buckets[i];
-            sb.append("bucket").append(i).append("=[").append(bucket.toString()).append("], \r\n");
-        }
-        return sb.toString();
-    }
-
-    public int getPort() {
-        return config.getNodePort();
+        int disIndex = EpidemicUtils.getDis(nodeId, myNode);
+        var bucket = buckets[disIndex];
+        return bucket.contains(nodeId) || nodeCache.contains(nodeId);
     }
 
     public boolean isEmpty() {
-        if (bucketSize > 1) {
-            return false;
-        }
-        var bucket = buckets[0];
-        return Objects.isNull(bucket) || bucket.isEmpty();
-    }
-
-    public int getBucketSize() {
-        return bucketSize;
+        return size == 0;
     }
 
     /**
      * 移除节点
-     * @param node 要移除的路由节点
+     * @param nodeId 要移除的路由节点id
      */
-    public void remove(NodeTriadRouterNode node) {
-        int dis = EpidemicUtils.getDis(node.getKey(), myNode);
-        dis = dis >= bucketSize ? bucketSize - 1 : dis;
-        var bucket = buckets[dis];
-        for (var n : bucket) {
-            if (n.equals(node)) {
-                bucket.remove(n);
-                return;
-            }
-        }
+    public void remove(String nodeId) {
+        int disIndex = EpidemicUtils.getDis(nodeId, myNode);
+        var bucket = buckets[disIndex];
+        if (bucket.remove(nodeId))
+            size -= 1;
+
+        nodeCache.remove(nodeId);
     }
 
     /**
-     * 移除缓存节点
-     * @param node
+     * 检查该节点是否需要持久化
      */
-    public void removeCache(NodeTriadRouterNode node) {
-        for (var n : nodeCache) {
-            if (n.equals(node)) {
-                nodeCache.remove(n);
-                return;
-            }
+    public boolean canSave() {
+        if (addCount < saveSize) {
+            return false;
         }
+        addCount = 0;
+        return true;
+    }
+
+    /**
+     * 复制buckets中的所有节点数据
+     */
+    public List<NodeTriadRouterNode> cloneBucket() {
+        var list = new ArrayList<NodeTriadRouterNode>(size);
+        for (var bucket : buckets) {
+            list.addAll(bucket.cloneNode());
+        }
+        return list;
     }
 
 }
