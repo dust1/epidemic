@@ -43,7 +43,7 @@ public class LayoutLog {
 
     private String nodeId;
 
-    public static LayoutLog create(String log) {
+    public static LayoutLog parser(String log) {
         if (Objects.isNull(log) || log.isBlank()) {
             return null;
         }

@@ -13,7 +13,8 @@ public class LogParser {
      * 解析路由日志
      */
     public LayoutLog parseLayout(String log) {
-        return LayoutLog.create(log);
+//        return LayoutLog.create(log);
+        return null;
     }
 
 }

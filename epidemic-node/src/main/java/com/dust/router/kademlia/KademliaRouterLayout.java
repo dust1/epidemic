@@ -7,6 +7,7 @@ import com.dust.grpc.kademlia.KademliaServiceGrpc;
 import com.dust.grpc.kademlia.NodeInfo;
 import com.dust.logs.LogFormat;
 import com.dust.logs.LogParser;
+import com.dust.logs.LogReader;
 import com.dust.logs.Logger;
 import com.dust.logs.entity.LayoutLog;
 import com.dust.router.RouterLayout;
@@ -15,7 +16,6 @@ import io.grpc.ManagedChannelBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -25,6 +25,11 @@ public class KademliaRouterLayout extends RouterLayout {
      * 网络路由模块的快照文件名称
      */
     public static final String SNAPSHOT_FILENAME = "node.cache";
+
+    /**
+     * 日志文件
+     */
+    private static final String LOG_FILE = "log/layout.log";
 
     /**
      * 桶管理器
@@ -152,66 +157,6 @@ public class KademliaRouterLayout extends RouterLayout {
         }
     }
 
-    /**
-     * 读取日志
-     */
-    private void readLog() {
-        File file = new File("log/layout.log");
-        if (!file.exists()) {
-            return;
-        }
-
-        var findEd = new HashSet<String>();
-        var list = new ArrayList<LayoutLog>();
-        try (var raf = new RandomAccessFile(file, "r")) {
-            if (raf.length() == 0) {
-                return;
-            }
-            long start = raf.getFilePointer();
-            long nextEnd = start + raf.length() - 1;
-            String result;
-            raf.seek(nextEnd);
-            int c = -1;
-            while (nextEnd >= start) {
-                c = raf.read();
-                if (c == '\r' || c == '\n') {
-                    result = raf.readLine();
-                    LayoutLog layoutLog = LogParser.parser.parseLayout(result);
-                    if (Objects.nonNull(layoutLog)) {
-                        if (bucket.contains(layoutLog.getNodeId())
-                                || findEd.contains(layoutLog.getNodeId())) {
-                            break;
-                        }
-
-                        findEd.add(layoutLog.getNodeId());
-                        list.add(layoutLog);
-                    }
-                    nextEnd -= 1;
-                }
-                nextEnd -= 1;
-                if (nextEnd >= 0) {
-                    raf.seek(nextEnd);
-                    if (nextEnd == 0) {
-                        LayoutLog layoutLog = LogParser.parser.parseLayout(raf.readLine());
-                        if (Objects.nonNull(layoutLog)) {
-                            if (bucket.contains(layoutLog.getNodeId())
-                                    || findEd.contains(layoutLog.getNodeId())) {
-                                break;
-                            }
-
-                            findEd.add(layoutLog.getNodeId());
-                            list.add(layoutLog);
-                        }
-                    }
-                }
-            }
-        } catch (IOException e) {
-            Logger.systemLog.error(LogFormat.SYSTEM_ERROR_FORMAT, "读取路由节点操作日志文件失败", e.getMessage());
-        }
-
-        list.forEach(node -> bucket.add(node.toNode()));
-    }
-
     @Override
     public String getMyId() {
         return myId;
@@ -220,6 +165,37 @@ public class KademliaRouterLayout extends RouterLayout {
     @Override
     public List<NodeTriad> findNode(String key) {
         return bucket.findNode(key);
+    }
+
+    /*
+     读取本地日志，将日志中的节点重新加入到路由表中
+     */
+    private void readLog() {
+        var logFile = new File(LOG_FILE);
+        if (!logFile.exists()) {
+            return;
+        }
+        try (var reader = LogReader.create(LOG_FILE)) {
+            while (reader.hasNext()) {
+                String logLine = reader.next();
+                var layout = LayoutLog.parser(logLine);
+                if (Objects.isNull(layout))
+                    continue;
+                if (bucket.contains(layout.getNodeId()))
+                    break;
+                bucket.add(layout.toNode());
+            }
+        } catch (IOException e) {
+            Logger.systemLog.error(LogFormat.SYSTEM_ERROR_FORMAT, "读取日志出错", e.getMessage());
+        }
+    }
+
+    /*
+    检查节点情况，如果节点数量为0表示该节点属于首次连接，
+    需要通过联系人节点从集群中获取节点填充数据
+     */
+    private void findFriend() {
+
     }
 
     /*

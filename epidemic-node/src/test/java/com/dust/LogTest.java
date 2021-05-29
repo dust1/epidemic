@@ -2,16 +2,14 @@ package com.dust;
 
 import com.dust.logs.LogParser;
 import com.dust.logs.entity.LayoutLog;
-import lombok.extern.slf4j.Slf4j;
+import com.dust.logs.LogReader;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.font.LayoutPath;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class LogTest {
 
@@ -47,6 +45,18 @@ public class LogTest {
         long end = System.currentTimeMillis();
         System.out.println(end - start);
         System.out.println(list);
+    }
+
+    @Test
+    public void readLog() throws IOException {
+        var reader = LogReader.create("log/layout.log");
+        List<String> result = new ArrayList<>(266);
+        while (reader.hasNext()) {
+            String line = reader.next();
+            result.add(line);
+        }
+        System.out.println(result.size());
+        result.forEach(System.out::println);
     }
 
 }
