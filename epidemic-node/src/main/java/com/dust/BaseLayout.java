@@ -1,13 +1,11 @@
 package com.dust;
 
-import com.dust.fundation.EpidemicUtils;
 import com.dust.logs.LogFormat;
 import com.dust.logs.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.Arrays;
 
 /**
  * Layout基础组件

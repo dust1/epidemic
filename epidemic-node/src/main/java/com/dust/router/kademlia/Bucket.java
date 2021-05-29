@@ -1,17 +1,16 @@
 package com.dust.router.kademlia;
 
-import java.util.Collection;
-import java.util.PriorityQueue;
+import java.util.*;
 
 /**
  * 单个Bucket对象
  */
 public class Bucket {
 
-    private PriorityQueue<NodeTriadRouterNode> queue;
+    private final Queue<NodeTriadRouterNode> queue;
 
     public Bucket(int bucketKey) {
-         queue = new PriorityQueue<>(bucketKey, (n1, n2) -> Integer.compare(n2.getUpdateTime(), n1.getUpdateTime()))
+        this.queue = new PriorityQueue<>(bucketKey, (n1, n2) -> Integer.compare(n2.getUpdateTime(), n1.getUpdateTime()));
     }
 
     /**
@@ -19,7 +18,11 @@ public class Bucket {
      * @param nodeId 是否存在的节点id
      */
     public boolean contains(String nodeId) {
-        //TODO
+        for (var node : queue) {
+            if (node.getKey().equals(nodeId)) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -27,22 +30,29 @@ public class Bucket {
      * 获取这个Bucket队列中的节点元素数量
      */
     public int size() {
-        return 0;
+        return queue.size();
     }
 
     /**
      * 往Bucket队列中添加元素
      */
-    public void add(NodeTriadRouterNode node) {
-
+    public synchronized void add(NodeTriadRouterNode node) {
+        node.updateTime();
+        queue.add(node);
     }
 
     /**
      * 移除某个节点id对应的节点
      * @return 如果Bucket中存在该节点并且移除成功，则返回true。否则返回false
      */
-    public boolean remove(String nodeId) {
-
+    public synchronized boolean remove(String nodeId) {
+        for (var node : queue) {
+            if (node.getKey().equals(nodeId)) {
+                queue.remove(node);
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -50,15 +60,27 @@ public class Bucket {
      * 这个操作会更新队列顺序，将最新的节点放到队列最前
      * @param nodeId 节点id
      */
-    public void refreshNode(String nodeId) {
-
+    public synchronized void refreshNode(String nodeId) {
+        NodeTriadRouterNode refreshNode = null;
+        for (var node : queue) {
+            if (node.getKey().equals(nodeId)) {
+                refreshNode = node;
+                break;
+            }
+        }
+        if (Objects.isNull(refreshNode)) {
+            return;
+        }
+        queue.remove(refreshNode);
+        refreshNode.updateTime();
+        queue.add(refreshNode);
     }
 
     /**
      * 返回一份Bucket存储节点的复制
      */
     public Collection<NodeTriadRouterNode> cloneNode() {
-        return null;
+        return new ArrayList<>(queue);
     }
 
 }

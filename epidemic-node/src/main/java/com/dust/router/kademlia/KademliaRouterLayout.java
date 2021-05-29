@@ -37,7 +37,7 @@ public class KademliaRouterLayout extends RouterLayout {
     private String myId;
 
     public static RouterLayout create(NodeConfig config) throws IOException {
-        String tmp = config.getStoragePath();
+        String tmp = config.getRouterPath();
         if (!tmp.endsWith("/")) {
             tmp += "/";
         }

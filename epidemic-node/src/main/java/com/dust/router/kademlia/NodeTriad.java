@@ -11,6 +11,7 @@ import lombok.ToString;
  */
 @Setter
 @Getter
+@ToString
 public class NodeTriad {
 
     private String key;
