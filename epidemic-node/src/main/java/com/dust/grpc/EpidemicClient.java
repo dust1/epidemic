@@ -49,6 +49,7 @@ public class EpidemicClient {
                     .build();
             var req = StoreRequest.newBuilder().setNodeInfo(nodeInfo)
                     .setData(ByteString.copyFrom(buffer))
+                    .setFileId(fileId)
                     .build();
             var res = blockingStub.store(req);
             System.out.println(res.toString());
