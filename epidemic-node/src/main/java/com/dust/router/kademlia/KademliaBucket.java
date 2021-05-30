@@ -164,6 +164,10 @@ public class KademliaBucket {
         return size == 0;
     }
 
+    public int size() {
+        return size;
+    }
+
     /**
      * 移除节点
      * @param nodeId 要移除的路由节点id

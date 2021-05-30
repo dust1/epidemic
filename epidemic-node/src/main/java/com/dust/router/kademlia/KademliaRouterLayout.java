@@ -2,6 +2,7 @@ package com.dust.router.kademlia;
 
 import com.dust.NodeConfig;
 import com.dust.fundation.EpidemicUtils;
+import com.dust.grpc.ClientProxy;
 import com.dust.grpc.kademlia.FindRequest;
 import com.dust.grpc.kademlia.KademliaServiceGrpc;
 import com.dust.grpc.kademlia.NodeInfo;
@@ -12,6 +13,7 @@ import com.dust.logs.Logger;
 import com.dust.logs.entity.LayoutLog;
 import com.dust.router.RouterLayout;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,6 +43,11 @@ public class KademliaRouterLayout extends RouterLayout {
      */
     private String myId;
 
+    /**
+     * 节点是否在线
+     */
+    private boolean online;
+
     public static RouterLayout create(NodeConfig config) throws IOException {
         String tmp = config.getRouterPath();
         if (!tmp.endsWith("/")) {
@@ -56,6 +63,7 @@ public class KademliaRouterLayout extends RouterLayout {
                                 byte[] head) throws IOException {
         super(path, config, version, versinFileName, head);
         this.myId = EpidemicUtils.randomNodeId(config.getNodeSalt());
+        this.online = false;
     }
 
     /**
@@ -65,36 +73,24 @@ public class KademliaRouterLayout extends RouterLayout {
      */
     @Override
     public void before() throws IOException {
+        //从版本配置文件中加载id
         readId();
-
-        File f = new File(path, SNAPSHOT_FILENAME);
-        if (!f.exists()) {
-            //不存在快照文件
-            bucket = new KademliaBucket(config, myId);
-            //尝试读取日志
-            readLog();
-            //搜寻网络中其他节点
-            findMe();
+        //加载id完成后创建id对应的路由节点
+        this.bucket = new KademliaBucket(config, myId);
+        //从本地快照文件中加载持久化节点
+        loadLocalNode();
+        //持久化文件加载完后从日志记录中读取未保存的节点
+        readLog();
+        //如果上述操作都没有获取到节点信息，则从关联节点往集群请求
+        try {
+            loadCluster();
+        } catch (StatusRuntimeException e) {
+            Logger.systemLog.warn(LogFormat.SYSTEM_INFO_FORMAT, "节点与关联节点通信失败，当前为单机模式");
             return;
         }
-
-        try (var raf = new RandomAccessFile(f, "r")) {
-            raf.seek(0);
-            if (!EpidemicUtils.checkHead(head, raf)) {
-                //如果头文件读取失败则表示数据异常，不读取数据
-                //等到后面进行持久化的时候将原文件删除
-                return;
-            }
-            this.bucket = new KademliaBucket(config, myId);
-            while (raf.getFilePointer() < raf.length()) {
-                var node = NodeTriadRouterNode.fromFile(raf);
-                if (Objects.isNull(node))
-                    continue;
-                bucket.add(node);
-            }
+        if (bucket.size() > 0) {
+            online = true;
         }
-        readLog();
-        findMe();
     }
 
 
@@ -111,52 +107,6 @@ public class KademliaRouterLayout extends RouterLayout {
         }
     }
 
-    /**
-     * 如果当前节点是第一次建立则通过联系人节点从集群中获取其他节点信息
-     */
-    public void findMe() {
-        if (!bucket.isEmpty()) {
-            //桶中有数据，不再寻找朋友
-            return;
-        }
-
-        var info = NodeInfo.newBuilder()
-                .setPort(config.getNodePort())
-                .setNodeId(myId)
-                .build();
-        var queue = new LinkedList<NodeTriadRouterNode>();
-
-        queue.add(new NodeTriadRouterNode("-", config.getContactHost(), config.getContactPort()));
-        while (!queue.isEmpty() && !bucket.isEmpty()) {
-            var node = queue.poll();
-            if (Objects.isNull(node)) {
-                continue;
-            }
-
-            var channel = ManagedChannelBuilder
-                    .forAddress(node.getHost(), node.getPort())
-                    .usePlaintext()
-                    .build();
-            var client = KademliaServiceGrpc.newBlockingStub(channel);
-            var req = FindRequest.newBuilder()
-                    .setTargetId(myId)
-                    .setNodeInfo(info)
-                    .build();
-            var res = client.findNode(req);
-            while (res.hasNext()) {
-                var re = res.next();
-                if (re.getCode() != 1 || myId.equals(re.getNodeId())
-                    || bucket.contains(re.getNodeId())) {
-                    continue;
-                }
-                var newNode = new NodeTriadRouterNode(re.getNodeId(),
-                        re.getHost(), re.getPort());
-                bucket.add(newNode);
-                queue.add(newNode);
-            }
-        }
-    }
-
     @Override
     public String getMyId() {
         return myId;
@@ -165,6 +115,56 @@ public class KademliaRouterLayout extends RouterLayout {
     @Override
     public List<NodeTriad> findNode(String key) {
         return bucket.findNode(key);
+    }
+
+    /*
+    加载本地快照文件中的节点信息
+     */
+    private void loadLocalNode() throws IOException {
+        var file = new File(path, SNAPSHOT_FILENAME);
+        if (!file.exists()) {
+            return;
+        }
+        try (var raf = new RandomAccessFile(file, "r")) {
+            raf.seek(0);
+            if (!EpidemicUtils.checkHead(head, raf)) {
+                //如果头文件读取失败则表示数据异常，不读取数据
+                //等到后面进行持久化的时候将原文件删除
+                return;
+            }
+            while (raf.getFilePointer() < raf.length()) {
+                var node = NodeTriadRouterNode.fromFile(raf);
+                if (Objects.isNull(node))
+                    continue;
+                bucket.add(node);
+            }
+        }
+    }
+
+    /*
+    加载集群节点
+    如果当前节点是第一次建立则通过联系人节点从集群中获取其他节点信息
+     */
+    private void loadCluster() {
+        if (!bucket.isEmpty()) {
+            return;
+        }
+        var client = ClientProxy.create(getMyId(), config.getNodePort());
+        var queue = new LinkedList<NodeTriad>();
+        queue.add(new NodeTriad("-", config.getContactHost(),
+                config.getContactPort()));
+        while (bucket.size() < config.getBucketKey() && !queue.isEmpty()) {
+            var node = queue.poll();
+            var findResult = client.findNode(node.getHost(), node.getPort(), getMyId());
+            for (var result : findResult) {
+                var routerNode = new NodeTriadRouterNode(result.getNodeId(),
+                        result.getHost(), result.getPort());
+                if (!bucket.contains(result.getNodeId())) {
+                    queue.add(routerNode);
+                    bucket.add(routerNode);
+                }
+            }
+        }
     }
 
     /*
@@ -188,14 +188,6 @@ public class KademliaRouterLayout extends RouterLayout {
         } catch (IOException e) {
             Logger.systemLog.error(LogFormat.SYSTEM_ERROR_FORMAT, "读取日志出错", e.getMessage());
         }
-    }
-
-    /*
-    检查节点情况，如果节点数量为0表示该节点属于首次连接，
-    需要通过联系人节点从集群中获取节点填充数据
-     */
-    private void findFriend() {
-
     }
 
     /*

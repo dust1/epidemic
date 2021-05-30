@@ -146,4 +146,8 @@ public class EpidemicUtils {
         return System.currentTimeMillis();
     }
 
+    public static int time() {
+        return (int) (now() / 1000);
+    }
+
 }
